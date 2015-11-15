@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<div class="container with-img-responsive">
+  <div class="col-md-8{% if page.highlight_first %} highlight_first{% endif %}">
+
+    {% if page.show_title %}
+      <h1>
+        {% if page.title_url %} <a href="{{ site.baseurl }}{{ page.title_url }}"> {% endif %}
+          {{ page.title | markdownify | replace:'<p>','' | replace:'</p>','' }}
+        {% if page.title_url %} </a> {% endif %}
+        {% if page.tagline %} <small>{{ page.tagline }}</small>{% endif %}
+      </h1>
+    {% endif %}
+
+    {{ content }}
+  </div>
+
+  <div class="col-md-4">
+    {% include sidebar.html %}
+  </div>
+</div>

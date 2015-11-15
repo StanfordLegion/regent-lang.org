@@ -1,0 +1,36 @@
+# Configuration:
+exclude: ["CNAME", "README.md"]
+permalink: /:year/:month/:day/:title
+excerpt_separator: "<!-- break -->"
+
+# Metadata:
+title: Regent
+author:
+  name: Stanford University
+
+# Navigation menu items. (Note that these a preceded by some fixed
+# items coded directly in _includes/navbar.html .)
+navigation:
+  - label: Getting Started
+    url: "/start"
+  - label: Reference
+    url: "/reference"
+
+# Content configuration defaults:
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+      show_title: true
+      sidebar: true
+      highlight_first: false
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      show_title: true
+      sidebar: true
+      highlight_first: false

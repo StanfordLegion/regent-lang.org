@@ -1,0 +1,21 @@
+{% if page.sidebar %}
+
+<h3>Installing</h3>
+
+<pre>
+git clone https://github.com/StanfordLegion/legion.git
+cd legion/language
+./install.py --debug
+./regent.py examples/circuit.rg
+</pre>
+
+
+
+<h3>Links</h3>
+
+<ul>
+  <li><a href="https://github.com/StanfordLegion/legion/tree/master/language">Github</a></li>
+  <li><a href="http://legion.stanford.edu/">Legion</a></li>
+</ul>
+
+{% endif %}

@@ -1,0 +1,16 @@
+<footer class="rg-footer" role="contentinfo">
+  <div class="container">
+    <p>&copy; {{ site.time | date: '%Y' }} {{ site.author.name }}.</p>
+    <p>Powered by <a href="http://jekyllrb.com/">Jekyll</a> and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
+
+    <ul class="rg-footer-links muted">
+      <li><a href="{{ site.baseurl }}/">Home</a></li>
+      <li>&middot;</li>
+      {% for item in site.navigation %}
+        <li><a href="{{ site.baseurl }}{{ item.url }}">{{ item.label }}</a></li>
+        <li>&middot;</li>
+      {% endfor %}
+      <li><a href="http://legion.stanford.edu/">Legion</a></li>
+    </ul>
+  </div>
+</footer>

@@ -1,0 +1,619 @@
+/*
+ * This theme is derived from:
+ * Bootstrap Docs (http://getbootstrap.com)
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under the Creative Commons Attribution 3.0 Unported License. For
+ * details, see http://creativecommons.org/licenses/by/3.0/.
+ */
+
+/*
+ * Theme colors:
+ * Main: 942119
+ * Darker (5%): 7e1c15
+ * Lighter (10%): c02b20
+ * Lighter (45%): efa8a3
+ */
+
+a, .pagination > li > a {
+  color: #c02b20;
+}
+
+a:hover, a:focus, .pagination > li > a:hover, .pagination > li > a:focus {
+  color: #942119;
+}
+
+/*
+ * Scaffolding
+ *
+ * Update the basics of our documents to prep for docs content.
+ */
+
+body {
+  position: relative; /* For scrollspy */
+}
+
+.highlight_first > p:first-of-type {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+@media (min-width:768px) {
+  .highlight_first > p:first-of-type {
+    font-size: 21px;
+  }
+}
+
+/* Keep code small in tables on account of limited space */
+.table code {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+
+/*
+ * Main navigation
+ *
+ * Turn the `.navbar` at the top of the docs purple.
+ */
+
+.rg-nav {
+  margin-bottom: 0;
+  background-color: #942119;
+  border-bottom: 0;
+}
+.rg-home-nav .rg-nav-b {
+  display: none;
+}
+.rg-nav .navbar-brand,
+.rg-nav .navbar-nav > li > a {
+  font-weight: 500;
+  color: #fff;
+}
+.rg-nav .navbar-nav > li > a:hover,
+.rg-nav .navbar-nav > .active > a,
+.rg-nav .navbar-nav > .active > a:hover {
+  color: #7e1c15;
+  background-color: #f9f9f9;
+}
+.rg-nav .navbar-toggle .icon-bar {
+  background-color: #fff;
+}
+.rg-nav .navbar-header .navbar-toggle {
+  border-color: #fff;
+}
+.rg-nav .navbar-header .navbar-toggle:hover,
+.rg-nav .navbar-header .navbar-toggle:focus {
+  background-color: #f9f9f9;
+  border-color: #f9f9f9;
+}
+
+
+/*
+ * Footer
+ *
+ * Separated section of content at the bottom of all pages, save the homepage.
+ */
+
+.rg-footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 100px;
+  color: #777;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+}
+.rg-footer-links {
+  padding-left: 0;
+  margin-top: 20px;
+  color: #999;
+}
+.rg-footer-links li {
+  display: inline;
+  padding: 0 2px;
+}
+.rg-footer-links li:first-child {
+  padding-left: 0;
+}
+
+@media (min-width: 768px) {
+  .rg-footer p {
+    margin-bottom: 0;
+  }
+}
+
+
+/*
+ * Social buttons
+ *
+ * Twitter and GitHub social action buttons (for homepage and footer).
+ */
+
+.rg-social {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.rg-social-buttons {
+  display: inline-block;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+.rg-social-buttons li {
+  display: inline-block;
+  padding: 5px 8px;
+  line-height: 1;
+}
+.rg-social-buttons .twitter-follow-button {
+  width: 225px !important;
+}
+.rg-social-buttons .twitter-share-button {
+  width: 98px !important;
+}
+/* Style the GitHub buttons via CSS instead of inline attributes */
+.github-btn {
+  overflow: hidden;
+  border: 0;
+}
+
+
+/*
+ * Homepage
+ *
+ * Tweaks to the custom homepage and the masthead (main jumbotron).
+ */
+
+/* Share masthead with page headers */
+.rg-masthead,
+.rg-header {
+  position: relative;
+  padding: 30px 15px;
+  color: #efa8a3;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(0,0,0,.1);
+  background-color: #942119;
+}
+
+.rg-header a {
+  color: #efa8a3;
+}
+
+/* Masthead (headings and download button) */
+.rg-masthead .rg-booticon {
+  margin: 0 auto 30px;
+}
+.rg-masthead h1 {
+  font-weight: 300;
+  line-height: 1;
+  color: #fff;
+}
+.rg-masthead .lead {
+  margin: 0 auto 30px;
+  font-size: 20px;
+  color: #fff;
+}
+.rg-masthead .version {
+  margin-top: -15px;
+  margin-bottom: 30px;
+  color: #9783b9;
+}
+.rg-masthead .btn {
+  width: 100%;
+  padding: 15px 30px;
+  font-size: 20px;
+}
+
+@media (min-width: 480px) {
+  .rg-masthead .btn {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .rg-masthead {
+    padding: 80px 0;
+  }
+  .rg-masthead h1 {
+    font-size: 60px;
+  }
+  .rg-masthead .lead {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 992px) {
+  .rg-masthead .lead {
+    width: 80%;
+    font-size: 30px;
+  }
+}
+
+
+/*
+ * Page headers
+ *
+ * Jumbotron-esque headers at the top of every page that's not the homepage.
+ */
+
+/* Page headers */
+.rg-header {
+  margin-bottom: 40px;
+  font-size: 20px;
+}
+.rg-header h1 {
+  margin-top: 0;
+  color: #fff;
+}
+.rg-header h1 a {
+  color: #fff;
+}
+.rg-header p {
+  margin-bottom: 0;
+  font-weight: 300;
+  line-height: 1.4;
+}
+.rg-header .container {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .rg-header {
+    padding-top: 60px;
+    padding-bottom: 60px;
+    font-size: 24px;
+    text-align: left;
+  }
+  .rg-header h1 {
+    font-size: 60px;
+    line-height: 1;
+  }
+}
+
+@media (min-width: 992px) {
+  .rg-header h1,
+  .rg-header p {
+    margin-right: 380px;
+  }
+}
+
+
+/*
+ * Homepage featurettes
+ *
+ * Reasons to use Bootstrap, entries from the Expo, and more.
+ */
+
+.rg-featurette {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+  text-align: center;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+.rg-featurette + .rg-footer {
+  margin-top: 0;
+  border-top: 0;
+}
+
+.rg-featurette-title {
+  margin-bottom: 5px;
+  font-size: 30px;
+  font-weight: normal;
+  color: #333;
+}
+.half-rule {
+  width: 100px;
+  margin: 40px auto;
+}
+.rg-featurette h3 {
+  margin-bottom: 5px;
+  font-weight: normal;
+  color: #333;
+}
+.rg-featurette-img {
+  display: block;
+  margin-bottom: 20px;
+  color: #333;
+}
+.rg-featurette-img:hover {
+  color: #428bca;
+  text-decoration: none;
+}
+.rg-featurette-img img {
+  display: block;
+  margin-bottom: 15px;
+}
+
+@media (min-width: 480px) {
+  .rg-featurette .img-responsive {
+    margin-top: 30px;
+  }
+}
+@media (min-width: 768px) {
+  .rg-featurette {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+  .rg-featurette-title {
+    font-size: 40px;
+  }
+  .rg-featurette .lead {
+    max-width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .rg-featurette .img-responsive {
+    margin-top: 0;
+  }
+}
+
+
+/*
+ * Featured sites
+ *
+ * Homepage thumbnails from the Expo.
+ */
+
+.rg-featured-sites {
+  margin-right: -1px;
+  margin-left: -1px;
+}
+.rg-featured-sites .col-xs-6 {
+  padding: 1px;
+}
+.rg-featured-sites .img-responsive {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .rg-featured-sites .col-sm-3:first-child img {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  .rg-featured-sites .col-sm-3:last-child img {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+}
+
+
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+
+/* By default it's not affixed in mobile views, so undo that */
+.rg-sidebar.affix {
+  position: static;
+}
+@media (min-width: 768px) {
+  .rg-sidebar {
+    padding-left: 20px;
+  }
+}
+
+/* First level of nav */
+.rg-sidenav {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* All levels of nav */
+.rg-sidebar .nav > li > a {
+  display: block;
+  padding: 4px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #999;
+}
+.rg-sidebar .nav > li > a:hover,
+.rg-sidebar .nav > li > a:focus {
+  padding-left: 19px;
+  color: #942119;
+  text-decoration: none;
+  background-color: transparent;
+  border-left: 1px solid #942119;
+}
+.rg-sidebar .nav > .active > a,
+.rg-sidebar .nav > .active:hover > a,
+.rg-sidebar .nav > .active:focus > a {
+  padding-left: 18px;
+  font-weight: bold;
+  color: #942119;
+  background-color: transparent;
+  border-left: 2px solid #942119;
+}
+
+/* Nav: second level (shown on .active) */
+.rg-sidebar .nav .nav {
+  display: none; /* Hide by default, but at >768px, show it */
+  padding-bottom: 10px;
+}
+.rg-sidebar .nav .nav > li > a {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 30px;
+  font-size: 12px;
+  font-weight: normal;
+}
+.rg-sidebar .nav .nav > li > a:hover,
+.rg-sidebar .nav .nav > li > a:focus {
+  padding-left: 29px;
+}
+.rg-sidebar .nav .nav > .active > a,
+.rg-sidebar .nav .nav > .active:hover > a,
+.rg-sidebar .nav .nav > .active:focus > a {
+  padding-left: 28px;
+  font-weight: 500;
+}
+
+/* Back to top (hidden on mobile) */
+.back-to-top,
+.rg-theme-toggle {
+  display: none;
+  padding: 4px 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999;
+}
+.back-to-top:hover,
+.rg-theme-toggle:hover {
+  color: #942119;
+  text-decoration: none;
+}
+.rg-theme-toggle {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .back-to-top,
+  .rg-theme-toggle {
+    display: block;
+  }
+}
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+  .rg-sidebar .nav > .active > ul {
+    display: block;
+  }
+  /* Widen the fixed sidebar */
+  .rg-sidebar.affix,
+  .rg-sidebar.affix-bottom {
+    width: 213px;
+  }
+  .rg-sidebar.affix {
+    position: fixed; /* Undo the static from mobile first approach */
+    top: 20px;
+  }
+  .rg-sidebar.affix-bottom {
+    position: absolute; /* Undo the static from mobile first approach */
+  }
+  .rg-sidebar.affix-bottom .rg-sidenav,
+  .rg-sidebar.affix .rg-sidenav {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+@media (min-width: 1200px) {
+  /* Widen the fixed sidebar again */
+  .rg-sidebar.affix-bottom,
+  .rg-sidebar.affix {
+    width: 263px;
+  }
+}
+
+
+/*
+ * Docs sections
+ *
+ * Content blocks for each component or feature.
+ */
+
+/* Space things out */
+.rg-section {
+  margin-bottom: 60px;
+}
+.rg-section:last-child {
+  margin-bottom: 0;
+}
+
+h1[id] {
+  padding-top: 20px;
+  margin-top: 0;
+}
+
+
+/*
+ * Color swatches
+ *
+ * Color swatches and associated values for our grayscale and brand colors.
+ */
+
+.color-swatches {
+  margin: 0 -5px;
+  overflow: hidden; /* clearfix */
+}
+.color-swatch {
+  float: left;
+  width: 60px;
+  height: 60px;
+  margin: 0 5px;
+  border-radius: 3px;
+}
+
+@media (min-width: 768px) {
+  .color-swatch {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+
+/*
+ * Code snippets
+ *
+ * Generated via Pygments and Jekyll, these are snippets of HTML, CSS, and JS.
+ */
+
+.highlight {
+  padding: 9px 14px;
+  margin-bottom: 14px;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  border-radius: 4px;
+}
+.highlight pre {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  word-break: normal;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+}
+.highlight pre code {
+  font-size: inherit;
+  color: #333; /* Effectively the base text color */
+}
+.highlight pre code:first-child {
+  display: inline-block;
+  padding-right: 45px;
+}
+
+
+/*
+ * Images
+ */
+
+.with-img-responsive img {
+  display: block;
+  width: 100%\9;
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+ * Miscellaneous
+ *
+ * Odds and ends for optimum docs display.
+ */
+
+/* Pseudo :focus state for showing how it looks in the docs */
+#focusedInput {
+  border-color: rgb(204,204,204); /* Restate unfocused value to make CSSLint happy that there's a pre-CSS3 fallback*/
+  border-color: rgba(82,168,236,.8);
+  outline: 0;
+  outline: thin dotted \9; /* IE6-9 */
+  -webkit-box-shadow: 0 0 8px rgba(82,168,236,.6);
+          box-shadow: 0 0 8px rgba(82,168,236,.6);
+}
