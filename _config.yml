@@ -3,8 +3,6 @@ exclude: ["CNAME", "README.md"]
 permalink: /:year/:month/:day/:title
 excerpt_separator: "<!-- break -->"
 
-highlighter: rogue
-
 # Metadata:
 title: Regent
 author:
