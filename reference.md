@@ -3,7 +3,7 @@ layout: page
 title: Language Reference
 sidebar: false
 highlight_first: false
-permalink: /reference
+permalink: /reference/index.html
 ---
 
 # Frontmatter

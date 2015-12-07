@@ -3,7 +3,7 @@ layout: page
 title: Getting Started
 sidebar: false
 highlight_first: false
-permalink: /start
+permalink: /start/index.html
 ---
 
 # Installing Regent
