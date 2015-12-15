@@ -37,11 +37,11 @@ module Rouge
 
         # Regent syntax:
         rule %r([@]), Operator
-        rule %r((atomic|copy|exclusive|fill|import|reads|reduces|relaxed|simultaneous|where|writes)\b), Keyword
+        rule %r((atomic|copy|equal|exclusive|fill|import|new|reads|reduces|relaxed|simultaneous|where|writes)\b), Keyword
         rule %r((var)\b), Keyword::Declaration
-        rule %r((ispace|ptr|partition|region|struct)\b), Keyword::Type
+        rule %r((ispace|ptr|partition|region)\b), Keyword::Type
         rule %r((task)\b), Keyword, :function_name
-        rule %r((fspace)\b), Keyword, :function_name
+        rule %r((fspace|struct)\b), Keyword, :function_name
 
         # Lua syntax:
         rule %r([A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?) do |m|
