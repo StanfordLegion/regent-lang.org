@@ -37,7 +37,7 @@ module Rouge
 
         # Regent syntax:
         rule %r([@]), Operator
-        rule %r((atomic|copy|equal|exclusive|fill|import|new|reads|reduces|relaxed|simultaneous|where|writes)\b), Keyword
+        rule %r((atomic|copy|equal|exclusive|fill|import|new|null|reads|reduces|relaxed|simultaneous|where|writes)\b), Keyword
         rule %r((var)\b), Keyword::Declaration
         rule %r((ispace|ptr|partition|region)\b), Keyword::Type
         rule %r((task)\b), Keyword, :function_name
