@@ -23,10 +23,11 @@ Regent locally:
 
 Regent depends on:
 
-  * Linux, Mac OS X, or another Unix
-  * Python >= 2.7 (for the self-installer and test suite)
-  * Clang and LLVM **with headers**. LLVM 3.5 is recommended, though
-    3.6 should also work. The binary packages on
+  * Linux, Mac OS X, or another Unix.
+  * Python >= 2.7 (for the self-installer and test suite).
+  * Clang and LLVM **with headers**. As of December 2015, LLVM 3.5 is
+    recommended; 3.6 works but is missing debug symbols. The binary
+    packages on
     [LLVM.org](http://llvm.org/releases/download.html#3.5.2) appear to
     work well.
   * Other dependencies ([Terra](http://terralang.org/),
