@@ -291,7 +291,7 @@ of a region. The resulting partition is guarranteed to be disjoint
 **IF** the supplied target partition is disjoint.
 
 {% highlight regent %}
-var p = preimage(parent_region, target_partition, source_region.field)
+var p = preimage(parent_region, target_partition, data_region.field)
 {% endhighlight %}
 
 ### Union
