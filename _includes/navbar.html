@@ -11,16 +11,25 @@
     </div>
     <nav class="collapse navbar-collapse rg-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav">
+        <li>
+          <a href="http://try.regent-lang.org/"></a>
+        </li>
         {% for item in site.navigation %}
-          {% assign active = nil %}
-          {% capture url_with_index %}{{ item.url }}/index.html{% endcapture %}
-          {% if page.url == item.url or page.url == url_with_index %}
-            {% assign active = 'active' %}
+          {% if item.external %}
+            <li>
+              <a href="{{ item.url }}">{{ item.label }}</a>
+            </li>
+          {% else %}
+            {% assign active = nil %}
+            {% capture url_with_index %}{{ item.url }}/index.html{% endcapture %}
+            {% if page.url == item.url or page.url == url_with_index %}
+              {% assign active = 'active' %}
+            {% endif %}
+            <li class="{{ active }}">
+              <a href="{{ site.baseurl }}{{ item.url }}">{{ item.label }}</a>
+            </li>
+            {% assign active = nil %}
           {% endif %}
-          <li class="{{ active }}">
-            <a href="{{ site.baseurl }}{{ item.url }}">{{ item.label }}</a>
-          </li>
-          {% assign active = nil %}
         {% endfor %}
       </ul>
 

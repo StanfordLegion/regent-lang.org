@@ -7,8 +7,13 @@
       <li><a href="{{ site.baseurl }}/">Home</a></li>
       <li>&middot;</li>
       {% for item in site.navigation %}
-        <li><a href="{{ site.baseurl }}{{ item.url }}">{{ item.label }}</a></li>
-        <li>&middot;</li>
+        {% if item.external %}
+          <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+          <li>&middot;</li>
+        {% else %}
+          <li><a href="{{ site.baseurl }}{{ item.url }}">{{ item.label }}</a></li>
+          <li>&middot;</li>
+        {% endif %}
       {% endfor %}
       <li><a href="http://legion.stanford.edu/">Legion</a></li>
     </ul>

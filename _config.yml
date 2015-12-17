@@ -11,8 +11,11 @@ author:
 # Navigation menu items. (Note that these a preceded by some fixed
 # items coded directly in _includes/navbar.html .)
 navigation:
-  - label: Getting Started
-    url: "/start"
+  - label: Try Online
+    url: "http://try.regent-lang.org/"
+    external: true
+  - label: Install
+    url: "/install"
   - label: Reference
     url: "/reference"
 

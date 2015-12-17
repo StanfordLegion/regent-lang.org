@@ -6,7 +6,7 @@ sidebar: true
 highlight_first: true
 ---
 
-**Regent** is an implicitly parallel programming language with
+**Regent** is an implicit parallel programming language with
 sequential semantics.
 
 {% highlight regent %}
