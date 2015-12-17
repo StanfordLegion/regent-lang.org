@@ -6,6 +6,19 @@ highlight_first: false
 permalink: /install/index.html
 ---
 
+## Docker
+
+If you have [Docker](https://www.docker.com/), the fastest way to
+install Regent is to run the official container:
+
+{% highlight bash %}
+docker pull stanfordlegion/regent
+docker run -ti stanfordlegion/regent
+{% endhighlight %}
+
+Otherwise, you can follow the instructions below to build and install
+Regent locally:
+
 ## Prerequisites
 
 Regent depends on:
@@ -20,7 +33,7 @@ Regent depends on:
     [Legion](http://legion.stanford.edu/)) are downloaded
     automatically by the self-installer.
 
-## Installing Regent
+## Building
 
 The Regent repository includes a self-installer which downloads and
 builds the Regent compiler. Run:
@@ -34,7 +47,7 @@ cd legion/language
 For GPUs, clusters, and other installation options, see the
 [project README](https://github.com/StanfordLegion/legion/tree/master/language).
 
-## Running Regent
+## Running
 
 Regent includes a frontend interpreter which can be run with:
 
