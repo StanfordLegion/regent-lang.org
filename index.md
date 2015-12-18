@@ -9,11 +9,17 @@ highlight_first: true
 **Regent** is an implicit parallel programming language with
 sequential semantics.
 
-Regent programs appear to execute sequentially, and can be read
-top-down, just like programs in traditional languages. Regent computes
-a dependence graph over tasks and executes each task as soon as it is
-ready, exploiting available parallelism while guarranteeing that
-execution obeys the sequential semantics of the code.
+Regent discovers dataflow parallelism in sequential code by computing
+a dependence graph over tasks, like the one below. Tasks execute as
+soon as all dependencies are satisfied, and can be distributed
+automatically over a cluster of (possibly heterogeneous) machines.
+
+![]({{ site.baseurl }}/images/frontpage.svg)
+
+Because execution follows the original sequential semantics of the
+code, Regent programs are easy to read and understand. Just read the
+code top-to-bottom, as if it were written in a traditional sequential
+language.
 
 {% highlight regent %}
 import "regent"
@@ -50,17 +56,6 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
-
-Execution of a Regent program starts at `main`. Each task executes
-sequentially. Whenever a task calls a subtask, Regent uses the
-*privileges* declared for each task (`reads`, `writes`, etc.) to
-determine what previous subtasks this new subtask depends on. In other
-words, Regent computes a dependence graph over the subtasks called by
-each task. After the program above executes, it will have produced the
-following dependence graph for `main`. Operations which are
-independent will execute in parallel.
-
-![]({{ site.baseurl }}/images/frontpage.svg)
 
 Interested in learning more? [Try out this example and others in your
 browser](http://try.regent-lang.org).
