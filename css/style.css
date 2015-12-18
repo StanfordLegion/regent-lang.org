@@ -32,6 +32,18 @@ body {
   position: relative; /* For scrollspy */
 }
 
+/* Shrink the width of the default container */
+@media (min-width: 992px) {
+    .container{
+        max-width: 750px;
+    }
+}
+@media (min-width: 1200px) {
+    .container{
+        max-width: 750px;
+    }
+}
+
 .highlight_first > p:first-of-type {
   margin-top: 20px;
   margin-bottom: 20px;
