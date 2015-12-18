@@ -19,7 +19,8 @@ automatically over a cluster of (possibly heterogeneous) machines.
 Because execution follows the original sequential semantics of the
 code, Regent programs are easy to read and understand. Just read the
 code top-to-bottom, as if it were written in a traditional sequential
-language.
+language. The depende graph above is produced when the task `main`
+executes below.
 
 {% highlight regent %}
 import "regent"
@@ -57,5 +58,4 @@ end
 regentlib.start(main)
 {% endhighlight %}
 
-Interested in learning more? [Try out this example and others in your
-browser](http://try.regent-lang.org).
+<p class="lead">Interested in learning more? <a href="http://try.regent-lang.org">Try out this example and others in your browser</a>.</p>
