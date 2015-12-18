@@ -9,6 +9,12 @@ highlight_first: true
 **Regent** is an implicit parallel programming language with
 sequential semantics.
 
+Regent programs appear to execute sequentially, and can be read
+top-down, just like programs in traditional languages. Behind the
+scenes, Regent computes a dependence graph over tasks and executes
+each task as soon as it is ready, while guarranteeing that execution
+obeys the original sequential semantics of the code.
+
 {% highlight regent %}
 import "regent"
 
@@ -50,10 +56,10 @@ Execution of a Regent program starts at `main`. Each task executes
 sequentially. Whenever a task calls a subtask, Regent uses the
 *privileges* declared for each task (`reads`, `writes`, etc.) to
 determine what previous subtasks this new subtask depends on. In other
-words, Regent dynamically computes a dependence graph over the
-subtasks called by each task. After the program above executes, it
-will have produced the following dependence graph for
-`main`. Operations which are independent will execute in parallel.
+words, Regent computes a dependence graph over the subtasks called by
+each task. After the program above executes, it will have produced the
+following dependence graph for `main`. Operations which are
+independent will execute in parallel.
 
 ![]({{ site.baseurl }}/images/frontpage.svg)
 
