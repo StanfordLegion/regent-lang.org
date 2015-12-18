@@ -13,10 +13,7 @@ sequential semantics.
 import "regent"
 
 -- Define a simple struct type with two fields.
-struct point {
-  x : float,
-  y : float,
-}
+struct point { x : float, y : float }
 
 -- Define 4 tasks. Ignore the task bodies for the moment; the behavior of each
 -- task is soundly described by its declaration. Note that each declaration
