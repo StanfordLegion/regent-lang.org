@@ -10,10 +10,9 @@ highlight_first: true
 sequential semantics.
 
 {% highlight regent %}
--- Load the Regent language definition.
 import "regent"
 
--- Define a simple struct to be used later.
+-- Define a simple struct type with two fields.
 struct point {
   x : float,
   y : float,
