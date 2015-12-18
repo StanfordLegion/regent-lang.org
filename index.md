@@ -14,7 +14,7 @@ a dependence graph over tasks, like the one below. Tasks execute as
 soon as all dependencies are satisfied, and can be distributed
 automatically over a cluster of (possibly heterogeneous) machines.
 
-![]({{ site.baseurl }}/images/frontpage.svg)
+<img src="{{ site.baseurl }}/images/frontpage.svg" class="center-block">
 
 Because execution follows the original sequential semantics of the
 code, Regent programs are easy to read and understand. Just read the
