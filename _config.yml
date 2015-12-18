@@ -18,6 +18,8 @@ navigation:
     url: "/install"
   - label: Reference
     url: "/reference"
+  - label: Paper
+    url: "/images/regent2015.pdf"
 
 # Content configuration defaults:
 defaults:
