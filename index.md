@@ -10,10 +10,10 @@ highlight_first: true
 sequential semantics.
 
 Regent programs appear to execute sequentially, and can be read
-top-down, just like programs in traditional languages. Behind the
-scenes, Regent computes a dependence graph over tasks and executes
-each task as soon as it is ready, while guarranteeing that execution
-obeys the original sequential semantics of the code.
+top-down, just like programs in traditional languages. Regent computes
+a dependence graph over tasks and executes each task as soon as it is
+ready, exploiting available parallelism while guarranteeing that
+execution obeys the original sequential semantics of the code.
 
 {% highlight regent %}
 import "regent"
@@ -46,7 +46,7 @@ task main()
   end
   c(points)
   for i = 0, 3 do
-    d(points)
+    d(parts[i])
   end
 end
 regentlib.start(main)
