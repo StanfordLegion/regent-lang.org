@@ -12,7 +12,6 @@ If you have [Docker](https://www.docker.com/), the fastest way to
 install Regent is to run the official container:
 
 {% highlight bash %}
-docker pull stanfordlegion/regent
 docker run -ti stanfordlegion/regent
 {% endhighlight %}
 
