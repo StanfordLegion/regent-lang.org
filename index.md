@@ -13,7 +13,7 @@ Regent programs appear to execute sequentially, and can be read
 top-down, just like programs in traditional languages. Regent computes
 a dependence graph over tasks and executes each task as soon as it is
 ready, exploiting available parallelism while guarranteeing that
-execution obeys the original sequential semantics of the code.
+execution obeys the sequential semantics of the code.
 
 {% highlight regent %}
 import "regent"
