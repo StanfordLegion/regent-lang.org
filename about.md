@@ -3,6 +3,7 @@ layout: page
 title: About
 sidebar: true
 highlight_first: true
+permalink: /about/index.html
 ---
 
 Regent is developed as part of the
