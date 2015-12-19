@@ -24,6 +24,7 @@ Regent depends on:
 
   * Linux, Mac OS X, or another Unix.
   * Python >= 2.7 (for the self-installer and test suite).
+  * A C++ 98 compiler (GCC, Clang, Intel, or PGI) and GNU Make.
   * Clang and LLVM **with headers**. As of December 2015, LLVM 3.5 is
     recommended; 3.6 works but is missing debug symbols. The binary
     packages on
