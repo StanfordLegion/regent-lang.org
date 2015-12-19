@@ -43,8 +43,23 @@ Most [Terra](http://terralang.org) language features can also be used
 in Regent tasks, and compilation of Regent programs proceeds similarly
 to Terra. For example, Lua variables referenced in Regent tasks are
 specialized prior to type checking, and are effectively constant from
-the perspective of Regent. The biggest exception is that the `&`
-(address-of) operator is not available in Regent.
+the perspective of Regent.
+
+## Unsupported Terra Features
+
+The following Terra features are not supported in Regent:
+
+  * The address-of operator `&`.
+  * The method call operator `o:f()` does not automatically
+    dereference Regent's `ptr` type.
+  * Terra [macros](http://terralang.org/api.html#macro).
+  * Terra [quotes](http://terralang.org/api.html#quote).
+
+In general, use Terra's raw pointer types (`&T`) with caution. Regent
+may execute tasks in a distributed environment, so a pointer created
+in one task might not be valid in another. As long as pointers stay
+within a task, it is ok to use raw pointers (and traditional C APIs
+like `malloc` and `free`).
 
 # Execution Model
 
