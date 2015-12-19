@@ -20,7 +20,7 @@ Regent locally:
 
 ## Prerequisites
 
-Regent depends on:
+Regent requires:
 
   * Linux, Mac OS X, or another Unix.
   * Python >= 2.7 (for the self-installer and test suite).
