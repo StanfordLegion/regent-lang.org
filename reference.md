@@ -96,8 +96,7 @@ Regent programs execute in a top-level Lua/Terra context, but Regent
 tasks cannot be called from Lua/Terra. Instead, a Regent program may
 begin execution of tasks by calling `regentlib.start` with a task
 argument. This task becomes the top-level task in the Regent program,
-and may call other tasks as desired. The call does not return, and is
-typically placed at the end of a Regent source file.
+and may call other tasks as desired.
 
 {% highlight regent %}
 task main()
@@ -105,6 +104,11 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
+
+The call does not return, and is typically placed at the end of a
+Regent source file. At this time, the runtime is not reentrant, so
+even if the call did return, it would still not be possible to launch
+another top-level task.
 
 ## Privileges
 
