@@ -45,7 +45,7 @@ cd legion/language
 {% endhighlight %}
 
 For GPUs, clusters, and other installation options, see the
-[project README](https://github.com/StanfordLegion/legion/tree/master/language).
+[README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
 ## Running
 
