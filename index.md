@@ -18,7 +18,7 @@ automatically over a cluster of (possibly heterogeneous) machines.
 Because execution follows the original sequential semantics of the
 code, Regent programs are easy to read and understand. Just read the
 code top-to-bottom, as if it were written in a traditional sequential
-language. The depende graph above is produced when the task `main`
+language. The dependence graph above is produced when the task `main`
 executes below.
 
 {% highlight regent %}
