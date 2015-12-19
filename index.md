@@ -1,13 +1,12 @@
 ---
 layout: page
-title: Regent
+title: "Regent: a Language for Implicit Dataflow Parallelism"
 show_title: false
 sidebar: true
 highlight_first: true
 ---
 
-**Regent** is an implicit parallel programming language with
-sequential semantics.
+**Regent** is a language for implicit dataflow parallelism.
 
 Regent discovers dataflow parallelism in sequential code by computing
 a dependence graph over tasks, like the one below. Tasks execute as
