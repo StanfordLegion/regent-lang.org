@@ -12,8 +12,7 @@ author:
 # items coded directly in _includes/navbar.html .)
 navigation:
   - label: Try Online
-    url: "http://try.regent-lang.org/"
-    external: true
+    url: "/spawn"
   - label: Install
     url: "/install"
   - label: Reference
