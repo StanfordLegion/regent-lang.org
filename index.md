@@ -57,4 +57,4 @@ end
 regentlib.start(main)
 {% endhighlight %}
 
-<p class="lead">Interested in learning more? <a href="http://try.regent-lang.org">Try out this example and others in your browser</a>.</p>
+<p class="lead">Interested in learning more? <a href="http://try.regent-lang.org/spawn">Try out this example and others in your browser</a>.</p>
