@@ -23,6 +23,10 @@ permalink: /reference/index.html
       * [Regions](#regions)
       * [Partitions](#partitions)
   * [Metaprogramming](#metaprogramming)
+      * [Symbols](#symbols)
+      * [Statement Quotes](#statement-quotes)
+      * [Expressions Quotes](#expression-quotes)
+      * [Task Generation](#task-generation)
 
 # Frontmatter
 
@@ -411,9 +415,9 @@ operators at this time, making this somewhat more verbose than Terra.)
 repxr 40 + 2 end
 {% endhighlight %}
 
-## Example
+## Task Generation
 
-Here's a complete example showing how to generate a task.
+The example below shows how to generate a simple type-parametric task.
 
 {% highlight regent %}
 local function make_increment_task(param_type, by_value)
