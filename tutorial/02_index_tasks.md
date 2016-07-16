@@ -12,7 +12,7 @@ these is *index task* optimization. An *index task launch*
 encapsulates a parallel loop and ensures that the runtime is able to
 amortize the cost of analysis of the contained tasks.
 
-## Index Tasks
+## Optimizing Index Tasks
 
 Loops are a common pattern in parallel codes. Regent optimizes loops
 to ensure that they execute efficiently on the Legion runtime. Recall
