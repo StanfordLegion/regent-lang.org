@@ -16,6 +16,8 @@ navigation:
     external: true
   - label: Install
     url: "/install"
+  - label: Tutorial
+    url: "/tutorial"
   - label: Reference
     url: "/reference"
   - label: Paper
