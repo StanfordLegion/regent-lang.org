@@ -436,7 +436,7 @@ To inspect the contents of a task, invoke the `:printpretty()`
 method. For example, `inc_int_by_1:printpretty()` produces the
 following output:
 
-{% highlight %}
+{% highlight text %}
 task t($x : int32) : int32
 -- leaf (false), inner (false), idempotent (false)
   return ($x+1)
