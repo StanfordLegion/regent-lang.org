@@ -432,16 +432,22 @@ local inc_int_by_1 = make_increment_task(int, 1)
 local inc_double_by_pi = make_increment_task(double, 3.14)
 {% endhighlight %}
 
-To inspect the contents of a task, invoke the `:printpretty()`
-method. For example, `inc_int_by_1:printpretty()` produces the
-following output:
+To inspect the contents of generated tasks, invoke Regent with the
+flag `-fpretty 1`. On the code above, this produces the following
+output.
 
 {% highlight text %}
 task t($x : int32) : int32
--- leaf (false), inner (false), idempotent (false)
+-- leaf (true), inner (false), idempotent (false)
   return ($x+1)
+end
+config options  true    false
+task t($x : double) : double
+-- leaf (true), inner (false), idempotent (false)
+  return ($x+3.14)
 end
 {% endhighlight %}
 
 This can also be used to determine what optimizations are being
-triggered.
+triggered. (For example, leaf optimization is enabled on the tasks
+above.)
