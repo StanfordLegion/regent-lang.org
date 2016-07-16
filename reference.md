@@ -431,3 +431,17 @@ end
 local inc_int_by_1 = make_increment_task(int, 1)
 local inc_double_by_pi = make_increment_task(double, 3.14)
 {% endhighlight %}
+
+To inspect the contents of a task, invoke the `:printpretty()`
+method. For example, `inc_int_by_1:printpretty()` produces the
+following output:
+
+{% highlight regent %}
+task t($x : int32) : int32
+-- leaf (false), inner (false), idempotent (false)
+  return ($x+1)
+end
+{% endhighlight %}
+
+This can also be used to determine what optimizations are being
+triggered.
