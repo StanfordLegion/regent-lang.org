@@ -22,6 +22,7 @@ permalink: /reference/index.html
       * [Index Spaces](#index-spaces)
       * [Regions](#regions)
       * [Partitions](#partitions)
+  * [Metaprogramming](#metaprogramming)
 
 # Frontmatter
 
@@ -358,4 +359,71 @@ partitions. The resulting partition is guarranteed to be disjoint
 
 {% highlight regent %}
 var p = lhs_partition - rhs_partition
+{% endhighlight %}
+
+# Metaprogramming
+
+Regent supports [Terra-style
+metaprogramming](http://terralang.org/getting-started.html#meta-programming). Metaprogramming
+can be used to accomplish a variety of purposes:
+
+  * Field spaces with input-dependent sets of fields
+  * Index spaces with input-dependent dimensionality
+  * Tasks with input-dependent arguments, privileges, and/or contents
+
+More generally, Regent can be used as a full-featured code generator
+for Legion, in the same way that Terra is used (by Regent itself) as a
+code generator for LLVM.
+
+For the most part, these features work the same as in Terra. (For
+example, types are still Lua expressions, and quotes can still be
+inserted with the escape operator `[]`.) Regent-specific features are
+described below.
+
+## Symbols
+
+A symbol can be used as a variable or task parameter. To generate a
+fresh, unique symbol, call:
+
+{% highlight regent %}
+regentlib.newsymbol(int, "name")
+{% endhighlight %}
+
+## Statement Quotes
+
+Regent provides an `rquote` operator which is analogous to Terra's
+`quote` feature.
+
+{% highlight regent %}
+rquote
+  var x = 5
+  return x + 1
+end
+{% endhighlight %}
+
+## Expression Quotes
+
+Regent provides an `rexpr` operator which is analogous to Terra's
+`` ` ``. (Unfortunately, Regent is not able to overload punctuation
+operators at this time, making this somewhat more verbose than Terra.)
+
+{% highlight regent %}
+repxr 40 + 2 end
+{% endhighlight %}
+
+## Example
+
+Here's a complete example showing how to generate a task.
+
+{% highlight regent %}
+local function make_increment_task(param_type, by_value)
+  local x = regentlib.newsymbol(param_type, "x")
+  local inc = rexpr x + by_value end
+  local task t([x])
+    return [inc]
+  end
+  return t
+end
+local inc_int_by_1 = make_increment_task(int, 1)
+local inc_double_by_pi = make_increment_task(double, 3.14)
 {% endhighlight %}
