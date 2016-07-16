@@ -11,6 +11,7 @@ permalink: /reference/index.html
       * [Unsupported Terra Features](#unsupported-terra-features)
   * [Execution Model](#execution-model)
       * [Tasks](#tasks)
+      * [Top-Level Task](#top-level-task)
       * [Privileges](#privileges)
       * [Coherence Modes](#coherence-modes)
       * [Constraints](#constraints)
