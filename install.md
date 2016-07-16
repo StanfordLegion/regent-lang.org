@@ -61,8 +61,8 @@ cd legion/language
 {% endhighlight %}
 
 For other installation options (including multi-node and GPU
-configurations), see the [Legion
-README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
+configurations), see the
+[README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
 ## Running
 
