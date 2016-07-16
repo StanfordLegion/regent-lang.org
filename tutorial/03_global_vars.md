@@ -10,7 +10,7 @@ Regent has no global variables. C-style pointers are allowed, but must
 be used with caution. Mechanisms within the language for achieving
 mutable state are discussed in later tutorials.
 
-## Global Variables
+## Lua Variables
 
 Regent has no concept of a global variable. Technically, Lua variables
 are global, but from Regent's perspective they are fixed at compile
