@@ -34,22 +34,25 @@ Complete instructions for installation follow below.
 
 Regent requires:
 
-  * Linux, Mac OS X, or another Unix.
-  * Python >= 2.7 (for the self-installer and test suite).
-  * A C++ 98 compiler (GCC, Clang, Intel, or PGI) and GNU Make.
-  * Clang and LLVM **with headers**. As of December 2015, LLVM 3.5 is
-    recommended; 3.6 works but is missing debug symbols. The binary
-    packages on
-    [LLVM.org](http://llvm.org/releases/download.html#3.5.2) appear to
-    work well.
-  * Other dependencies ([Terra](http://terralang.org/),
-    [Legion](http://legion.stanford.edu/)) are downloaded
-    automatically by the self-installer.
+  * Linux, macOS, or another Unix
+  * A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
+  * Python 2.7 (or 3.x)
+  * LLVM and Clang 3.5 **with headers**
+      * Versions 3.6 and 3.8 also work, but are missing debug symbols in generated code
+
+There are also a number of optional dependencies. For most users, we
+recommend skipping these initially and installing them later on an
+as-needed basis.
+
+  * *Optional*: CUDA 5.0 or newer (for NVIDIA GPUs)
+  * *Optional*: [GASNet](https://gasnet.lbl.gov/) (for networking, see
+     [installation instructions](http://legion.stanford.edu/gasnet/))
+  * *Optional*: HDF5 (for file I/O)
 
 ## Building
 
-The Regent repository includes a self-installer which downloads and
-builds the Regent compiler. Run:
+Regent includes a self-installer which downloads
+[Terra](http://terralang.org/) and builds the Regent compiler. Run:
 
 {% highlight bash %}
 git clone -b master https://github.com/StanfordLegion/legion.git
@@ -57,15 +60,22 @@ cd legion/language
 ./install.py --debug
 {% endhighlight %}
 
-For GPUs, clusters, and other installation options, see the
-[README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
+For other installation options (including multi-node and GPU
+configurations), see the [Legion
+README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
 ## Running
 
 Regent includes a frontend interpreter which can be run with:
 
 {% highlight bash %}
-./regent.py <script.rg>
+./regent.py <script>
+{% endhighlight %}
+
+For example:
+
+{% highlight bash %}
+./regent.py examples/circuit.rg
 {% endhighlight %}
 
 (Note: The Regent frontend can also be run without arguments to obtain
