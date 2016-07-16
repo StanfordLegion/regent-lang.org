@@ -13,20 +13,20 @@ permalink: /install/index.html
 If you have [Docker](https://www.docker.com/), the fastest way to
 install Regent is to run the official container:
 
-```bash
+{% highlight bash %}
 docker run -ti stanfordlegion/regent
-```
+{% endhighlight %}
 
 ### Ubuntu
 
 If you use Ubuntu, you can install Regent by running:
 
-```bash
+{% highlight bash %}
 sudo apt-get install clang-3.5 libclang-3.5-dev llvm-3.5-dev
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
 ./install.py --debug
-```
+{% endhighlight %}
 
 Complete instructions for installation follow below.
 
