@@ -32,7 +32,7 @@ Regent requires:
   * A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
   * Python 2.7 (or 3.x)
   * LLVM and Clang 3.5 **with headers**
-      * Versions 3.6 and 3.8 also work, but are missing debug symbols in generated code
+      * Versions 3.6-3.9 also work, but may be missing debug symbols in generated code
 
 There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
