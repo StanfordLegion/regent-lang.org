@@ -477,7 +477,7 @@ In some cases, it can be useful to call to call Legion APIs
 directly. These work the same as any other C function. As a
 convenience, Regent exposes a standard set of headers via the variable
 `regentlib.c`. This corresponds to the Legion header file
-[`legion_c.h`](https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion_c.h).
+`legion_c.h`.
 
 Certain Legion API calls may require a runtime and/or context. These
 can be obtained in Regent via the operators `__runtime()` and
@@ -503,3 +503,10 @@ task main()
   b()
 end
 {% endhighlight %}
+
+At this time, the best source of documentation on the C API is the
+[source code of the `legion_c.h` header
+file](https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion_c.h). Note
+that in most cases, the functions of the C API correspond one-to-one
+with the C++ API, so most C APIs are documented simply by pointing to
+the corresponding methods in `legion.h`.
