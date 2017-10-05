@@ -27,6 +27,8 @@ permalink: /reference/index.html
       * [Statement Quotes](#statement-quotes)
       * [Expressions Quotes](#expression-quotes)
       * [Task Generation](#task-generation)
+  * [Foreign Function Interface](#foreign-function-interface)
+      * [Legion C API](#legion-c-api)
 
 # Frontmatter
 
@@ -451,3 +453,53 @@ end
 This can also be used to determine what optimizations are being
 triggered. (For example, leaf optimization is enabled on the tasks
 above.)
+
+# Foreign Function Interface
+
+Regent code can call C functions via Terra's foreign function
+interface (FFI). For example, the following snippet calls the C standard
+library function `printf`:
+
+{% highlight regent %}
+local c = terralib.includec("stdio.h")
+
+task hello()
+  c.printf("hello!\n")
+end
+{% endhighlight %}
+
+For more information on Terra's FFI, please see the
+[FFI documentation](http://terralang.org/api.html#using-c-inside-terra).
+
+## Legion C API
+
+In some cases, it can be useful to call to call Legion APIs
+directly. These work the same as any other C function. As a
+convenience, Regent exposes a standard set of headers via the variable
+`regentlib.c`. This corresponds to the Legion header file
+[`legion_c.h`](https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion_c.h).
+
+Certain Legion API calls may require a runtime and/or context. These
+can be obtained in Regent via the operators `__runtime()` and
+`__context()`.
+
+For example, the following code calls a Legion execution fence:
+
+{% highlight regent %}
+local c = regentlib.c
+
+task a()
+  c.printf("this task will run first\n")
+end
+task b()
+  c.printf("this task will run second\n")
+end
+
+task main()
+  a()
+  -- Force a and b to be serialized by inserting a fence.
+  -- Note: The fence will *NOT* block the main task.
+  c.legion_runtime_issue_execution_fence(__runtime(), __context())
+  b()
+end
+{% endhighlight %}
