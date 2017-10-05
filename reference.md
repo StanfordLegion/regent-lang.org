@@ -168,17 +168,17 @@ relaxed(r)
 
 The modes behave as follows:
 
-  * `exclusive` mode (the default) guarrantees that tasks will execute
+  * `exclusive` mode (the default) guarantees that tasks will execute
     in a manner that preserves the original sequential semantics of
     the code.
 
   * `atomic` mode allows tasks to be reordered in a manner that
-    preserves serializability, similar to a transation-based
+    preserves serializability, similar to a transaction-based
     system. Atomicity is provided at the level of a task.
 
   * `simultaneous` mode allows tasks to run concurrently as long as
     they use the same physical instance for all simultaneous
-    regions. This guarrantees that the regions in question behave with
+    regions. This guarantees that the regions in question behave with
     shared memory semantics, similar to pthreads, etc.
 
   * `relaxed` mode allows marked tasks to run concurrently with no
@@ -301,7 +301,7 @@ disjoint: some partitions, such as the image operator, may be aliased.
 ### Equal
 
 Produces roughly equal subregions, one for each color in the supplied
-color space. The resulting partition is guarranteed to be disjoint.
+color space. The resulting partition is guaranteed to be disjoint.
 
 {% highlight regent %}
 var p = partition(equal, r, color_space)
@@ -310,7 +310,7 @@ var p = partition(equal, r, color_space)
 ### By Field
 
 Partitions a region based on a coloring stored in a field of the
-region. The resulting partition is guarranteed to be disjoint.
+region. The resulting partition is guaranteed to be disjoint.
 
 {% highlight regent %}
 var p = partition(r.color_field, color_space)
@@ -320,7 +320,7 @@ var p = partition(r.color_field, color_space)
 
 Partitions a region by computing the image of each of the subregions
 of a partition through the supplied (pointer-typed) field of a
-region. The resulting partition is **NOT** guarranteed to be disjoint.
+region. The resulting partition is **NOT** guaranteed to be disjoint.
 
 {% highlight regent %}
 var p = image(parent_region, source_partition, data_region.field)
@@ -330,7 +330,7 @@ var p = image(parent_region, source_partition, data_region.field)
 
 Partitions a region by computing the preimage of each of the
 subregions of a partition through the supplied (pointer-typed) field
-of a region. The resulting partition is guarranteed to be disjoint
+of a region. The resulting partition is guaranteed to be disjoint
 **IF** the supplied target partition is disjoint.
 
 {% highlight regent %}
@@ -340,7 +340,7 @@ var p = preimage(parent_region, target_partition, data_region.field)
 ### Union
 
 Computes the zipped union of the subregions in the supplied
-partitions. The resulting partition is **NOT** guarranteed to be
+partitions. The resulting partition is **NOT** guaranteed to be
 disjoint.
 
 {% highlight regent %}
@@ -350,7 +350,7 @@ var p = lhs_partition | rhs_partition
 ### Intersection
 
 Computes the zipped intersection of the subregions in the supplied
-partitions. The resulting partition is guarranteed to be disjoint
+partitions. The resulting partition is guaranteed to be disjoint
 **IF** either or both of the arguments are disjoint.
 
 {% highlight regent %}
@@ -360,7 +360,7 @@ var p = lhs_partition & rhs_partition
 ### Difference
 
 Computes the zipped difference of the subregions in the supplied
-partitions. The resulting partition is guarranteed to be disjoint
+partitions. The resulting partition is guaranteed to be disjoint
 **IF** the left-hand-side partition is disjoint.
 
 {% highlight regent %}
