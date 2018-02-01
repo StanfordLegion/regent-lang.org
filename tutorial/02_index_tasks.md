@@ -46,7 +46,7 @@ against bugs (in the application or compiler). The `__parallel`
 annotation guarantees that the compiler will produce an error if it
 is unable to optimize the loop in question. Most often, this happens
 because of a loop-carried dependence between the iterations of the
-loop. (This is contrast an OpenMP-style `#pragma`, which applies the
+loop. (This is in contrast to an OpenMP-style `#pragma`, which applies the
 optimization even if it is unsound.)
 
 ## Final Code
