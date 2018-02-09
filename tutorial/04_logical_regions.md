@@ -6,42 +6,67 @@ highlight_first: false
 permalink: /tutorial/04_logical_regions/index.html
 ---
 
-(The text for this tutorial has not been written yet.)
+## Field spaces
+
+Field spaces are sets of fields, and behave similarly to structs in C or Terra.
 
 {% highlight regent %}
-import "regent"
-
-local c = terralib.includec("stdio.h")
-
--- A field space (fspace) is a collection of fields, similar to a
--- C struct.
 fspace fs {
   a : double,
   {b, c, d} : int, -- Multiple fields may be declared with a single type.
 }
+{% endhighlight %}
 
-task main()
-  -- An index space (ispace) is a collection in index points. Regent
-  -- has two kinds of index spaces: structured and unstructured.
+Field spaces may also be instantiated by casting an anonymous struct to the appropriate type.
 
-  -- An unstructured ispace is a collection of opaque points, useful
-  -- for pointer data structures such as graphs, trees, linked lists,
-  -- and unstructured meshes. The following line creates an ispace
-  -- with 1024 elements.
-  var unstructured_is = ispace(ptr, 1024)
-
-  -- A structured ispace is (multi-dimensional) rectangle of
-  -- points. The space below includes the 1-dimensional ints from 0 to 1023.
-  var structured_is = ispace(int1d, 1024, 0)
-
-  -- A region is the cross product between an ispace and an fspace.
-  var unstructured_lr = region(unstructured_is, fs)
-  var structured_lr = region(structured_is, fs)
-
-  -- Note that you can create multiple regions with the same ispace
-  -- and fspace. This is a **NEW** region, distint from structured_lr
-  -- above.
-  var no_clone_lr = region(structured_is, fs)
+{% highlight regent %}
+task make_fs(w : double, x : int, y : int, z : int) : fs
+  var obj = point { a = w, b = x, c = y, d = z } -- Define a local variable of type fs.
+  return obj
 end
-regentlib.start(main)
+{% endhighlight %}
+
+Field spaces differ from structs in that they may also take region-typed arguments.
+
+{% highlight regent %}
+fspace point {
+  {x, y} : double
+}
+
+fspace edge(r : region(point)) {
+ left: ptr(point, r),
+ right: ptr(point, r),
+}
+{% endhighlight %}
+
+## Index spaces
+
+An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.
+
+An unstructured ispace is a collection of opaque points, useful for pointer data structures such as graphs, trees, linked lists, and unstructured meshes.
+
+{% highlight regent %}
+var unstructured_is = ispace(ptr, 1024) -- Create an ispace with 1024 elements.
+{% endhighlight %}
+
+A structured ispace is (multi-dimensional) rectangle of points. 
+
+{% highlight regent %}
+var i1 = ispace(int1d, 1024, 0) -- Create an ispace including the 1-dimensional ints from 0 to 1023.
+var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 }) -- 2-dimensional 4x4 rectangle with indices starting at 1,1.
+{% endhighlight %}
+
+## Regions
+
+Regions are the cross-product between an index space and a field space. 
+
+{% highlight regent %}
+var unstructured_lr = region(unstructured_is, fs)
+var structured_lr = region(structured_is, fs)
+{% endhighlight %}
+
+Note that you can create multiple regions with the same index space and field space. This is a new region, distinct from structured_lr above.
+
+{% highlight regent %}
+var other_structured_lr = region(structured_is, fs)
 {% endhighlight %}
