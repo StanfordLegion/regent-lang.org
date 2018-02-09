@@ -251,13 +251,30 @@ arguments. Such arguments are useful for declaring recursive data
 types. References to field spaces with arguments must be escaped.
 
 {% highlight regent %}
-fspace list_node(list : region(list_node)) {
-  next_node : ptr(list_node, list)
+fspace point {
+  {x, y} : double
 }
 
-task make_node(list : region(list_node), next : ptr(list_node, list))
-  return [list_node(list)] { next_node = next }
+fspace edge(r : region(point)) {
+ left: ptr(point, r),
+ right: ptr(point, r),
+}
+
+task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, points))
+  return [edge(points)] { left = a, right = b }
 end
+{% endhighlight %}
+
+Recursive data structures that reference their own type can also leverage the 'wild' operator (which matches any region) during declaration:
+
+{% highlight regent %}
+fspace quad(r : region(quad(wild))) {
+ val: double,
+ ne: ptr(quad(wild), r),
+ nw: ptr(quad(wild), r),
+ se: ptr(quad(wild), r),
+ sw: ptr(quad(wild), r),
+}
 {% endhighlight %}
 
 ## Index Spaces
