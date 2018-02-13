@@ -252,12 +252,12 @@ types. References to field spaces with arguments must be escaped.
 
 {% highlight regent %}
 fspace point {
-  {x, y} : double
+  {x, y} : double -- Multiple fields may be declared with a single type.
 }
 
 fspace edge(r : region(point)) {
- left: ptr(point, r),
- right: ptr(point, r),
+  left: ptr(point, r),
+  right: ptr(point, r),
 }
 
 task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, points))
@@ -265,15 +265,26 @@ task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, po
 end
 {% endhighlight %}
 
-Recursive data structures that reference their own type can also leverage the 'wild' operator (which matches any region) during declaration:
+In the presence of [partitions](#partitions), it can be difficult to
+choose right region to use as an arugment to a field space. In these
+cases, it can be helpful to use the `wild` operator (which matches any
+region) in the declaration of the field space. Note that this
+currently exposes unsoundness in the type system; the user is
+responsible for making sure that the right regions are used when the
+field space is actually instantiated. (For those interested in the
+type theory behind this, see the [DPL
+paper](http://legion.stanford.edu/pdfs/dpl2016.pdf).)
+
+For example, a quad-tree implementation might feature the following
+field space declaration:
 
 {% highlight regent %}
 fspace quad(r : region(quad(wild))) {
- val: double,
- ne: ptr(quad(wild), r),
- nw: ptr(quad(wild), r),
- se: ptr(quad(wild), r),
- sw: ptr(quad(wild), r),
+  val: double,
+  ne: ptr(quad(wild), r),
+  nw: ptr(quad(wild), r),
+  se: ptr(quad(wild), r),
+  sw: ptr(quad(wild), r),
 }
 {% endhighlight %}
 
@@ -320,7 +331,7 @@ disjoint: some partitions, such as the image operator, may be aliased.
 Produces roughly equal subregions, one for each color in the supplied
 color space. The resulting partition is guaranteed to be disjoint. If
 the size of the color space is evenly divisable by the requested number
-of subregions then they will be of equal size and contiguous - otherwise
+of subregions then they will be of equal size and contiguous---otherwise
 the exact way in which the remaining elements are partitioned is unspecified.
 
 {% highlight regent %}

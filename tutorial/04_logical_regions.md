@@ -21,7 +21,7 @@ Field spaces may also be instantiated by casting an anonymous struct to the appr
 
 {% highlight regent %}
 task make_fs(w : double, x : int, y : int, z : int) : fs
-  var obj = point { a = w, b = x, c = y, d = z } -- Define a local variable of type fs.
+  var obj = fs { a = w, b = x, c = y, d = z } -- Define a local variable of type fs.
   return obj
 end
 {% endhighlight %}
@@ -37,6 +37,10 @@ fspace edge(r : region(point)) {
  left: ptr(point, r),
  right: ptr(point, r),
 }
+
+task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, points))
+  return [edge(points)] { left = a, right = b }
+end
 {% endhighlight %}
 
 ## Index spaces
@@ -49,7 +53,7 @@ An unstructured ispace is a collection of opaque points, useful for pointer data
 var unstructured_is = ispace(ptr, 1024) -- Create an ispace with 1024 elements.
 {% endhighlight %}
 
-A structured ispace is (multi-dimensional) rectangle of points. 
+A structured ispace is a (multi-dimensional) rectangle of points.
 
 {% highlight regent %}
 var i1 = ispace(int1d, 1024, 0) -- Create an ispace including the 1-dimensional ints from 0 to 1023.
@@ -58,7 +62,7 @@ var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 }) -- 2-dimensional 4x4 
 
 ## Regions
 
-Regions are the cross-product between an index space and a field space. 
+Regions are the cross-product between an index space and a field space.
 
 {% highlight regent %}
 var unstructured_lr = region(unstructured_is, fs)
@@ -69,4 +73,47 @@ Note that you can create multiple regions with the same index space and field sp
 
 {% highlight regent %}
 var other_structured_lr = region(structured_is, fs)
+{% endhighlight %}
+
+## Final Code
+
+{% highlight regent %}
+import "regent"
+
+local c = terralib.includec("stdio.h")
+
+fspace fs {
+  a : double,
+  {b, c, d} : int,
+}
+
+task make_fs(w : double, x : int, y : int, z : int) : fs
+  var obj = fs { a = w, b = x, c = y, d = z }
+  return obj
+end
+
+fspace point {
+  {x, y} : double
+}
+
+fspace edge(r : region(point)) {
+ left: ptr(point, r),
+ right: ptr(point, r),
+}
+
+task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, points))
+  return [edge(points)] { left = a, right = b }
+end
+
+task main()
+  var unstructured_is = ispace(ptr, 1024)
+
+  var structured_is = ispace(int1d, 1024, 0)
+
+  var unstructured_lr = region(unstructured_is, fs)
+  var structured_lr = region(structured_is, fs)
+
+  var no_clone_lr = region(structured_is, fs)
+end
+regentlib.start(main)
 {% endhighlight %}
