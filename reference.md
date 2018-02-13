@@ -318,7 +318,10 @@ disjoint: some partitions, such as the image operator, may be aliased.
 ### Equal
 
 Produces roughly equal subregions, one for each color in the supplied
-color space. The resulting partition is guaranteed to be disjoint.
+color space. The resulting partition is guaranteed to be disjoint. If
+the size of the color space is evenly divisable by the requested number
+of subregions then they will be of equal size and contiguous - otherwise
+the exact way in which the remaining elements are partitioned is unspecified.
 
 {% highlight regent %}
 var p = partition(equal, r, color_space)
