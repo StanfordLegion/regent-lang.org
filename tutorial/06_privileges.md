@@ -6,40 +6,9 @@ highlight_first: false
 permalink: /tutorial/06_privileges/index.html
 ---
 
-(The text for this tutorial has not been written yet.)
+Privileges describe how a task interacts with region-typed arguments. For example, `reads` is required in order to read from a region argument, and `writes` is required to modify a region.
 
 {% highlight regent %}
-import "regent"
-
-local c = terralib.includec("stdlib.h")
-
-fspace input {
-  x : double,
-  y : double,
-}
-
-fspace output {
-  z : double,
-}
-
--- The vast majority of task arguments are pass-by-value. Regions are
--- instead pass-by-reference. This means that tasks may modify the
--- contents of their region arguments.
-task init(is : ispace(int1d),
-          input_lr : region(is, input))
--- Tasks declare privileges on region arguments to indicate what
--- regions they will read or write. This task will write to its region
--- argument.
-where writes(input_lr) do
-  for i in is do
-    -- Privileges are enforced by the type system. These region
-    -- accesses are legal because of the write privilege declared
-    -- above.
-    input_lr[i].x = c.drand48()
-    input_lr[i].y = c.drand48()
-  end
-end
-
 task daxpy(is : ispace(int1d),
            input_lr : region(is, input),
            output_lr : region(is, output),
@@ -51,33 +20,30 @@ where reads writes(output_lr.z), reads(input_lr.{x, y}) do
     output_lr[i].z = alpha*input_lr[i].x + input_lr[i].y
   end
 end
+{% endhighlight %}
 
-task check(is : ispace(int1d),
+Privileges are enforced by the type system, which will throw an exception when detecting an invalid access.
+
+Beyond `reads` and `writes`, reductions (+, *, -, /, min, max) allow the application of certain commutative operators to regions.
+
+{% highlight regent %}
+task sum_output(is : ispace(int1d),
            input_lr : region(is, input),
            output_lr : region(is, output),
            alpha : double)
-where reads(input_lr, output_lr) do
+where reads reduces +(output_lr.z), reads(input_lr.{x, y}) do
   for i in is do
-    var expected = alpha*input_lr[i].x + input_lr[i].y
-    var received = output_lr[i].z
-    regentlib.assert(expected == received, "check failed")
+    output_lr[i].z += alpha*input_lr[i].x + input_lr[i].y
   end
 end
 
-task main()
-  var num_elements = 1024
-  var is = ispace(int1d, num_elements)
-  var input_lr = region(is, input)
-  var output_lr = region(is, output)
-
-  -- Privileges are also required for task calls. The main task has
-  -- read-write privileges on any regions it created.
-  init(is, input_lr)
-
-  var alpha = c.drand48()
-  daxpy(is, input_lr, output_lr, alpha)
-
-  check(is, input_lr, output_lr, alpha)
+task max_output(is : ispace(int1d),
+           input_lr : region(is, input),
+           output_lr : region(is, output),
+           alpha : double)
+where reads reduces max(output_lr.z), reads(input_lr.{x, y}) do
+  for i in is do
+    output_lr[i].z max = max(alpha*input_lr[i].x, output_lr[i].z)
+  end
 end
-regentlib.start(main)
 {% endhighlight %}
