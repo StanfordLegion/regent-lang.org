@@ -19,6 +19,28 @@ cd legion/language
 ./install.py --debug
 {% endhighlight %}
 
+### macOS
+
+If you use [Homebrew](https://brew.sh/) on macOS, you can install
+Regent by running:
+
+{% highlight bash %}
+brew install llvm@3.9
+# Consider placing these lines into your .bashrc for future use.
+export CLANG="$(brew --prefix)/opt/llvm@3.9/bin/clang"
+export LLVM_CONFIG="$(brew --prefix)/opt/llvm@3.9/bin/llvm-config"
+export CXX="$(brew --prefix)/opt/llvm@3.9/bin/clang++"
+git clone -b master https://github.com/StanfordLegion/legion.git
+cd legion/language
+./install.py --debug
+{% endhighlight %}
+
+Note: In order for this to work, Homebrew must be installed to
+`/usr/local`. Other locations (such as `$HOME`) will build but will
+result in a broken compiler.
+
+## Other Systems
+
 Complete instructions for installation follow below.
 
 Regent is also available as a Docker container. See [the bottom of
