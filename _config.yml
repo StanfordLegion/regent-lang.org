@@ -20,8 +20,9 @@ navigation:
     url: "/tutorial"
   - label: Reference
     url: "/reference"
-  - label: Paper
-    url: "/images/regent2015.pdf"
+  - label: Publications
+    url: "http://legion.stanford.edu/publications"
+    external: true
 
 # Content configuration defaults:
 defaults:
