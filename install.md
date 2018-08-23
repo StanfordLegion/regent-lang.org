@@ -53,8 +53,10 @@ Regent requires:
   * Linux, macOS, or another Unix
   * A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
   * Python 2.7 (or 3.x)
-  * LLVM and Clang 3.5 **with headers**
-      * Versions 3.6-3.9 also work, but may be missing debug symbols in generated code
+  * LLVM and Clang **with headers**:
+      * LLVM 3.8 is recommended for use with CUDA
+      * LLVM 3.5 is recommended for debugging (other versions will be missing debug symbols)
+      * LLVM 3.5-3.9 and 6.0 are also supported
 
 There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
