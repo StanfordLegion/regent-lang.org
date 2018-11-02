@@ -319,7 +319,7 @@ var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 })
 
 {% highlight regent %}
 for point in i0 do
-  -- point is an ptr(i0).
+  -- point is a ptr(i0).
 end
 for point in i1 do
   -- point is an int1d(i1).
@@ -353,10 +353,40 @@ Regions are the cross-product between an index space and a field
 space. The name of the region exists in the scope of the declaration,
 so recursive data types may refer to the region being defined.
 
+#### Creating a Region
+
 {% highlight regent %}
-var r0 = region(i0, int)                       -- A region of ints on i0.
+var r0 = region(i0, int)                       -- A region of ints on index space i0.
 var r1 = region(ispace(ptr, 5), list_node(r1)) -- A linked list with 5 elements.
-var r2 = region(ispace(int1d, 10, 3), point)   -- A 1D vector of points.
+var r2 = region(i2, grid_point)                -- A 2D region of grid_points.
+{% endhighlight %}
+
+#### Iterating a Region
+
+{% highlight regent %}
+for point in r0 do
+  -- point is a ptr(int, r0).
+end
+for point in r1 do
+  -- point is a ptr(list_node(r1), r1).
+end
+for point in r2 do
+  -- point is a int2d(grid_point, r2).
+end
+{% endhighlight %}
+
+#### Finding the Index Space of a Region
+
+{% highlight regent %}
+r0.ispace -- Returns i0.
+r1.ispace -- Returns an anonymous unstructured index space of size 5.
+r2.ispace -- Returns i2.
+{% endhighlight %}
+
+#### Finding the Bounds of a Region
+
+{% highlight regent %}
+r2.bounds -- Returns i2.bounds.
 {% endhighlight %}
 
 ## Partitions
