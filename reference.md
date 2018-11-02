@@ -294,15 +294,15 @@ fspace quad(r : region(quad(wild))) {
 Index spaces are sets of indices, used most frequently to define the
 set of keys in a [region](#regions). Index spaces may be unstructured
 (i.e. indices are opaque pointers), or structured (i.e. indices are
-N-dimensional points with an implied geometric
-relationship). Unstructured index spaces are created with a maximum
-size and are initially empty. Structured index spaces are created with
-an extent and optional start, and are pre-allocated.
+N-dimensional points with an implied geometric relationship). Index
+spaces of either type are created with a size (this is an
+N-dimensional point for structured index spaces) and optional offset.
 
 #### Creating an Unstructured Index Space
 
 {% highlight regent %}
-var i0 = ispace(ptr, 5) -- Empty unstructured space with room for 5 elements.
+-- Unstructured space with 5 elements.
+var i0 = ispace(ptr, 5)
 {% endhighlight %}
 
 #### Creating a Structured Index Space
