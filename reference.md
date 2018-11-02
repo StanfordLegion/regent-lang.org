@@ -29,6 +29,7 @@ permalink: /reference/index.html
       * [Task Generation](#task-generation)
   * [Foreign Function Interface](#foreign-function-interface)
       * [Calling the Legion C API](#calling-the-legion-c-api)
+      * [Operators to Obtain C API Object Handles](#operators-to-obtain-c-api-object-handles)
 
 # Frontmatter
 
