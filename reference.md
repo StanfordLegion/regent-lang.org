@@ -22,6 +22,7 @@ permalink: /reference/index.html
       * [Index Spaces](#index-spaces)
       * [Regions](#regions)
       * [Partitions](#partitions)
+      * [Partition Operators](#partition-operators)
   * [Metaprogramming](#metaprogramming)
       * [Symbols](#symbols)
       * [Statement Quotes](#statement-quotes)
@@ -267,7 +268,7 @@ end
 {% endhighlight %}
 
 In the presence of [partitions](#partitions), it can be difficult to
-choose right region to use as an arugment to a field space. In these
+choose right region to use as an argument to a field space. In these
 cases, it can be helpful to use the `wild` operator (which matches any
 region) in the declaration of the field space. Note that this
 currently exposes unsoundness in the type system; the user is
@@ -391,15 +392,64 @@ r2.bounds -- Returns i2.bounds.
 
 ## Partitions
 
-Partitions subdivide regions into subregions. Several partitioning
-operators are described below. Note that not all partitions are
-disjoint: some partitions, such as the image operator, may be aliased.
+Partitions subdivide regions into subregions, in order to more
+precisely specify the data used by tasks and to enable
+parallelism. Partitions in Regent may be:
+
+  * `disjoint` or `aliased`.
+      * `disjoint` subregions are non-overlapping, and therefore can
+        be safely modified in parallel.
+      * `aliased` subregions are permitted to overlap, but can only be
+        used in parallel with `reads` or `reduces` privileges.
+  * Dense or sparse.
+      * Dense subregions consist of a single contiguous rectangle of
+        elements.
+      * Sparse subregions may consist of arbitrary sets of elements
+        within the original region.
+
+Subregions should be thought of as views onto the original
+region. They do not contain their own data but instead reference the
+data contained by the parent region.
+
+A given region can be partitioned multiple times, and the subregions
+can be partitioned recursively into finer regions.
+
+The subregions of a partition are identified by points in a special
+index space called a *color space*. Subregions can be retrieved by
+their color within the partition.
+
+Regent provides a very expressive sub-language of [partition
+operators](#partition-operators) for creating partitions, described in
+more detail below.
+
+#### Creating a Partition
+
+{% highlight regent %}
+var c0 = ispace(int1d, 3)
+var p0 = partition(equal, r0, c0)
+{% endhighlight %}
+
+#### Iterating the Subregions of a Partition
+
+{% highlight regent %}
+for c in c0 do
+  p0[c] -- Returns a subregion of r0 with color c.
+end
+{% endhighlight %}
+
+#### Finding the Color Space of a Partition
+
+{% highlight regent %}
+p0.colors -- Returns c0.
+{% endhighlight %}
+
+## Partition Operators
 
 ### Equal
 
 Produces roughly equal subregions, one for each color in the supplied
 color space. The resulting partition is guaranteed to be disjoint. If
-the size of the color space is evenly divisable by the requested number
+the size of the color space is evenly divisible by the requested number
 of subregions then they will be of equal size and contiguous---otherwise
 the exact way in which the remaining elements are partitioned is unspecified.
 
