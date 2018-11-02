@@ -401,6 +401,8 @@ parallelism. Partitions in Regent may be:
         be safely modified in parallel.
       * `aliased` subregions are permitted to overlap, but can only be
         used in parallel with `reads` or `reduces` privileges.
+      * A partition is `disjoint` **IFF** all of its subregions are
+        mutually disjoint.
   * Dense or sparse.
       * Dense subregions consist of a single contiguous rectangle of
         elements.
