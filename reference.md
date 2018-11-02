@@ -445,7 +445,7 @@ p0.colors -- Returns c0.
 
 ## Partition Operators
 
-### Equal
+#### Equal
 
 Produces roughly equal subregions, one for each color in the supplied
 color space. The resulting partition is guaranteed to be disjoint. If
@@ -457,7 +457,7 @@ the exact way in which the remaining elements are partitioned is unspecified.
 var p = partition(equal, r, color_space)
 {% endhighlight %}
 
-### By Field
+#### By Field
 
 Partitions a region based on a coloring stored in a field of the
 region. The resulting partition is guaranteed to be disjoint.
@@ -466,7 +466,7 @@ region. The resulting partition is guaranteed to be disjoint.
 var p = partition(r.color_field, color_space)
 {% endhighlight %}
 
-### Image
+#### Image
 
 Partitions a region by computing the image of each of the subregions
 of a partition through the supplied (pointer-typed) field of a
@@ -476,7 +476,7 @@ region. The resulting partition is **NOT** guaranteed to be disjoint.
 var p = image(parent_region, source_partition, data_region.field)
 {% endhighlight %}
 
-### Preimage
+#### Preimage
 
 Partitions a region by computing the preimage of each of the
 subregions of a partition through the supplied (pointer-typed) field
@@ -487,7 +487,7 @@ of a region. The resulting partition is guaranteed to be disjoint
 var p = preimage(parent_region, target_partition, data_region.field)
 {% endhighlight %}
 
-### Union
+#### Union
 
 Computes the zipped union of the subregions in the supplied
 partitions. The resulting partition is **NOT** guaranteed to be
@@ -497,7 +497,7 @@ disjoint.
 var p = lhs_partition | rhs_partition
 {% endhighlight %}
 
-### Intersection
+#### Intersection
 
 Computes the zipped intersection of the subregions in the supplied
 partitions. The resulting partition is guaranteed to be disjoint
@@ -507,7 +507,7 @@ partitions. The resulting partition is guaranteed to be disjoint
 var p = lhs_partition & rhs_partition
 {% endhighlight %}
 
-### Difference
+#### Difference
 
 Computes the zipped difference of the subregions in the supplied
 partitions. The resulting partition is guaranteed to be disjoint
