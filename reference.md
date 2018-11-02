@@ -299,13 +299,13 @@ relationship). Unstructured index spaces are created with a maximum
 size and are initially empty. Structured index spaces are created with
 an extent and optional start, and are pre-allocated.
 
-### Unstructured
+#### Creating an Unstructured Index Space
 
 {% highlight regent %}
 var i0 = ispace(ptr, 5) -- Empty unstructured space with room for 5 elements.
 {% endhighlight %}
 
-### Structured
+#### Creating a Structured Index Space
 
 {% highlight regent %}
 -- 1-dimensional space with 10 elements.
@@ -315,9 +315,12 @@ var i1 = ispace(int1d, 10)
 var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 })
 {% endhighlight %}
 
-### Iterating an Index Space
+#### Iterating an Index Space
 
 {% highlight regent %}
+for point in i0 do
+  -- point is an ptr(i0).
+end
 for point in i1 do
   -- point is an int1d(i1).
 end
@@ -326,7 +329,7 @@ for point in i2 do
 end
 {% endhighlight %}
 
-### Finding the Bounds of an Index Space
+#### Finding the Bounds of an Index Space
 
 Currently this is only possible for structured index spaces:
 
@@ -336,7 +339,7 @@ i2.bounds.lo -- Returns lower corner of the rectangle.
 i2.bounds.hi -- Returns upper corner.
 {% endhighlight %}
 
-### Finding the Volume of an Index Space
+#### Finding the Volume of an Index Space
 
 {% highlight regent %}
 i0.volume -- Returns 5.
