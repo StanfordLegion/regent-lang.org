@@ -28,7 +28,7 @@ permalink: /reference/index.html
       * [Expressions Quotes](#expression-quotes)
       * [Task Generation](#task-generation)
   * [Foreign Function Interface](#foreign-function-interface)
-      * [Legion C API](#legion-c-api)
+      * [Calling the Legion C API](#calling-the-legion-c-api)
 
 # Frontmatter
 
@@ -502,7 +502,7 @@ end
 For more information on Terra's FFI, please see the
 [FFI documentation](http://terralang.org/api.html#using-c-inside-terra).
 
-## Legion C API
+## Calling the Legion C API
 
 In some cases, it can be useful to call to call Legion APIs
 directly. These work the same as any other C function. As a
@@ -512,7 +512,9 @@ convenience, Regent exposes a standard set of headers via the variable
 
 Certain Legion API calls may require a runtime and/or context. These
 can be obtained in Regent via the operators `__runtime()` and
-`__context()`.
+`__context()`. A full list of [operators to obtain C API object
+handles](#operators-to-obtain-c-api-object-handles) is available
+below.
 
 For example, the following code calls a Legion execution fence:
 
@@ -541,3 +543,20 @@ file](https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion
 that in most cases, the functions of the C API correspond one-to-one
 with the C++ API, so most C APIs are documented simply by pointing to
 the corresponding methods in `legion.h`.
+
+## Operators to Obtain C API Object Handles
+
+  * `__runtime()` returns the Legion runtime (`legion_runtime_t`).
+  * `__context()` returns the Legion context (`legion_context_t`).
+  * `__physical(r)` returns an array of physical regions
+    (`legion_physical_region_t`) for `r`, one per field, in the order
+    that the fields were originally defined in `r`. Physical regions
+    are returned for all fields regardless of whether the current task
+    holds privileges on said fields, but fields with no privileges
+    will have `NO_ACCESS` on the corresponding physical regions.
+  * `__fields(r)` returns an array of the field IDs
+    (`legion_field_id_t`) of `r`, one per field, in the order that the
+    fields were originally defined in `r`.
+  * `__raw(r)` returns the C API object handle that corresponds to the
+    given object, e.g. a `legion_logical_region_t` for a region or
+    `legion_logical_partition_t` for a partition.
