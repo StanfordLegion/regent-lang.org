@@ -629,12 +629,12 @@ The `__inline` annotation indicates that calls to the marked task must
 to issue an error if this is not possible.
 
 {% highlight regent %}
-__demand(__replicable)
+__demand(__inline)
 task f()
   ... -- The compiler will throw an error if it is not possible to inline this task.
 end
 
-__forbid(__replicable)
+__forbid(__inline)
 task g()
   ... -- This task will NOT be inlined.
 end
