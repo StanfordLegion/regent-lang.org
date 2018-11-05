@@ -547,7 +547,7 @@ In some cases, annotations labeled as "experimental" may deviate from
 this behavior. These are described in a separate [section
 below](#experimental-annotations).
 
-## Tasks
+## Task Annotations
 
 #### Leaf Optimization
 
@@ -640,7 +640,7 @@ task g()
 end
 {% endhighlight %}
 
-## Statements
+## Statement Annotations
 
 #### Index Launch Optimization
 
@@ -679,7 +679,7 @@ for i in is do
 end
 {% endhighlight %}
 
-## Expressions
+## Expression Annotations
 
 #### Inline Optimization
 
