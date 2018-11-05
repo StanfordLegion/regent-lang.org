@@ -519,6 +519,278 @@ partitions. The resulting partition is guaranteed to be disjoint
 var p = lhs_partition - rhs_partition
 {% endhighlight %}
 
+# Annotations
+
+Annotations can be applied to tasks, statements, or expressions and
+control the optimizations applied by the Regent compiler to the
+code. Annotations come in two basic flavors:
+
+  * `__demand` requests that the compiler throw an error if an
+    optimization cannot be applied.
+  * `__forbid` requires that the compiler not apply an optimization.
+
+Note that in contrast to pragmas in languages like C++, annotations
+cannot be used to force the compiler to optimize code when it is not
+safe to do so. Instead, the effect of the `__demand` annotation is to
+force the compiler to issue an error if a given optimization cannot be
+applied. Thus, it is better to think of annotations as a defensive
+programming feature that allows the programmer to sanity check that
+the compiler is behaving as expected, rather than as a way to enable
+or force optimizations.
+
+In some cases, annotations labeled as "experimental" may deviate from
+this behavior. These are described in a separate [section
+below](#experimental-annotations).
+
+## Tasks
+
+#### Leaf Optimization
+
+The `__leaf` annotation indicates that a task will not call any
+subtasks, copies, fills, or create regions or partitions. In certain
+cases such tasks can be executed more efficiently.
+
+{% highlight regent %}
+__demand(__leaf)
+task f()
+  ... -- This task will be marked as a leaf task.
+end
+
+__forbid(__leaf)
+task g()
+  ... -- This task will NOT be marked as a leaf task.
+end
+{% endhighlight %}
+
+#### Inner Optimization
+
+The `__inner` annotation indicates that a task will not directly
+access the contents of any regions. In certain cases such tasks can be
+executed more efficiently.
+
+{% highlight regent %}
+__demand(__inner)
+task f()
+  ... -- This task will be marked as a inner task.
+end
+
+__forbid(__inner)
+task g()
+  ... -- This task will NOT be marked as a inner task.
+end
+{% endhighlight %}
+
+#### Idempotent Optimization
+
+The `__idempotent` annotation indicates that a task will not perform
+I/O or any other action with externally-visible side effects. (Writing
+to regions is ok.) Currently this annotation has no effect, but will
+be used to enable optimizations in the future.
+
+{% highlight regent %}
+__demand(__idempotent)
+task f()
+  ... -- This task will be marked as an idempotent task.
+end
+
+__forbid(__idempotent)
+task g()
+  ... -- This task will NOT be marked as an idempotent task.
+end
+{% endhighlight %}
+
+#### Replicable Optimization
+
+The `__replicable` annotation indicates that a task is idempotent, and
+in addition is deterministic. Currently this annotation has no effect,
+but will be used to enable optimizations in the future.
+
+{% highlight regent %}
+__demand(__replicable)
+task f()
+  ... -- This task will be marked as an replicable task.
+end
+
+__forbid(__replicable)
+task g()
+  ... -- This task will NOT be marked as an replicable task.
+end
+{% endhighlight %}
+
+#### Inline Optimization
+
+The `__inline` annotation indicates that calls to the marked task must
+(or must not) be inlined into the caller, and will cause the compiler
+to issue an error if this is not possible.
+
+{% highlight regent %}
+__demand(__replicable)
+task f()
+  ... -- The compiler will throw an error if it is not possible to inline this task.
+end
+
+__forbid(__replicable)
+task g()
+  ... -- This task will NOT be inlined.
+end
+{% endhighlight %}
+
+## Statements
+
+#### Index Launch Optimization
+
+The `__parallel` annotation on a `for` loop indicates that the marked
+loop must be converted into an index launch, and will cause the
+compiler to issue an error if this is not possible. Index launches of
+tasks can be analyzed in `O(1)` time instead of `O(N)` for `N` tasks.
+
+{% highlight regent %}
+__demand(__parallel)
+for i in is do
+  f(p[i]) -- The compiler will throw an error if this loop cannot be converted into an index launch.
+end
+
+__forbid(__parallel)
+for i in is do
+  f(p[i]) -- This loop will NOT be converted into an index launch.
+end
+{% endhighlight %}
+
+#### Vectorization
+
+The `__vectorize` annotation on a `for` loop indicates that the marked
+loop must be vectorized, and will cause the compiler to issue an error
+if this is not possible.
+
+{% highlight regent %}
+__demand(__vectorize)
+for i in is do
+  ... -- The compiler will throw an error if this loop cannot be vectorized.
+end
+
+__forbid(__vectorize)
+for i in is do
+  f(p[i]) -- This loop will NOT be vectorized.
+end
+{% endhighlight %}
+
+## Expressions
+
+#### Inline Optimization
+
+The `__inline` annotation on a task call expression indicates that the
+marked call must (or must not) be inlined into the caller, and will
+cause the compiler to issue an error if this is not possible. This
+annotation overrides any `__inline` annotations on the called task.
+
+{% highlight regent %}
+__demand(__inline, f(...)) -- The compiler will throw an error if this call cannot be inlined.
+
+__forbid(__inline, f(...)) -- This call will NOT be inlined.
+{% endhighlight %}
+
+## Experimental Annotations
+
+#### SPMD Optimization
+
+The `__spmd` annotation on a loop or block indicates that the marked
+loop or block must be optimized with *static control replication*, an
+optimization described [in this
+paper](https://legion.stanford.edu/pdfs/cr2017.pdf). Control
+replicated programs are substantially more scalable than non-control
+replicated programs.
+
+Currently the Regent compiler consider *only* statements marked with
+this annotation for the optimization.
+
+{% highlight regent %}
+__demand(__spmd)
+for t = 0, t_final do
+  for i in is do
+    f(p[i])
+  end
+  for i in is do
+    g(q[i])
+  end
+end
+{% endhighlight %}
+
+This annotation can be used in conjunction with the `__trace`
+optimization via `__demand(__spmd, __trace)`.
+
+#### Trace Optimization
+
+The `__trace` annotation on a loop indicates that the marked loop
+should be traced. This is only possible when the sequence of tasks
+called within the traced loop is identical on every trip through the
+loop.
+
+Currently the Regent compiler consider *only* statements marked with
+this annotation for the optimization.
+
+This annotation can be used in conjunction with the `__spmd`
+optimization via `__demand(__spmd, __trace)`.
+
+{% highlight regent %}
+__demand(__trace)
+for t = 0, t_final do
+  for i in is do
+    f(p[i])
+  end
+  for i in is do
+    g(q[i])
+  end
+end
+{% endhighlight %}
+
+#### CUDA Code Generation
+
+The `__cuda` annotation on a task indicates that the marked task
+should be considered for CUDA code generation. Any loops over regions
+inside the marked task must not contain loop-carried dependencies
+except for reductions via commutative and associative operators.
+
+Currently the Regent compiler consider *only* statements marked with
+this annotation for the optimization.
+
+{% highlight regent %}
+__demand(__cuda)
+task h()
+  ...
+end
+{% endhighlight %}
+
+#### OpenMP Code Generation
+
+The `__openmp` annotation on a `for` loop indicates that the marked
+loop should be considered for OpenMP code generation. The loop must
+not contain loop-carried dependencies except for reductions via
+commutative and associative operators.
+
+Currently the Regent compiler consider *only* statements marked with
+this annotation for the optimization.
+
+{% highlight regent %}
+__demand(__openmp)
+for i in is do
+  ...
+end
+{% endhighlight %}
+
+#### Auto-Parallelizer
+
+The `__parallel` annotation on a task indicates that the task should
+be considered for auto-parallelization. Any loops over regions inside
+the marked task must not contain loop-carried dependencies except for
+reductions via commutative and associative operators.
+
+{% highlight regent %}
+__demand(__parallel)
+task h()
+  ...
+end
+{% endhighlight %}
+
 # Metaprogramming
 
 Regent supports [Terra-style
