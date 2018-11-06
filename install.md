@@ -7,14 +7,18 @@ permalink: /install/index.html
 ---
 
   * [Quickstart](#quickstart)
+      * [Ubuntu](#ubuntu)
+      * [macOS](#macos)
+      * [Other Systems](#other-systems)
   * [Prerequisites](#prerequisites)
   * [Building](#building)
   * [Running](#running)
+  * [Development Environment](#development-environment)
   * [Docker](#docker)
 
-## Quickstart
+# Quickstart
 
-### Ubuntu
+## Ubuntu
 
 If you use Ubuntu, you can install Regent by running:
 
@@ -25,7 +29,7 @@ cd legion/language
 ./install.py --debug
 {% endhighlight %}
 
-### macOS
+## macOS
 
 If you use [Homebrew](https://brew.sh/) on macOS, you can install
 Regent by running:
@@ -52,7 +56,7 @@ Complete instructions for installation follow below.
 Regent is also available as a Docker container. See [the bottom of
 this page](#docker) for instructions.
 
-## Prerequisites
+# Prerequisites
 
 Regent requires:
 
@@ -73,7 +77,7 @@ as-needed basis.
      [installation instructions](http://legion.stanford.edu/gasnet/))
   * *Optional*: HDF5 (for file I/O)
 
-## Building
+# Building
 
 Regent includes a self-installer which downloads
 [Terra](http://terralang.org/) and builds the Regent compiler. Run:
@@ -88,7 +92,7 @@ For other installation options (including multi-node and GPU
 configurations), see the
 [README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
-## Running
+# Running
 
 Regent includes a frontend interpreter which can be run with:
 
@@ -108,7 +112,15 @@ shell. However, this mode is not very useful because of the way that
 Terra language extensions works. Also, the Legion runtime is not
 currently reentrant, making interactive use difficult.)
 
-## Docker
+# Development Environment
+
+Regent syntax highlighting modes are available for the following
+editors:
+
+  * [Emacs](https://github.com/StanfordLegion/regent-mode)
+  * [Vim](https://github.com/StanfordLegion/regent.vim)
+
+# Docker
 
 If you have [Docker](https://www.docker.com/), Regent is also
 available as a container:
