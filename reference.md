@@ -19,7 +19,7 @@ permalink: /reference/index.html
       * [Fills](#fills)
       * [Attach and Detach](#attach-and-detach)
       * [Acquire and Release](#acquire-and-release)
-      * [File I/O with HDF5](#file-i-o-with-hdf5)
+      * [File I/O with HDF5](#file-io-with-hdf5)
   * [Data Model](#data-model)
       * [Field Spaces](#field-spaces)
       * [Index Spaces](#index-spaces)
@@ -264,7 +264,7 @@ region are considered to be uninitialized following a detach
 operation, and region is no longer restricted.
 
 See below for detailed instructions on using [file I/O with
-HDF5](#file-i-o-with-hdf5).
+HDF5](#file-io-with-hdf5).
 
 ## Acquire and Release
 
