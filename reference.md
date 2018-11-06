@@ -17,6 +17,9 @@ permalink: /reference/index.html
       * [Constraints](#constraints)
       * [Copies](#copies)
       * [Fills](#fills)
+      * [Attach and Detach](#attach-and-detach)
+      * [Acquire and Release](#acquire-and-release)
+      * [File I/O with HDF5](#file-i-o-with-hdf5)
   * [Data Model](#data-model)
       * [Field Spaces](#field-spaces)
       * [Index Spaces](#index-spaces)
@@ -232,6 +235,118 @@ fill(r, v)           -- Fill r with v.
 fill(r.x, v)         -- Fill field x of r with v.
 fill(r.{x, y, z}, v) -- Fill fields x, y, z of r with v.
 {% endhighlight %}
+
+## Attach and Detach
+
+The attach and detach operations connect a region with an external
+resource, like a file on disk. Attaching a region overwrites the
+contents of the region and replaces it with the contents of the
+external resource. Note that for external resources such as files,
+attaching a region does **NOT** copy the contents of the file from
+disk into memory. Instead the region should be thought of as a view
+onto the contents of the on-disk file. Such a region is said to be
+*restricted* and must be [acquired](#acquire-and-release) before it
+can be used by a task.
+
+For example, using an external HDF5 file:
+
+{% highlight regent %}
+-- Read fields x, y and z from my_file.h5 into the region r.
+var filename = "my_file.h5"
+attach(hdf5, r.{x, y, z}, filename, regentlib.file_read_write)
+...
+detach(hdf5, r.{x, y, z})
+{% endhighlight %}
+
+The detach operation is used to disassociate the region from an
+attached resource once it is no longer being used. The contents of the
+region are considered to be uninitialized following a detach
+operation, and region is no longer restricted.
+
+See below for detailed instructions on using [file I/O with
+HDF5](#file-i-o-with-hdf5).
+
+## Acquire and Release
+
+A region which is restricted (e.g. due to an
+[attach](#attach-and-detach) operation) cannot be copied, and
+therefore cannot be directly accessed by a task if the original
+contents are e.g. on disk. The acquire operation is used to indicate
+that it is safe to make a copy of the region (e.g. into memory) so
+that can be directly accessed by a task. After using acquire, the
+region is no longer considered restricted.
+
+The release operation guarrantees that any copies of a region made
+following an acquire operation are flushed back to their original
+location (e.g. disk).
+
+Note that if the original contents of the region are on disk, any
+concurrent writes (e.g. by other processes running on the machine) to
+the file on disk may or may not be seen by tasks. In order to safely
+perform concurrent writes to the file, the region must be released
+prior to any external writes being made, and only re-acquired after
+the writes are complete. Similarly, any external process which reads
+the file must wait until after the region is released. The user is
+responsible for ensuring that the correct synchronization is used with
+any external processes that perform concurrent access to the file.
+
+{% highlight regent %}
+acquire(r)
+some_task(r)
+release(r)
+{% endhighlight %}
+
+## File I/O with HDF5
+
+Regent supports file I/O via the HDF5 file format. Support for HDF5
+can be enabled by passing the `--hdf5` argument to `install.py` or
+setting the environment variable `USE_HDF5=1`. Note that a **serial
+build of HDF5 is required**, as parallel support in HDF5 depends on
+MPI.
+
+#### Creating an HDF5 File
+
+Currently, Regent does not support creating HDF5 files directly. HDF5
+files can be created either prior to running the Regent program, or
+can be created by calling the HDF5 C API directly from inside
+Regent. For an example of creating an HDF5 file in Regent, see [this
+test program](https://github.com/StanfordLegion/legion/blob/stable/language/tests/hdf5/run_pass/attach_hdf5.rg).
+
+#### Reading or Writing an Existing HDF5 File
+
+To read or write an existing HDF5 file, the [attach
+operation](#attach-and-detach) is used to connect the region to the
+contents of the external file. Using attach effectively overwrites the
+region, and any existing contents will be lost.
+
+Following an attach operation, the region should be thought of as a
+view onto the data stored on disk. Note that the contents of the file
+are **NOT** automatically copied from disk into memory. The
+[acquire](#acquire-and-release) operation is subsequently used to
+permit the contents of the region to be copied into memory. In the
+example below, the copy will be issued prior to executing `some_task`.
+
+{% highlight regent %}
+-- Read fields x, y and z from my_file.h5 into the region r.
+var filename = "my_file.h5"
+attach(hdf5, r.{x, y, z}, filename, regentlib.file_read_write)
+acquire(r)
+some_task(r)
+release(r)
+detach(hdf5, r.{x, y, z})
+{% endhighlight %}
+
+The value `regentlib.file_read_only` can be used with attach if the
+file is to be read and not written.
+
+The release and detach operations reverse the actions performed by
+acquire and attach, respectively. For more information on the
+semantics of these operations, see the documentation on [attach and
+detach](#attach-and-detach) and [acquire and
+release](#acquire-and-release) above.
+
+More examples of using HDF5 file I/O can be found in the [test
+suite](https://github.com/StanfordLegion/legion/tree/stable/language/tests/hdf5/run_pass).
 
 # Data Model
 
