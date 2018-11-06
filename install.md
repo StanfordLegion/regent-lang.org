@@ -6,6 +6,12 @@ highlight_first: false
 permalink: /install/index.html
 ---
 
+  * [Quickstart](#quickstart)
+  * [Prerequisites](#prerequisites)
+  * [Building](#building)
+  * [Running](#running)
+  * [Docker](#docker)
+
 ## Quickstart
 
 ### Ubuntu
