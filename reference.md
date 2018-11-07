@@ -619,6 +619,9 @@ disjoint.
 var p = lhs_partition | rhs_partition
 {% endhighlight %}
 
+This can be thought to be equivalent to setting each subregion `p[i]`
+to be equal to `lhs_partition[i] | rhs_partition[i]`.
+
 #### Intersection
 
 Computes the zipped intersection of the subregions in the supplied
@@ -629,6 +632,9 @@ partitions. The resulting partition is guaranteed to be disjoint
 var p = lhs_partition & rhs_partition
 {% endhighlight %}
 
+This can be thought to be equivalent to setting each subregion `p[i]`
+to be equal to `lhs_partition[i] & rhs_partition[i]`.
+
 #### Difference
 
 Computes the zipped difference of the subregions in the supplied
@@ -638,6 +644,9 @@ partitions. The resulting partition is guaranteed to be disjoint
 {% highlight regent %}
 var p = lhs_partition - rhs_partition
 {% endhighlight %}
+
+This can be thought to be equivalent to setting each subregion `p[i]`
+to be equal to `lhs_partition[i] - rhs_partition[i]`.
 
 # Annotations
 
