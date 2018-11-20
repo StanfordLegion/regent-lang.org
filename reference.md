@@ -429,11 +429,17 @@ var i0 = ispace(ptr, 5)
 #### Creating a Structured Index Space
 
 {% highlight regent %}
--- 1-dimensional space with 10 elements.
+-- Structured 1D space with 10 elements.
+-- Elements range from 0 to 9 (inclusive).
 var i1 = ispace(int1d, 10)
 
--- 2-dimensional 4x4 rectangle with indices starting at 1,1.
-var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 })
+-- Structured 2D space of size 6x6, starting at 0,0.
+-- Elements range from 0,0 to 5,5 (inclusive).
+var i2 = ispace(int2d, {6, 6})
+
+-- Same but offset by -1,-1.
+-- Elements range from -1,-1 to 4,4 (inclusive).
+var i2b = ispace(int2d, {6, 6}, {-1, -1})
 {% endhighlight %}
 
 #### Iterating an Index Space
