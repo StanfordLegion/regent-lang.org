@@ -38,7 +38,8 @@ permalink: /reference/index.html
       * [Task Generation](#task-generation)
   * [Foreign Function Interface](#foreign-function-interface)
       * [Calling the Legion C API](#calling-the-legion-c-api)
-      * [Operators to Obtain C API Object Handles](#operators-to-obtain-c-api-object-handles)
+      * [Obtaining C API Handles from Regent Values](#obtaining-c-api-handles-from-regent-values)
+      * [Importing C API Handles into Regent](#importing-c-api-handles-into-regent)
 
 # Frontmatter
 
@@ -1072,7 +1073,7 @@ that in most cases, the functions of the C API correspond one-to-one
 with the C++ API, so most C APIs are documented simply by pointing to
 the corresponding methods in `legion.h`.
 
-## Operators to Obtain C API Object Handles
+## Obtaining C API Handles from Regent Values
 
   * `__runtime()` returns the Legion runtime (`legion_runtime_t`).
   * `__context()` returns the Legion context (`legion_context_t`).
@@ -1088,3 +1089,53 @@ the corresponding methods in `legion.h`.
   * `__raw(r)` returns the C API object handle that corresponds to the
     given object, e.g. a `legion_logical_region_t` for a region or
     `legion_logical_partition_t` for a partition.
+
+## Importing C API Handles into Regent
+
+The operators below can be used to import C API handles for objects
+created in C/C++ so that they can be used in Regent.
+
+**Important:** C API handles can only be imported once into
+Regent. Subsequent attempts to import C API handles will fail. All
+objects created by Regent are considered to be already imported and
+thus cannot be imported again using this mechanism. These restrictions
+guarrantee that certain assumptions made by the Regent compiler are
+not violated, and are critical to ensuring that Regent's type checker
+and optimizer work correctly.
+
+#### Importing Index Spaces
+
+{% highlight regent %}
+var is = __import_ispace(int3d, raw_ispace)
+{% endhighlight %}
+
+`raw_ispace` is of type `legion_index_space_t`.
+
+#### Importing Regions
+
+{% highlight regent %}
+var r = __import_region(is, fs, raw_region, raw_field_id_array)
+{% endhighlight %}
+
+`raw_region` is of type `legion_logical_region_t`.
+
+`raw_field_id_array` is of type `legion_field_id_t[N]` where `N` is
+the number of fields in field space `fs`. Field IDs are enumerated in
+the same order as listed in the original field space or struct. Note
+that field spaces and structs in Regent are recursively flattened,
+such that the field space `fs` below contains 3 fields (`center.x`,
+`center.y` and `mass`).
+
+{% highlight regent %}
+struct vec2  { x : double, y : double }
+fspace fs { center : vec2, mass : double }
+{% endhighlight %}
+
+#### Importing Partitions
+
+{% highlight regent %}
+var p_disjoint = __import_partition(disjoint, r, cs, raw_partition_disjoint)
+var p_aliased = __import_partition(aliased, r, cs, raw_partition_aliased)
+{% endhighlight %}
+
+`raw_partition_*` are of type `legion_logical_partition_t`.
