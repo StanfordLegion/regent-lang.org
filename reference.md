@@ -22,6 +22,8 @@ permalink: /reference/index.html
       * [File I/O with HDF5](#file-io-with-hdf5)
   * [Data Model](#data-model)
       * [Field Spaces](#field-spaces)
+      * [Index Types](#index-types)
+      * [Custom Index Types](#custom-index-types)
       * [Index Spaces](#index-spaces)
       * [Regions](#regions)
       * [Partitions](#partitions)
@@ -410,6 +412,52 @@ fspace quad(r : region(quad(wild))) {
   sw: ptr(quad(wild), r),
 }
 {% endhighlight %}
+
+## Index Types
+
+Index types define points in an N dimensional space, and are used to
+define the elements of [index spaces](#index-spaces). Regent supports
+5 built-in index spaces: `ptr`, `int1d`, `int2d`, `int3d`, and
+`int4d`. Note that using `int4d` requires additional flags at
+compile-time and runtime (see below).
+
+{% highlight regent %}
+var x0 = ptr(0) -- Pointer to the first element of an index space.
+var x1 = int1d(0) -- Index 0 in a 1-dimensional space.
+var x2 = int2d({0, 0}) -- Index 0,0 in a 2-dimensional space.
+var x3 = int3d({0, 0, 0}) -- Index 0,0,0 in a 3-dimensional space.
+var x4 = int4d({0, 0, 0, 0}) -- Index 0,0,0,0 in a 4-dimensional space.
+{% endhighlight %}
+
+The fields of the build-in index types are called `x`, `y`, `z`, and
+`w`, respectively.
+
+{% highlight regent %}
+var sum4 = x4.x + x4.y + x4.z + x4.w
+{% endhighlight %}
+
+When using `int4d` or custom index types with higher dimensionality,
+Regent must be compiled and run with additional flags as shown below.
+
+{% highlight bash %}
+MAX_DIM=4 ./install.py --debug
+./regent.py your_file.rg -flegion-dim 4
+{% endhighlight %}
+
+## Custom Index Types
+
+Custom index types can be defined in Regent with any number of
+dimensions by defining a struct and passing it to the function
+`index_type`.
+
+{% highlight regent %}
+struct i2 { x : int, y : int }
+local i2d = index_type(i2, "i2d")
+{% endhighlight %}
+
+Note when creating custom index types with 4 or more dimensions, it is
+important to ensure that Regent is compiled and run with the necessary
+flags, shown above.
 
 ## Index Spaces
 
