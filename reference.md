@@ -418,8 +418,8 @@ fspace quad(r : region(quad(wild))) {
 Index types define points in an N dimensional space, and are used to
 define the elements of [index spaces](#index-spaces). Regent supports
 10 built-in index types: `ptr`, `int1d`, `int2d`, `int3d`, and so on
-up to `int9d`. Note that using `int4d` above require additional flags
-at compile-time and runtime (see below).
+up to `int9d`. Note that `int4d` or above require additional flags at
+compile-time and runtime (see below).
 
 {% highlight regent %}
 var x0 = ptr(0) -- Pointer to the first element of an index space.
