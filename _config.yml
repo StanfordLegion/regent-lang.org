@@ -20,6 +20,8 @@ navigation:
     url: "/tutorial"
   - label: Reference
     url: "/reference"
+  - label: Resources
+    url: "/resources"
   - label: Publications
     url: "http://legion.stanford.edu/publications"
     external: true
