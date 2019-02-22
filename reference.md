@@ -442,7 +442,7 @@ dimensions), Regent must be compiled and run with additional flags as
 shown below.
 
 {% highlight bash %}
-MAX_DIM=4 ./install.py --debug
+MAX_DIM=4 ./install.py
 ./regent.py your_file.rg -flegion-dim 4
 {% endhighlight %}
 
