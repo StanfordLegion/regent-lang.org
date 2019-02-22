@@ -417,9 +417,9 @@ fspace quad(r : region(quad(wild))) {
 
 Index types define points in an N dimensional space, and are used to
 define the elements of [index spaces](#index-spaces). Regent supports
-5 built-in index types: `ptr`, `int1d`, `int2d`, `int3d`, and
-`int4d`. Note that using `int4d` requires additional flags at
-compile-time and runtime (see below).
+10 built-in index types: `ptr`, `int1d`, `int2d`, `int3d`, and so on
+up to `int9d`. Note that using `int4d` above require additional flags
+at compile-time and runtime (see below).
 
 {% highlight regent %}
 var x0 = ptr(0) -- Pointer to the first element of an index space.
@@ -429,15 +429,17 @@ var x3 = int3d({0, 0, 0}) -- Index 0,0,0 in a 3-dimensional space.
 var x4 = int4d({0, 0, 0, 0}) -- Index 0,0,0,0 in a 4-dimensional space.
 {% endhighlight %}
 
-The fields of the build-in index types are called `x`, `y`, `z`, and
-`w`, respectively.
+The fields of the build-in index types are called `x`, `y`, `z`, `w`,
+`v`, `u`, `t`, `s`, and `r`, respectively (up to the maximum number of
+dimensions of the particular index type).
 
 {% highlight regent %}
 var sum4 = x4.x + x4.y + x4.z + x4.w
 {% endhighlight %}
 
-When using `int4d` or custom index types with higher dimensionality,
-Regent must be compiled and run with additional flags as shown below.
+When using `int4d` or above (or custom index types with 4 or more
+dimensions), Regent must be compiled and run with additional flags as
+shown below.
 
 {% highlight bash %}
 MAX_DIM=4 ./install.py --debug
