@@ -86,7 +86,6 @@ the perspective of Regent.
 
 The following Terra features are not supported in Regent:
 
-  * The address-of operator `&`.
   * The method call operator `o:f()` does not automatically
     dereference Regent's `ptr` type.
   * Terra [macros](http://terralang.org/api.html#macro).
@@ -96,7 +95,9 @@ In general, use Terra's raw pointer types (`&T`) with caution. Regent
 may execute tasks in a distributed environment, so a pointer created
 in one task might not be valid in another. As long as pointers stay
 within a task, it is ok to use raw pointers (and traditional C APIs
-like `malloc` and `free`).
+like `malloc` and `free`). The same principle applies to process-local
+data such as file descriptors: they are ok to use within a task but
+should not be passed between tasks.
 
 # Execution Model
 
