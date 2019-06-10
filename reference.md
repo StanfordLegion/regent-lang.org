@@ -228,6 +228,25 @@ copy(r.x, s.y)                 -- Copy field x to y.
 copy(r.{x, y, z}, s.{u, v, w}) -- Copy fields x, y, z to fields u, v, w.
 {% endhighlight %}
 
+### Restrictions on Copy Operations
+
+The following restrictions apply to the source `S` and destination `D`
+regions in a copy operations. Note that the restrictions depend on
+which branch of the Legion runtime is being used.
+
+On `master` branch: `D <= S`, that is, `D` must be a subregion of `S`.
+
+On `nopaint` branch (and branches derived from `nopaint` such as
+`control_replication`): `D` must contain a subset of the elements in
+`S`, but is not otherwise required to be related. That is, it must be
+valid to write the following code:
+
+{% highlight regent %}
+for i in D do
+  D[i] = S[i]
+end
+{% endhighlight %}
+
 ## Fills
 
 Fill operations replace the contents of a region (for all or some
