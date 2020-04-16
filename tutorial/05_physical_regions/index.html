@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    
+
+    <title>Physical Regions | Regent</title>
+    
+    <meta name="author" content="Stanford University">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/css/syntax.css" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Fav and touch icons -->
+    <!-- Update these with your own images
+      <link rel="shortcut icon" href="images/favicon.ico">
+      <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+      <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+      <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    -->
+  </head>
+  <body>
+
+    <header class="navbar navbar-static-top rg-nav" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".rg-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/" class="navbar-brand">Regent</a>
+    </div>
+    <nav class="collapse navbar-collapse rg-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/install">Install</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/tutorial">Tutorial</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/reference">Reference</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/resources">Resources</a>
+            </li>
+            
+          
+        
+          
+            <li>
+              <a href="http://legion.stanford.edu/publications">Publications</a>
+            </li>
+          
+        
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/StanfordLegion/legion/tree/master/language">GitHub</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="container with-img-responsive">
+  <div class="row">
+    <div class="col-md-12">
+
+      
+        <h1 class="page-header">
+          
+            Physical Regions
+
+          
+          
+        </h1>
+      
+
+      <p>Regent provides two distinct syntaxes for accessing regions.</p>
+
+<h2 id="iteration-over-regions">Iteration Over Regions</h2>
+
+<p>The loop below iterates over pointers to the elements in the region. The loop index type (which is optional and shown only for
+pedagogical purposes) records both the type that the pointer points to and the region that it points to.</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">input_ptr</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">)</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span> <span class="c1">-- The type declaration here is optional.</span>
+  <span class="p">(</span><span class="o">@</span><span class="n">input_ptr</span><span class="p">).</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator @ is used to access the element.</span>
+  <span class="n">input_ptr</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator is also optional.</span>
+<span class="k">end</span></code></pre></figure>
+
+<h2 id="iteration-over-index-spaces">Iteration Over Index Spaces</h2>
+
+<p>The loop below iterates over points in the index space, and is functionally equivalent to the example above. Since the loop variable is typed on the index space rather than a region, the index access operator <code class="highlighter-rouge">[]</code> must be used to access the respective regions.</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">is</span><span class="p">)</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span> <span class="c1">-- The type declaration here is also optional.</span>
+  <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+  <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+<span class="k">end</span></code></pre></figure>
+
+<h2 id="final-code">Final Code</h2>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
+
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdlib.h"</span><span class="p">)</span>
+
+<span class="k">fspace</span> <span class="nf">input</span> <span class="p">{</span>
+  <span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+  <span class="n">y</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">fspace</span> <span class="nf">output</span> <span class="p">{</span>
+  <span class="n">z</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="kd">var</span> <span class="n">num_elements</span> <span class="o">=</span> <span class="mi">1024</span>
+  <span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+  <span class="k">for</span> <span class="n">input_ptr</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">)</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
+    <span class="p">(</span><span class="o">@</span><span class="n">input_ptr</span><span class="p">).</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+    <span class="n">input_ptr</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator is also optional.</span>
+  <span class="k">end</span>
+
+  <span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+
+  <span class="k">for</span> <span class="n">i</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">is</span><span class="p">)</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
+  <span class="k">end</span>
+
+  <span class="c1">-- Again, with type inference.</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+    <span class="kd">var</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
+    <span class="kd">var</span> <span class="n">received</span> <span class="o">=</span> <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span>
+    <span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">expected</span> <span class="o">==</span> <span class="n">received</span><span class="p">,</span> <span class="s2">"check failed"</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
+
+
+    </div>
+  </div>
+</div>
+
+
+    <footer class="rg-footer" role="contentinfo">
+  <div class="container">
+    <p>&copy; 2020 Stanford University.</p>
+    <p>Powered by <a href="http://jekyllrb.com/">Jekyll</a> and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
+
+    <ul class="rg-footer-links muted">
+      <li><a href="/">Home</a></li>
+      <li>&middot;</li>
+      
+        
+          <li><a href="/install">Install</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/tutorial">Tutorial</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/reference">Reference</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/resources">Resources</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="http://legion.stanford.edu/publications">Publications</a></li>
+          <li>&middot;</li>
+        
+      
+      <li><a href="https://github.com/StanfordLegion/legion/tree/master/language">GitHub</a></li>
+      <li>&middot;</li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </div>
+</footer>
+
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-71475406-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>

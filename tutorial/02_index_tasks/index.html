@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    
+
+    <title>Index Tasks | Regent</title>
+    
+    <meta name="author" content="Stanford University">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/css/syntax.css" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Fav and touch icons -->
+    <!-- Update these with your own images
+      <link rel="shortcut icon" href="images/favicon.ico">
+      <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+      <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+      <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    -->
+  </head>
+  <body>
+
+    <header class="navbar navbar-static-top rg-nav" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".rg-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/" class="navbar-brand">Regent</a>
+    </div>
+    <nav class="collapse navbar-collapse rg-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/install">Install</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/tutorial">Tutorial</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/reference">Reference</a>
+            </li>
+            
+          
+        
+          
+            
+            
+            
+            <li class="">
+              <a href="/resources">Resources</a>
+            </li>
+            
+          
+        
+          
+            <li>
+              <a href="http://legion.stanford.edu/publications">Publications</a>
+            </li>
+          
+        
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/StanfordLegion/legion/tree/master/language">GitHub</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="container with-img-responsive">
+  <div class="row">
+    <div class="col-md-12">
+
+      
+        <h1 class="page-header">
+          
+            Index Tasks
+
+          
+          
+        </h1>
+      
+
+      <p>Regent provides a number of optimizations to ensure that tasks execute
+in parallel and with maximum efficiency. One of the most important of
+these is <em>index task</em> optimization. An <em>index task launch</em>
+encapsulates a parallel loop and ensures that the runtime is able to
+amortize the cost of analysis of the contained tasks.</p>
+
+<h2 id="optimizing-index-tasks">Optimizing Index Tasks</h2>
+
+<p>Loops are a common pattern in parallel codes. Regent optimizes loops
+to ensure that they execute efficiently on the Legion runtime. Recall
+that tasks execute in parallel only if they do not interfere. Legion
+must expend effort analyzing each task to determine non-interference
+with respect to surrounding tasks. Index tasks ensure that this
+analysis is amortized over a loop of task calls, increasing the
+efficiency of the runtime.</p>
+
+<p>Regent generates index task launches on loops containing tasks
+calls. For example, the following code calls a task <code class="highlighter-rouge">double_of</code> in a
+loop, and accumulates the results into the variable <code class="highlighter-rouge">total</code>.</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
+  <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>The line <code class="highlighter-rouge">__demand(__parallel)</code> marks the loop as an index
+launch. This annotation is <em>not required</em>, and is shown mostly for
+pedagogical purposes. Regent will optimize this loop
+regardless.</p>
+
+<p>Generally speaking, annotations are recommended only as a means of
+<a href="https://en.wikipedia.org/wiki/Defensive_programming">defensive
+programming</a>
+against bugs (in the application or compiler). The <code class="highlighter-rouge">__parallel</code>
+annotation guarantees that the compiler will produce an error if it
+is unable to optimize the loop in question. Most often, this happens
+because of a loop-carried dependence between the iterations of the
+loop. (This is in contrast to an OpenMP-style <code class="highlighter-rouge">#pragma</code>, which applies the
+optimization even if it is unsound.)</p>
+
+<h2 id="final-code">Final Code</h2>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
+
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+
+<span class="k">task</span> <span class="nf">double_of</span><span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello world from task %d!\n"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+  <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="kd">var</span> <span class="n">num_points</span> <span class="o">=</span> <span class="mi">4</span>
+
+  <span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
+    <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">total</span> <span class="o">==</span> <span class="mi">92</span><span class="p">,</span> <span class="s2">"check failed"</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
+
+
+    </div>
+  </div>
+</div>
+
+
+    <footer class="rg-footer" role="contentinfo">
+  <div class="container">
+    <p>&copy; 2020 Stanford University.</p>
+    <p>Powered by <a href="http://jekyllrb.com/">Jekyll</a> and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
+
+    <ul class="rg-footer-links muted">
+      <li><a href="/">Home</a></li>
+      <li>&middot;</li>
+      
+        
+          <li><a href="/install">Install</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/tutorial">Tutorial</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/reference">Reference</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="/resources">Resources</a></li>
+          <li>&middot;</li>
+        
+      
+        
+          <li><a href="http://legion.stanford.edu/publications">Publications</a></li>
+          <li>&middot;</li>
+        
+      
+      <li><a href="https://github.com/StanfordLegion/legion/tree/master/language">GitHub</a></li>
+      <li>&middot;</li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </div>
+</footer>
+
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-71475406-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
