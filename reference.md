@@ -42,6 +42,7 @@ permalink: /reference/index.html
       * [Calling the Legion C API](#calling-the-legion-c-api)
       * [Obtaining C API Handles from Regent Values](#obtaining-c-api-handles-from-regent-values)
       * [Importing C API Handles into Regent](#importing-c-api-handles-into-regent)
+  * [Standard Library](#standard-library)
 
 # Frontmatter
 
@@ -1209,3 +1210,7 @@ var p_aliased = __import_partition(aliased, r, cs, raw_partition_aliased)
 {% endhighlight %}
 
 `raw_partition_*` are of type `legion_logical_partition_t`.
+
+# Standard Library
+
+See the [documentation for the standard library](/doc).
