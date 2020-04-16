@@ -6,7 +6,7 @@ local: ldoc build
 # Deploy to GitHub
 .PHONY: github
 github: local
-	@if [ -d _deploy ]; then git -C _deploy pull --ff-only; else git clone -b github-pages git@github.com:StanfordLegion/regent-lang.org.git _deploy; fi
+	@if [ -d _deploy ]; then git -C _deploy pull --ff-only; else git clone -b gh-pages git@github.com:StanfordLegion/regent-lang.org.git _deploy; fi
 
 	@if ! git -C _deploy diff-index --quiet --cached HEAD --; then echo "The _deploy directory has staged (uncommitted) files, please resolve"; exit 1; fi
 	@if ! git -C _deploy diff-files --quiet; then echo "The _deploy directory has dirty files, please resolve"; exit 1; fi
