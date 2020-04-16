@@ -6,5 +6,10 @@
 *.orig
 *.rej
 
+/_legion
+/_deploy
+
+/doc
+
 /_site
 .jekyll-metadata

@@ -1,5 +1,5 @@
 # Configuration:
-exclude: ["CNAME", "README.md"]
+exclude: ["CNAME", "Gemfile", "Gemfile.lock", "Makefile", "README.md"]
 permalink: /:year/:month/:day/:title
 excerpt_separator: "<!-- break -->"
 
