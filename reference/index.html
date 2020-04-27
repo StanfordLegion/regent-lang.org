@@ -678,6 +678,20 @@ be safely modified in parallel.</li>
 used in parallel with <code class="highlighter-rouge">reads</code> or <code class="highlighter-rouge">reduces</code> privileges.</li>
       <li>A partition is <code class="highlighter-rouge">disjoint</code> <strong>IFF</strong> all of its subregions are
 mutually disjoint.</li>
+      <li>Several partition operators allow disjointness to be specified
+optionally; if it is not specified, it will be computed at
+runtime.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">complete</code> or <code class="highlighter-rouge">incomplete</code>.
+    <ul>
+      <li><code class="highlighter-rouge">complete</code> partitions cover their parent region (i.e., the
+union of the all the subregions is equal to the parent
+region). This is useful for several optimizations, though it
+does not impact parallelism.</li>
+      <li><code class="highlighter-rouge">incomplete</code> partitions do not cover their parent region.</li>
+      <li>Specifying completeness is always optional; if it is not
+specified, it will be computed at runtime.</li>
     </ul>
   </li>
   <li>Dense or sparse.
@@ -732,12 +746,25 @@ the exact way in which the remaining elements are partitioned is unspecified.</p
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
 
+<p>Equal partitons are always disjoint and complete by construction, so
+there is not need to specify this explicitly.</p>
+
 <h4 id="by-field">By Field</h4>
 
 <p>Partitions a region based on a coloring stored in a field of the
 region. The resulting partition is guaranteed to be disjoint.</p>
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
+
+<p>Partitions by field are always disjoint by construction, so this need
+not be specified. They are <strong>NOT</strong> always complete, as the color space
+may not cover all of the values of the color field (and therefore some
+points may not be inclued in the final partition). If the user wishes
+to specify that the partition is complete (i.e., that all color field
+values are in the color space), then this can be accomplished with an
+optional <code class="highlighter-rouge">complete</code> keyword:</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">complete</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
 
 <h4 id="image">Image</h4>
 
@@ -747,6 +774,12 @@ region. The resulting partition is <strong>NOT</strong> guaranteed to be disjoin
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
 
+<p>Disjointness and completeness can be specified via optional
+<code class="highlighter-rouge">disjoint</code>/<code class="highlighter-rouge">complete</code> keywords:</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
+
 <h4 id="preimage">Preimage</h4>
 
 <p>Partitions a region by computing the preimage of each of the
@@ -755,6 +788,12 @@ of a region. The resulting partition is guaranteed to be disjoint
 <strong>IF</strong> the supplied target partition is disjoint.</p>
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
+
+<p>Disjointness and completeness can be specified via optional
+<code class="highlighter-rouge">disjoint</code>/<code class="highlighter-rouge">complete</code> keywords:</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
 
 <h4 id="union">Union</h4>
 
@@ -1227,8 +1266,8 @@ such that the field space <code class="highlighter-rouge">fs</code> below contai
 
 <h4 id="importing-partitions">Importing Partitions</h4>
 
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p_disjoint</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="n">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_disjoint</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">p_aliased</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="n">aliased</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_aliased</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p_disjoint</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_disjoint</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p_aliased</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">aliased</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_aliased</span><span class="p">)</span></code></pre></figure>
 
 <p><code class="highlighter-rouge">raw_partition_*</code> are of type <code class="highlighter-rouge">legion_logical_partition_t</code>.</p>
 
