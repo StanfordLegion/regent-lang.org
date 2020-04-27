@@ -888,18 +888,18 @@ end
 
 #### Index Launch Optimization
 
-The `__parallel` annotation on a `for` loop indicates that the marked
+The `__index_launch` annotation on a `for` loop indicates that the marked
 loop must be converted into an index launch, and will cause the
 compiler to issue an error if this is not possible. Index launches of
 tasks can be analyzed in `O(1)` time instead of `O(N)` for `N` tasks.
 
 {% highlight regent %}
-__demand(__parallel)
+__demand(__index_launch)
 for i in is do
   f(p[i]) -- The compiler will throw an error if this loop cannot be converted into an index launch.
 end
 
-__forbid(__parallel)
+__forbid(__index_launch)
 for i in is do
   f(p[i]) -- This loop will NOT be converted into an index launch.
 end
