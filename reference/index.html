@@ -940,17 +940,17 @@ to issue an error if this is not possible.</p>
 
 <h4 id="index-launch-optimization">Index Launch Optimization</h4>
 
-<p>The <code class="highlighter-rouge">__parallel</code> annotation on a <code class="highlighter-rouge">for</code> loop indicates that the marked
+<p>The <code class="highlighter-rouge">__index_launch</code> annotation on a <code class="highlighter-rouge">for</code> loop indicates that the marked
 loop must be converted into an index launch, and will cause the
 compiler to issue an error if this is not possible. Index launches of
 tasks can be analyzed in <code class="highlighter-rouge">O(1)</code> time instead of <code class="highlighter-rouge">O(N)</code> for <code class="highlighter-rouge">N</code> tasks.</p>
 
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- The compiler will throw an error if this loop cannot be converted into an index launch.</span>
 <span class="k">end</span>
 
-<span class="n">__forbid</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- This loop will NOT be converted into an index launch.</span>
 <span class="k">end</span></code></pre></figure>
