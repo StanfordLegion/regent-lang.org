@@ -601,6 +601,17 @@ parallelism. Partitions in Regent may be:
         used in parallel with `reads` or `reduces` privileges.
       * A partition is `disjoint` **IFF** all of its subregions are
         mutually disjoint.
+      * Several partition operators allow disjointness to be specified
+        optionally; if it is not specified, it will be computed at
+        runtime.
+  * `complete` or `incomplete`.
+      * `complete` partitions cover their parent region (i.e., the
+        union of the all the subregions is equal to the parent
+        region). This is useful for several optimizations, though it
+        does not impact parallelism.
+      * `incomplete` partitions do not cover their parent region.
+      * Specifying completeness is always optional; if it is not
+        specified, it will be computed at runtime.
   * Dense or sparse.
       * Dense subregions consist of a single contiguous rectangle of
         elements.
@@ -657,6 +668,9 @@ the exact way in which the remaining elements are partitioned is unspecified.
 var p = partition(equal, r, color_space)
 {% endhighlight %}
 
+Equal partitons are always disjoint and complete by construction, so
+there is not need to specify this explicitly.
+
 #### By Field
 
 Partitions a region based on a coloring stored in a field of the
@@ -664,6 +678,18 @@ region. The resulting partition is guaranteed to be disjoint.
 
 {% highlight regent %}
 var p = partition(r.color_field, color_space)
+{% endhighlight %}
+
+Partitions by field are always disjoint by construction, so this need
+not be specified. They are **NOT** always complete, as the color space
+may not cover all of the values of the color field (and therefore some
+points may not be inclued in the final partition). If the user wishes
+to specify that the partition is complete (i.e., that all color field
+values are in the color space), then this can be accomplished with an
+optional `complete` keyword:
+
+{% highlight regent %}
+var p2 = partition(complete, r.color_field, color_space)
 {% endhighlight %}
 
 #### Image
@@ -676,6 +702,14 @@ region. The resulting partition is **NOT** guaranteed to be disjoint.
 var p = image(parent_region, source_partition, data_region.field)
 {% endhighlight %}
 
+Disjointness and completeness can be specified via optional
+`disjoint`/`complete` keywords:
+
+{% highlight regent %}
+var p2 = image(disjoint, parent_region, source_partition, data_region.field)
+var p3 = image(disjoint, complete, parent_region, source_partition, data_region.field)
+{% endhighlight %}
+
 #### Preimage
 
 Partitions a region by computing the preimage of each of the
@@ -685,6 +719,14 @@ of a region. The resulting partition is guaranteed to be disjoint
 
 {% highlight regent %}
 var p = preimage(parent_region, target_partition, data_region.field)
+{% endhighlight %}
+
+Disjointness and completeness can be specified via optional
+`disjoint`/`complete` keywords:
+
+{% highlight regent %}
+var p2 = preimage(disjoint, parent_region, target_partition, data_region.field)
+var p3 = preimage(disjoint, complete, parent_region, target_partition, data_region.field)
 {% endhighlight %}
 
 #### Union
