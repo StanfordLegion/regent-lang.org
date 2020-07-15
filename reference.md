@@ -850,9 +850,13 @@ end
 
 #### Replicable Optimization
 
-The `__replicable` annotation indicates that a task is idempotent, and
-in addition is deterministic. Currently this annotation has no effect,
-but will be used to enable optimizations in the future.
+The `__replicable` annotation indicates that a task is *control
+deterministic*, i.e. that all tasks (and other operations) are issued
+with the same arguments. Idempotent tasks are replicable by
+definition, but a task need not be idempotent to be
+replicable. Currently this annotation has effect only in the
+`control_replication` branch of Legion, where it enables dynamic
+control replication.
 
 {% highlight regent %}
 __demand(__replicable)
