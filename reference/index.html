@@ -906,9 +906,13 @@ be used to enable optimizations in the future.</p>
 
 <h4 id="replicable-optimization">Replicable Optimization</h4>
 
-<p>The <code class="highlighter-rouge">__replicable</code> annotation indicates that a task is idempotent, and
-in addition is deterministic. Currently this annotation has no effect,
-but will be used to enable optimizations in the future.</p>
+<p>The <code class="highlighter-rouge">__replicable</code> annotation indicates that a task is <em>control
+deterministic</em>, i.e. that all tasks (and other operations) are issued
+with the same arguments. Idempotent tasks are replicable by
+definition, but a task need not be idempotent to be
+replicable. Currently this annotation has effect only in the
+<code class="highlighter-rouge">control_replication</code> branch of Legion, where it enables dynamic
+control replication.</p>
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__replicable</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
