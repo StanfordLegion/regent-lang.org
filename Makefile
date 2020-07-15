@@ -24,7 +24,7 @@ github: local
 
 .PHONY: ldoc
 ldoc: legion
-	cd _legion/language && terra/release/bin/ldoc .
+	cd _legion/language && luarocks/install/bin/ldoc .
 	rm -rf doc
 	mv _legion/language/doc .
 
