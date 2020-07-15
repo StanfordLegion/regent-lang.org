@@ -13,3 +13,5 @@
 
 /_site
 .jekyll-metadata
+
+/_vendor
