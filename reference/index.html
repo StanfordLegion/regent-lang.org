@@ -734,6 +734,17 @@ more detail below.</p>
 
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">p0</span><span class="p">.</span><span class="n">colors</span> <span class="c1">-- Returns c0.</span></code></pre></figure>
 
+<h4 id="passing-a-partition-to-a-task">Passing a Partition to a Task</h4>
+
+<p>To pass a partition to a task, declare the region which is the parent
+of the partition first, so that the region variable can be used to
+define the partition type:</p>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">p</span> <span class="p">:</span> <span class="kt">partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">)))</span></code></pre></figure>
+
+<p>Note that <code class="highlighter-rouge">r</code> is referred to in the type of <code class="highlighter-rouge">p</code> so that the compiler
+can determine what region <code class="highlighter-rouge">p</code> is a partition of.</p>
+
 <h2 id="partition-operators">Partition Operators</h2>
 
 <h4 id="equal">Equal</h4>
