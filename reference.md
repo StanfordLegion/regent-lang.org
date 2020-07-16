@@ -654,6 +654,19 @@ end
 p0.colors -- Returns c0.
 {% endhighlight %}
 
+#### Passing a Partition to a Task
+
+To pass a partition to a task, declare the region which is the parent
+of the partition first, so that the region variable can be used to
+define the partition type:
+
+{% highlight regent %}
+task f(r : region(int), p : partition(disjoint, r, ispace(int1d)))
+{% endhighlight %}
+
+Note that `r` is referred to in the type of `p` so that the compiler
+can determine what region `p` is a partition of.
+
 ## Partition Operators
 
 #### Equal
