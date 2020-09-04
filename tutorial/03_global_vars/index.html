@@ -113,48 +113,35 @@
       <p>Regent has no global variables. C-style pointers are allowed, but must
 be used with caution. Mechanisms within the language for achieving
 mutable state are discussed in later tutorials.</p>
-
-<h2 id="lua-variables">Lua Variables</h2>
-
+<h2>Lua Variables</h2>
 <p>Regent has no concept of a global variable. Technically, Lua variables
 are global, but from Regent’s perspective they are fixed at compile
 time. For example, the code below is equivalent to attempting the
-assignment <code class="highlighter-rouge">2 = 3</code>, and fails with a compile error.</p>
-
+assignment <code>2 = 3</code>, and fails with a compile error.</p>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="k">task</span> <span class="nf">set_x</span><span class="p">()</span>
   <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1">-- ERROR: expected an lvalue but got int32</span>
 <span class="k">end</span></code></pre></figure>
-
-<h2 id="pointers">Pointers</h2>
-
+<h2>Pointers</h2>
 <p>Regent allows calls to C functions, and permits the use of C
 pointers. However, these features must be used carefully in order to
 comply with the Legion programming model. Consider, for example, that
 a subtask may execute on a different processor than its parent—so a
 pointer passed from parent to child might not be valid, and could
 result in a crash.</p>
-
 <p>Similarly, pointers to C functions may vary between processors and
 should not be relied upon to be stable.</p>
-
 <p>The restrictions of the Legion programming model are discussed in the
 <a href="http://legion.stanford.edu/tutorial/hybrid.html">C++ tutorial</a>.</p>
-
-<h2 id="final-code">Final Code</h2>
-
+<h2>Final Code</h2>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
-
-<span class="kd">local</span> <span class="n">global_constant</span> <span class="o">=</span> <span class="mi">4</span>
-
-<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"The value of global_constant %d will always be the same\n"</span><span class="p">,</span> <span class="n">global_constant</span><span class="p">)</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"The function pointer to printf %p may be different on different processors\n"</span><span class="p">,</span> <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">)</span>
+<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdio.h”</span><span class="p">)</span></p>
+<p><span class="kd">local</span> <span class="n">global_constant</span> <span class="o">=</span> <span class="mi">4</span></p>
+<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“The value of global_constant %d will always be the same\n”</span><span class="p">,</span> <span class="n">global_constant</span><span class="p">)</span>
+<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“The function pointer to printf %p may be different on different processors\n”</span><span class="p">,</span> <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">)</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
 
     </div>
   </div>

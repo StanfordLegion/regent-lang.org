@@ -116,109 +116,84 @@ not the fastest way to compute Fibonacci numbers, but demonstrates the
 functional nature of Regent tasks. The complete code for this example
 follows at the bottom of the page and can also be found in the <a href="https://github.com/StanfordLegion/legion/tree/master/tutorial">GitHub
 repository</a>.</p>
-
-<h2 id="tasks">Tasks</h2>
-
+<h2>Tasks</h2>
 <p><em>Tasks</em> are the fundamental unit of execution in Regent. Tasks are
 like functions in traditional languages. In fact, tasks execute
 sequentially. This means you can read the body of task from
 top-to-bottom, just like a normal sequential language.</p>
-
 <p><em>Parallelism</em> occurs only among child tasks. (The terms <em>child tasks</em>
 and <em>subtasks</em> simply refer to the set of tasks called by a given
-task.) Though the two calls to <code class="highlighter-rouge">fibonacci</code> below appear to execute in
+task.) Though the two calls to <code>fibonacci</code> below appear to execute in
 sequence, they will actually run in parallel with each other.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 <span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span></code></pre></figure>
-
 <p>Two tasks can execute in parallel only if they do not interfere. For
 the two calls above, this is trivial: the parameters to the tasks
 above are passed by-value, and there are no mutable global variables
 in Regent. Thus there is no way for them to modify state used in the
 other task (and thus no possibility of interference).</p>
-
 <p>Regent does support mutable state, however. We’ll consider this (and
 how it results in potential interference) in later tutorials.</p>
-
-<h2 id="futures">Futures</h2>
-
-<p>The <code class="highlighter-rouge">fibonacci</code> task itself is declared to take two <code class="highlighter-rouge">int</code> arguments,
-and returns an <code class="highlighter-rouge">int</code>. (The return type can be inferred in general and
+<h2>Futures</h2>
+<p>The <code>fibonacci</code> task itself is declared to take two <code>int</code> arguments,
+and returns an <code>int</code>. (The return type can be inferred in general and
 is shown below for pedagogical purposes only.) The body of the task
-stores the results of the two recursive calls in variables <code class="highlighter-rouge">f1</code> and
-<code class="highlighter-rouge">f2</code> and returns the sum of their values.</p>
-
+stores the results of the two recursive calls in variables <code>f1</code> and
+<code>f2</code> and returns the sum of their values.</p>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="kt">int</span>
   <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span> <span class="k">end</span>
   <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span>
-
-  <span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>
-<span class="k">end</span></code></pre></figure>
-
+<p><span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span></p>
+<p><span class="k">return</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>
+<span class="k">end</span></code></pre></figure></p>
 <p>In order to maximize parallelism, it’s important to avoid blocking the
 execution of a task as it calls subtasks. Regent has a number of
-optimizations that help ensure this. For example, the <code class="highlighter-rouge">fibonacci</code> task
+optimizations that help ensure this. For example, the <code>fibonacci</code> task
 above returns a <em>future</em>, rather than a direct value. This means that
-the execution continues past the line <code class="highlighter-rouge">var f1 = fibonacci(n - 1)</code> to
-the second <code class="highlighter-rouge">fibonacci</code> call, even though the result of the call may
-not be ready yet. The <code class="highlighter-rouge">+</code> operator is also lifted to operate on
-futures. Thus, the task only blocks at the final <code class="highlighter-rouge">return</code> statement,
+the execution continues past the line <code>var f1 = fibonacci(n - 1)</code> to
+the second <code>fibonacci</code> call, even though the result of the call may
+not be ready yet. The <code>+</code> operator is also lifted to operate on
+futures. Thus, the task only blocks at the final <code>return</code> statement,
 after all parallel operations have been issued.</p>
-
 <p>It is important to note that futures are <em>not</em> an a part of the Regent
 programming model. They are purely an optimization, inserted
 automatically by the compiler where appropriate. However, there are a
 number of ways to defeat the optimization—for example, a call to a C
 function cannot be issued in parallel, and thus must block execution
 if one of the arguments is a future.</p>
-
-<p>The main task calls <code class="highlighter-rouge">fibonacci</code> in a loop. In order to avoid blocking
-on the call to <code class="highlighter-rouge">c.printf</code>, the call is extracted into a task and
-called on the result of each <code class="highlighter-rouge">fibonacci</code> call.</p>
-
+<p>The main task calls <code>fibonacci</code> in a loop. In order to avoid blocking
+on the call to <code>c.printf</code>, the call is extracted into a task and
+called on the result of each <code>fibonacci</code> call.</p>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">print_result</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">result</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
   <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Fibonacci(%d) = %d\n"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="kd">var</span> <span class="n">num_fibonacci</span> <span class="o">=</span> <span class="mi">7</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_fibonacci</span> <span class="k">do</span>
-    <span class="n">print_result</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
-
-<h2 id="final-code">Final Code</h2>
-
+<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">num_fibonacci</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_fibonacci</span> <span class="k">do</span>
+<span class="n">print_result</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="k">end</span>
+<span class="k">end</span></code></pre></figure></p>
+<h2>Final Code</h2>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
-
-<span class="k">task</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="kt">int</span>
-  <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span> <span class="k">end</span>
-  <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span>
-
-  <span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
-
-  <span class="k">return</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>
+<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdio.h”</span><span class="p">)</span></p>
+<p><span class="k">task</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="kt">int</span>
+<span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span> <span class="k">end</span>
+<span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span></p>
+<p><span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span></p>
+<p><span class="k">return</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">print_result</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">result</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
+<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“Fibonacci(%d) = %d\n”</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">num_fibonacci</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_fibonacci</span> <span class="k">do</span>
+<span class="n">print_result</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">print_result</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">result</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Fibonacci(%d) = %d\n"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="kd">var</span> <span class="n">num_fibonacci</span> <span class="o">=</span> <span class="mi">7</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_fibonacci</span> <span class="k">do</span>
-    <span class="n">print_result</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
 
     </div>
   </div>

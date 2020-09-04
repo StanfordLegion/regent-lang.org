@@ -103,58 +103,47 @@
       
 
       <p><strong>Regent</strong> is a language for implicit dataflow parallelism.</p>
-
 <p>Regent discovers dataflow parallelism in sequential code by computing
 a dependence graph over tasks, like the one below. Tasks execute as
 soon as all dependencies are satisfied, and can be distributed
 automatically over a cluster of (possibly heterogeneous) machines.</p>
-
-<p><img src="/images/frontpage.svg" class="center-block" /></p>
-
+<img src="/images/frontpage.svg" class="center-block">
 <p>Because execution follows the original sequential semantics of the
 code, Regent programs are easy to read and understand. Just read the
 code top-to-bottom, as if it were written in a traditional sequential
-language. The dependence graph above is produced when the task <code class="highlighter-rouge">main</code>
+language. The dependence graph above is produced when the task <code>main</code>
 executes below.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-
-<span class="k">struct</span> <span class="nf">point</span> <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="n">float</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="n">float</span> <span class="p">}</span> <span class="c1">-- A simple struct with two fields.</span>
-
-<span class="c1">-- Define 4 tasks. Ignore the task bodies for the moment; the behavior of each</span>
-<span class="c1">-- task is soundly described by its declaration. Note that each declaration</span>
-<span class="c1">-- says what the task will read or write.</span>
-<span class="k">task</span> <span class="nf">a</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[ ... ]]</span> <span class="k">end</span>
-<span class="k">task</span> <span class="nf">b</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">.</span><span class="n">x</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[ ... ]]</span> <span class="k">end</span>
-<span class="k">task</span> <span class="nf">c</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">.</span><span class="n">y</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[ ... ]]</span> <span class="k">end</span>
-<span class="k">task</span> <span class="nf">d</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="k">do</span> <span class="cm">--[[ ... ]]</span> <span class="k">end</span>
-
-<span class="c1">-- Execution begins at main. Read the code top-down (like a sequential program).</span>
+<p><span class="k">struct</span> <span class="nf">point</span> <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="n">float</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="n">float</span> <span class="p">}</span> <span class="c1">– A simple struct with two fields.</span></p>
+<p><span class="c1">– Define 4 tasks. Ignore the task bodies for the moment; the behavior of each</span>
+<span class="c1">– task is soundly described by its declaration. Note that each declaration</span>
+<span class="c1">– says what the task will read or write.</span>
+<span class="k">task</span> <span class="nf">a</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="k">do</span> <span class="cm">–[[ … ]]</span> <span class="k">end</span>
+<span class="k">task</span> <span class="nf">b</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">.</span><span class="n">x</span><span class="p">)</span> <span class="k">do</span> <span class="cm">–[[ … ]]</span> <span class="k">end</span>
+<span class="k">task</span> <span class="nf">c</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">points</span><span class="p">.</span><span class="n">y</span><span class="p">)</span> <span class="k">do</span> <span class="cm">–[[ … ]]</span> <span class="k">end</span>
+<span class="k">task</span> <span class="nf">d</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="k">do</span> <span class="cm">–[[ … ]]</span> <span class="k">end</span></p>
+<p><span class="c1">– Execution begins at main. Read the code top-down (like a sequential program).</span>
 <span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="c1">-- Create a region (like an array) with room for 5 elements.</span>
-  <span class="kd">var</span> <span class="n">points</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">point</span><span class="p">)</span>
-  <span class="k">new</span><span class="p">(</span><span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">-- Allocate the elements.</span>
-
-  <span class="c1">-- Partition the region into 3 subregions. Each subregion is a view onto a</span>
-  <span class="c1">-- subset of the data of the parent.</span>
-  <span class="kd">var</span> <span class="n">part</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-
-  <span class="c1">-- Launch subtasks a, b, c, and d.</span>
-  <span class="n">a</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="k">do</span>
-    <span class="n">b</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-  <span class="k">end</span>
-  <span class="n">c</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="k">do</span>
-    <span class="n">d</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-  <span class="k">end</span>
+<span class="c1">– Create a region (like an array) with room for 5 elements.</span>
+<span class="kd">var</span> <span class="n">points</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">point</span><span class="p">)</span>
+<span class="k">new</span><span class="p">(</span><span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">– Allocate the elements.</span></p>
+<p><span class="c1">– Partition the region into 3 subregions. Each subregion is a view onto a</span>
+<span class="c1">– subset of the data of the parent.</span>
+<span class="kd">var</span> <span class="n">part</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span></p>
+<p><span class="c1">– Launch subtasks a, b, c, and d.</span>
+<span class="n">a</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="k">do</span>
+<span class="n">b</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-
+<span class="n">c</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="k">do</span>
+<span class="n">d</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">end</span>
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
 <!--
 <p class="lead">Interested in learning more? <a href="http://try.regent-lang.org/spawn">Try out this example and others in your browser</a>.</p>
 -->
-
 <p class="lead">Interested in learning more? <a href="install">Install Regent</a> and checkout the <a href="tutorial">tutorials</a>.</p>
 
     </div>

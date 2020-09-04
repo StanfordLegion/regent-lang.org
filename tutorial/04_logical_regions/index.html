@@ -110,102 +110,70 @@
         </h1>
       
 
-      <h2 id="field-spaces">Field spaces</h2>
-
+      <h2>Field spaces</h2>
 <p>Field spaces are sets of fields, and behave similarly to structs in C or Terra.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
   <span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
   <span class="p">{</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">-- Multiple fields may be declared with a single type.</span>
 <span class="p">}</span></code></pre></figure>
-
 <p>Field spaces may also be instantiated by casting an anonymous struct to the appropriate type.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
   <span class="kd">var</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">z</span> <span class="p">}</span> <span class="c1">-- Define a local variable of type fs.</span>
   <span class="k">return</span> <span class="n">obj</span>
 <span class="k">end</span></code></pre></figure>
-
 <p>Field spaces differ from structs in that they may also take region-typed arguments.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
   <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span>
 <span class="p">}</span>
-
-<span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
- <span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
- <span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
-<span class="p">}</span>
-
-<span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
-  <span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></figure>
-
-<h2 id="index-spaces">Index spaces</h2>
-
+<p><span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
+<span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+<span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+<span class="p">}</span></p>
+<p><span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
+<span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></figure></p>
+<h2>Index spaces</h2>
 <p>An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.</p>
-
 <p>An unstructured ispace is a collection of opaque points, useful for pointer data structures such as graphs, trees, linked lists, and unstructured meshes.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">unstructured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span> <span class="c1">-- Create an ispace with 1024 elements.</span></code></pre></figure>
-
 <p>A structured ispace is a (multi-dimensional) rectangle of points.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">i1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">-- Create an ispace including the 1-dimensional ints from 0 to 1023.</span>
 <span class="kd">var</span> <span class="n">i2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">},</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">})</span> <span class="c1">-- 2-dimensional 4x4 rectangle with indices starting at 1,1.</span></code></pre></figure>
-
-<h2 id="regions">Regions</h2>
-
+<h2>Regions</h2>
 <p>Regions are the cross-product between an index space and a field space.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">unstructured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">unstructured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
 <span class="kd">var</span> <span class="n">structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span></code></pre></figure>
-
 <p>Note that you can create multiple regions with the same index space and field space. This is a new region, distinct from structured_lr above.</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">other_structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span></code></pre></figure>
-
-<h2 id="final-code">Final Code</h2>
-
+<h2>Final Code</h2>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
-
-<span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
-  <span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
-  <span class="p">{</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
-  <span class="kd">var</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">z</span> <span class="p">}</span>
-  <span class="k">return</span> <span class="n">obj</span>
+<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdio.h”</span><span class="p">)</span></p>
+<p><span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
+<span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="p">{</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
+<span class="p">}</span></p>
+<p><span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
+<span class="kd">var</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">z</span> <span class="p">}</span>
+<span class="k">return</span> <span class="n">obj</span>
+<span class="k">end</span></p>
+<p><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
+<span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span>
+<span class="p">}</span></p>
+<p><span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
+<span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+<span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+<span class="p">}</span></p>
+<p><span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
+<span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">unstructured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span></p>
+<p><span class="kd">var</span> <span class="n">structured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></p>
+<p><span class="kd">var</span> <span class="n">unstructured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">unstructured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span></p>
+<p><span class="kd">var</span> <span class="n">no_clone_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
 <span class="k">end</span>
-
-<span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
-  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span>
-<span class="p">}</span>
-
-<span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
- <span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
- <span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
-<span class="p">}</span>
-
-<span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
-  <span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
-<span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="kd">var</span> <span class="n">unstructured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
-
-  <span class="kd">var</span> <span class="n">structured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-  <span class="kd">var</span> <span class="n">unstructured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">unstructured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-
-  <span class="kd">var</span> <span class="n">no_clone_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-<span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
 
     </div>
   </div>

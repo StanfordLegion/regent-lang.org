@@ -111,88 +111,75 @@
       
 
       <p>(The text for this tutorial has not been written yet.)</p>
-
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdlib.h"</span><span class="p">)</span>
-
-<span class="k">fspace</span> <span class="nf">input</span> <span class="p">{</span>
-  <span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
-  <span class="n">y</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="k">fspace</span> <span class="nf">output</span> <span class="p">{</span>
-  <span class="n">z</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="k">task</span> <span class="nf">init</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">))</span>
+<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdlib.h”</span><span class="p">)</span></p>
+<p><span class="k">fspace</span> <span class="nf">input</span> <span class="p">{</span>
+<span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="n">y</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="p">}</span></p>
+<p><span class="k">fspace</span> <span class="nf">output</span> <span class="p">{</span>
+<span class="n">z</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+<span class="p">}</span></p>
+<p><span class="k">task</span> <span class="nf">init</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">))</span>
 <span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
-    <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-    <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-  <span class="k">end</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
+<span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+<span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">),</span>
-           <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">output</span><span class="p">),</span>
-           <span class="n">alpha</span> <span class="p">:</span> <span class="n">double</span><span class="p">)</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">),</span>
+<span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">output</span><span class="p">),</span>
+<span class="n">alpha</span> <span class="p">:</span> <span class="n">double</span><span class="p">)</span>
 <span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
-    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
-  <span class="k">end</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
+<span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">check</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">),</span>
-           <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">output</span><span class="p">),</span>
-           <span class="n">alpha</span> <span class="p">:</span> <span class="n">double</span><span class="p">)</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">check</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">),</span>
+<span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">output</span><span class="p">),</span>
+<span class="n">alpha</span> <span class="p">:</span> <span class="n">double</span><span class="p">)</span>
 <span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">,</span> <span class="n">output_lr</span><span class="p">)</span> <span class="k">do</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
-    <span class="kd">var</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
-    <span class="kd">var</span> <span class="n">received</span> <span class="o">=</span> <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span>
-    <span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">expected</span> <span class="o">==</span> <span class="n">received</span><span class="p">,</span> <span class="s2">"check failed"</span><span class="p">)</span>
-  <span class="k">end</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
+<span class="kd">var</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
+<span class="kd">var</span> <span class="n">received</span> <span class="o">=</span> <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">expected</span> <span class="o">==</span> <span class="n">received</span><span class="p">,</span> <span class="s2">“check failed”</span><span class="p">)</span>
 <span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-  <span class="kd">var</span> <span class="n">num_elements</span> <span class="o">=</span> <span class="mi">1024</span>
-  <span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-
-  <span class="c1">-- Data parallelism in Regent is achieved by partioning a reigon</span>
-  <span class="c1">-- into subregions. Regent provides a number of partitioning</span>
-  <span class="c1">-- operators; the code below uses an equal partitioning to create</span>
-  <span class="c1">-- simple blocked subregions.</span>
-  <span class="c1">--</span>
-  <span class="c1">-- The subregions in a partition are also associated with points in</span>
-  <span class="c1">-- an index space. The ispace ps below names the respective subregions.</span>
-  <span class="kd">var</span> <span class="n">num_subregions</span> <span class="o">=</span> <span class="mi">4</span>
-  <span class="kd">var</span> <span class="n">ps</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_subregions</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">input_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="n">output_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">output_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
-
-  <span class="c1">-- Loops may now call tasks on the subregions of the partitions</span>
-  <span class="c1">-- declared above. (Note as before the __demand annotation is</span>
-  <span class="c1">-- optional and causes the compiler to issue an error if the loop</span>
-  <span class="c1">-- iterations cannot be guarranteed to execute in parallel.)</span>
-  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
-    <span class="n">init</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-  <span class="k">end</span>
-
-  <span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
-    <span class="n">daxpy</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
-    <span class="n">check</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
-  <span class="k">end</span>
+<span class="k">end</span></p>
+<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">num_elements</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></p>
+<p><span class="c1">– Data parallelism in Regent is achieved by partioning a reigon</span>
+<span class="c1">– into subregions. Regent provides a number of partitioning</span>
+<span class="c1">– operators; the code below uses an equal partitioning to create</span>
+<span class="c1">– simple blocked subregions.</span>
+<span class="c1">–</span>
+<span class="c1">– The subregions in a partition are also associated with points in</span>
+<span class="c1">– an index space. The ispace ps below names the respective subregions.</span>
+<span class="kd">var</span> <span class="n">num_subregions</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="kd">var</span> <span class="n">ps</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_subregions</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">output_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">output_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span></p>
+<p><span class="c1">– Loops may now call tasks on the subregions of the partitions</span>
+<span class="c1">– declared above. (Note as before the __demand annotation is</span>
+<span class="c1">– optional and causes the compiler to issue an error if the loop</span>
+<span class="c1">– iterations cannot be guarranteed to execute in parallel.)</span>
+<span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+<span class="n">init</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">end</span></p>
+<p><span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+<span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+<span class="n">daxpy</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
+<span class="k">end</span></p>
+<p><span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+<span class="n">check</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
 
     </div>
   </div>

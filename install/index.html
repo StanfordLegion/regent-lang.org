@@ -111,36 +111,29 @@
       
 
       <ul>
-  <li><a href="#quickstart">Quickstart</a>
-    <ul>
-      <li><a href="#ubuntu">Ubuntu</a></li>
-      <li><a href="#macos">macOS</a></li>
-      <li><a href="#other-systems">Other Systems</a></li>
-    </ul>
-  </li>
-  <li><a href="#prerequisites">Prerequisites</a></li>
-  <li><a href="#building">Building</a></li>
-  <li><a href="#running">Running</a></li>
-  <li><a href="#development-environment">Development Environment</a></li>
-  <li><a href="#docker">Docker</a></li>
+<li><a href="#quickstart">Quickstart</a>
+<ul>
+<li><a href="#ubuntu">Ubuntu</a></li>
+<li><a href="#macos">macOS</a></li>
+<li><a href="#other-systems">Other Systems</a></li>
 </ul>
-
-<h1 id="quickstart">Quickstart</h1>
-
-<h2 id="ubuntu">Ubuntu</h2>
-
+</li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#building">Building</a></li>
+<li><a href="#running">Running</a></li>
+<li><a href="#development-environment">Development Environment</a></li>
+<li><a href="#docker">Docker</a></li>
+</ul>
+<h1>Quickstart</h1>
+<h2>Ubuntu</h2>
 <p>If you use Ubuntu, you can install Regent by running:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>clang-3.5 libclang-3.5-dev llvm-3.5-dev
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
-
-<h2 id="macos">macOS</h2>
-
+<h2>macOS</h2>
 <p>If you use <a href="https://brew.sh/">Homebrew</a> on macOS, you can install
 Regent by running:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">brew <span class="nb">install </span>llvm@3.9
 <span class="c"># Consider placing these lines into your .bashrc for future use.</span>
 <span class="nb">export </span><span class="nv">CLANG</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>brew <span class="nt">--prefix</span><span class="si">)</span><span class="s2">/opt/llvm@3.9/bin/clang"</span>
@@ -149,105 +142,75 @@ Regent by running:</p>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
-
 <p>Note: In order for this to work, Homebrew must be installed to
-<code class="highlighter-rouge">/usr/local</code>. Other locations (such as <code class="highlighter-rouge">$HOME</code>) will build but will
+<code>/usr/local</code>. Other locations (such as <code>$HOME</code>) will build but will
 result in a broken compiler.</p>
-
-<h2 id="other-systems">Other Systems</h2>
-
+<h2>Other Systems</h2>
 <p>Complete instructions for installation follow below.</p>
-
 <p>Regent is also available as a Docker container. See <a href="#docker">the bottom of
 this page</a> for instructions.</p>
-
-<h1 id="prerequisites">Prerequisites</h1>
-
+<h1>Prerequisites</h1>
 <p>Regent requires:</p>
-
 <ul>
-  <li>Linux, macOS, or another Unix</li>
-  <li>A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make</li>
-  <li>Python 2.7 (or 3.x)</li>
-  <li>LLVM and Clang <strong>with headers</strong>:
-    <ul>
-      <li>LLVM 3.8 is recommended for use with CUDA</li>
-      <li>LLVM 3.5 is recommended for debugging (other versions will be missing debug symbols)</li>
-      <li>LLVM 3.5-3.9 and 6.0 are also supported</li>
-    </ul>
-  </li>
+<li>Linux, macOS, or another Unix</li>
+<li>A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make</li>
+<li>Python 2.7 (or 3.x)</li>
+<li>LLVM and Clang <strong>with headers</strong>:
+<ul>
+<li>LLVM 3.8 is recommended for use with CUDA</li>
+<li>LLVM 3.5 is recommended for debugging (other versions will be missing debug symbols)</li>
+<li>LLVM 3.5-3.9 and 6.0 are also supported</li>
 </ul>
-
+</li>
+</ul>
 <p>There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
 as-needed basis.</p>
-
 <ul>
-  <li><em>Optional</em>: CUDA 5.0 or newer (for NVIDIA GPUs)</li>
-  <li><em>Optional</em>: <a href="https://gasnet.lbl.gov/">GASNet</a> (for networking, see
- <a href="http://legion.stanford.edu/gasnet/">installation instructions</a>)</li>
-  <li><em>Optional</em>: HDF5 (for file I/O)</li>
+<li><em>Optional</em>: CUDA 5.0 or newer (for NVIDIA GPUs)</li>
+<li><em>Optional</em>: <a href="https://gasnet.lbl.gov/">GASNet</a> (for networking, see
+<a href="http://legion.stanford.edu/gasnet/">installation instructions</a>)</li>
+<li><em>Optional</em>: HDF5 (for file I/O)</li>
 </ul>
-
-<h1 id="building">Building</h1>
-
+<h1>Building</h1>
 <p>Regent includes a self-installer which downloads
 <a href="http://terralang.org/">Terra</a> and builds the Regent compiler. Run:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
-
 <p>For other installation options (including multi-node and GPU
 configurations), see the
 <a href="https://github.com/StanfordLegion/legion/blob/master/language/README.md">README</a>.</p>
-
-<h1 id="running">Running</h1>
-
+<h1>Running</h1>
 <p>Regent includes a frontend interpreter which can be run with:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">./regent.py &lt;script&gt;</code></pre></figure>
-
 <p>For example:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">./regent.py examples/circuit.rg</code></pre></figure>
-
 <p>(Note: The Regent frontend can also be run without arguments to obtain
 a <a href="http://terralang.org">Terra</a>/<a href="http://luajit.org/">LuaJIT</a>
 shell. However, this mode is not very useful because of the way that
 Terra language extensions works. Also, the Legion runtime is not
 currently reentrant, making interactive use difficult.)</p>
-
-<h1 id="development-environment">Development Environment</h1>
-
+<h1>Development Environment</h1>
 <p>Regent syntax highlighting modes are available for the following
 editors:</p>
-
 <ul>
-  <li><a href="https://github.com/StanfordLegion/regent-mode">Emacs</a></li>
-  <li><a href="https://github.com/StanfordLegion/regent.vim">Vim</a></li>
+<li><a href="https://github.com/StanfordLegion/regent-mode">Emacs</a></li>
+<li><a href="https://github.com/StanfordLegion/regent.vim">Vim</a></li>
 </ul>
-
-<h1 id="docker">Docker</h1>
-
+<h1>Docker</h1>
 <p>If you have <a href="https://www.docker.com/">Docker</a>, Regent is also
 available as a container:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">docker run <span class="nt">-ti</span> stanfordlegion/regent</code></pre></figure>
-
 <p>This will start a bash shell from which you can run Regent. Regent is
-installed under <code class="highlighter-rouge">/usr/local/legion</code>. So for example, to run the
+installed under <code>/usr/local/legion</code>. So for example, to run the
 circuit example:</p>
-
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">regent /usr/local/legion/language/examples/circuit.rg</code></pre></figure>
-
 <p>Because Docker containers have no access to the host file system, some
 additional options are required if you want to run Docker on your own
 Regent files. The command below mounts the current directory in the
-host as <code class="highlighter-rouge">/examples</code> in the container and then runs Regent on it.</p>
-
+host as <code>/examples</code> in the container and then runs Regent on it.</p>
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">docker run <span class="nt">-ti</span> <span class="nt">-v</span> <span class="nv">$PWD</span>:/examples stanfordlegion/regent regent /examples/circuit.rg</code></pre></figure>
-
 
     </div>
   </div>
