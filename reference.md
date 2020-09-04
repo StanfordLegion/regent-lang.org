@@ -1270,6 +1270,18 @@ var p_aliased = __import_partition(aliased, r, cs, raw_partition_aliased)
 
 `raw_partition_*` are of type `legion_logical_partition_t`.
 
+#### Importing Futures
+
+{% highlight regent %}
+  var f = __future(T, x)
+{% endhighlight %}
+
+`x` is of type `legion_future_t` and `f` will have type `T`. If `-ffuture 1` is enabled, this can be optimized to
+
+{% highlight regent %}
+  var f = future(T)
+{% endhighlight %}
+
 # Standard Library
 
 See the [documentation for the standard library](/doc).
