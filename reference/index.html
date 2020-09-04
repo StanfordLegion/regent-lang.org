@@ -1286,6 +1286,12 @@ such that the field space <code class="highlighter-rouge">fs</code> below contai
 
 <p><code class="highlighter-rouge">raw_partition_*</code> are of type <code class="highlighter-rouge">legion_logical_partition_t</code>.</p>
 
+<h4 id="importing-futures">Importing Futures</h4>
+
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f</span> <span class="o">=</span> <span class="n">__future</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">x</code> is of type <code class="highlighter-rouge">legion_future_t</code> and <code class="highlighter-rouge">f</code> will have type <code class="highlighter-rouge">T</code>. If <code class="highlighter-rouge">-ffuture 1</code> is enabled, this can be automatically optimized into a Regent future.</p>
+
 <h1 id="standard-library">Standard Library</h1>
 
 <p>See the <a href="/doc">documentation for the standard library</a>.</p>
