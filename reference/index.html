@@ -967,15 +967,12 @@ the corresponding methods in <code>legion.h</code>.</p>
 <ul>
 <li><code>__runtime()</code> returns the Legion runtime (<code>legion_runtime_t</code>).</li>
 <li><code>__context()</code> returns the Legion context (<code>legion_context_t</code>).</li>
-<li><code>__physical(r)</code> returns an array of physical regions
-(<code>legion_physical_region_t</code>) for <code>r</code>, one per field, in the order
-that the fields were originally defined in <code>r</code>. Physical regions
-are returned for all fields regardless of whether the current task
-holds privileges on said fields, but fields with no privileges
-will have <code>NO_ACCESS</code> on the corresponding physical regions.</li>
-<li><code>__fields(r)</code> returns an array of the field IDs
-(<code>legion_field_id_t</code>) of <code>r</code>, one per field, in the order that the
-fields were originally defined in <code>r</code>.</li>
+<li><code>__physical(r.{f, g, ...})</code> returns an array of physical regions
+(<code>legion_physical_region_t</code>) for <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order
+that the fields are listed in the call.</li>
+<li><code>__fields(r.{f, g, ...})</code> returns an array of the field IDs
+(<code>legion_field_id_t</code>) of <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order
+that the fields are listed in the call.</li>
 <li><code>__raw(r)</code> returns the C API object handle that corresponds to the
 given object, e.g. a <code>legion_logical_region_t</code> for a region or
 <code>legion_logical_partition_t</code> for a partition.</li>
