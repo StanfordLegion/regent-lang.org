@@ -1207,15 +1207,12 @@ the corresponding methods in `legion.h`.
 
   * `__runtime()` returns the Legion runtime (`legion_runtime_t`).
   * `__context()` returns the Legion context (`legion_context_t`).
-  * `__physical(r)` returns an array of physical regions
-    (`legion_physical_region_t`) for `r`, one per field, in the order
-    that the fields were originally defined in `r`. Physical regions
-    are returned for all fields regardless of whether the current task
-    holds privileges on said fields, but fields with no privileges
-    will have `NO_ACCESS` on the corresponding physical regions.
-  * `__fields(r)` returns an array of the field IDs
-    (`legion_field_id_t`) of `r`, one per field, in the order that the
-    fields were originally defined in `r`.
+  * `__physical(r.{f, g, ...})` returns an array of physical regions
+    (`legion_physical_region_t`) for `r`, one per field, for fields `f`, `g`, etc. in the order
+    that the fields are listed in the call.
+  * `__fields(r.{f, g, ...})` returns an array of the field IDs
+    (`legion_field_id_t`) of `r`, one per field, for fields `f`, `g`, etc. in the order
+    that the fields are listed in the call.
   * `__raw(r)` returns the C API object handle that corresponds to the
     given object, e.g. a `legion_logical_region_t` for a region or
     `legion_logical_partition_t` for a partition.
