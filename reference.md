@@ -543,7 +543,7 @@ i2.bounds.hi -- Returns upper corner.
 {% highlight regent %}
 i0.volume -- Returns 5.
 i1.volume -- Returns 10.
-i2.volume -- Returns 16.
+i2.volume -- Returns 36.
 {% endhighlight %}
 
 ## Regions
