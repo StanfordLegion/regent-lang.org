@@ -127,7 +127,7 @@
 <h1>Quickstart</h1>
 <h2>Ubuntu</h2>
 <p>If you use Ubuntu, you can install Regent by running:</p>
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>clang-3.5 libclang-3.5-dev llvm-3.5-dev
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>clang-6.0 libclang-6.0-dev llvm-6.0-dev
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
@@ -156,9 +156,8 @@ this page</a> for instructions.</p>
 <li>Python 2.7 (or 3.x)</li>
 <li>LLVM and Clang <strong>with headers</strong>:
 <ul>
-<li>LLVM 3.8 is recommended for use with CUDA</li>
-<li>LLVM 3.5 is recommended for debugging (other versions will be missing debug symbols)</li>
-<li>LLVM 3.5-3.9 and 6.0 are also supported</li>
+<li>LLVM 6.0 is recommended</li>
+<li>See the <a href="https://github.com/terralang/terra#supported-llvm-versions">version support table</a> for more details</li>
 </ul>
 </li>
 </ul>
