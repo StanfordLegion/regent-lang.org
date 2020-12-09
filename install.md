@@ -31,23 +31,22 @@ cd legion/language
 
 ## macOS
 
-If you use [Homebrew](https://brew.sh/) on macOS, you can install
-Regent by running:
+If you use macOS, you can install Regent by running:
 
 {% highlight bash %}
-brew install llvm@3.9
-# Consider placing these lines into your .bashrc for future use.
-export CLANG="$(brew --prefix)/opt/llvm@3.9/bin/clang"
-export LLVM_CONFIG="$(brew --prefix)/opt/llvm@3.9/bin/llvm-config"
-export CXX="$(brew --prefix)/opt/llvm@3.9/bin/clang++"
+curl -O https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+tar xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/clang+llvm-9.0.1-x86_64-apple-darwin"
+export INCLUDE_PATH="$(xcrun --sdk macosx --show-sdk-path)/usr/include"
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
-./install.py --debug
+CXXFLAGS=-std=c++11 ./install.py --debug
 {% endhighlight %}
 
-Note: In order for this to work, Homebrew must be installed to
-`/usr/local`. Other locations (such as `$HOME`) will build but will
-result in a broken compiler.
+Note: Previously we recommended Homebrew to install LLVM, but as of
+December 2020, this route does not work unless you have a full
+installation of XCode (i.e., the command-line tools are not
+sufficient).
 
 ## Other Systems
 
