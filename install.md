@@ -23,7 +23,7 @@ permalink: /install/index.html
 If you use Ubuntu, you can install Regent by running:
 
 {% highlight bash %}
-sudo apt-get install clang-3.5 libclang-3.5-dev llvm-3.5-dev
+sudo apt-get install clang-6.0 libclang-6.0-dev llvm-6.0-dev
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
 ./install.py --debug
@@ -63,9 +63,8 @@ Regent requires:
   * A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
   * Python 2.7 (or 3.x)
   * LLVM and Clang **with headers**:
-      * LLVM 3.8 is recommended for use with CUDA
-      * LLVM 3.5 is recommended for debugging (other versions will be missing debug symbols)
-      * LLVM 3.5-3.9 and 6.0 are also supported
+      * LLVM 6.0 is recommended
+      * See the [version support table](https://github.com/terralang/terra#supported-llvm-versions) for more details
 
 There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
