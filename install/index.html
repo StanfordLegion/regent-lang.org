@@ -132,19 +132,18 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
 <h2>macOS</h2>
-<p>If you use <a href="https://brew.sh/">Homebrew</a> on macOS, you can install
-Regent by running:</p>
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">brew <span class="nb">install </span>llvm@3.9
-<span class="c"># Consider placing these lines into your .bashrc for future use.</span>
-<span class="nb">export </span><span class="nv">CLANG</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>brew <span class="nt">--prefix</span><span class="si">)</span><span class="s2">/opt/llvm@3.9/bin/clang"</span>
-<span class="nb">export </span><span class="nv">LLVM_CONFIG</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>brew <span class="nt">--prefix</span><span class="si">)</span><span class="s2">/opt/llvm@3.9/bin/llvm-config"</span>
-<span class="nb">export </span><span class="nv">CXX</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>brew <span class="nt">--prefix</span><span class="si">)</span><span class="s2">/opt/llvm@3.9/bin/clang++"</span>
+<p>If you use macOS, you can install Regent by running:</p>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">curl <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+<span class="nb">tar </span>xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+<span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-9.0.1-x86_64-apple-darwin"</span>
+<span class="nb">export </span><span class="nv">INCLUDE_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>xcrun <span class="nt">--sdk</span> macosx <span class="nt">--show-sdk-path</span><span class="si">)</span><span class="s2">/usr/include"</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
-./install.py <span class="nt">--debug</span></code></pre></figure>
-<p>Note: In order for this to work, Homebrew must be installed to
-<code>/usr/local</code>. Other locations (such as <code>$HOME</code>) will build but will
-result in a broken compiler.</p>
+<span class="nv">CXXFLAGS</span><span class="o">=</span><span class="nt">-std</span><span class="o">=</span>c++11 ./install.py <span class="nt">--debug</span></code></pre></figure>
+<p>Note: Previously we recommended Homebrew to install LLVM, but as of
+December 2020, this route does not work unless you have a full
+installation of XCode (i.e., the command-line tools are not
+sufficient).</p>
 <h2>Other Systems</h2>
 <p>Complete instructions for installation follow below.</p>
 <p>Regent is also available as a Docker container. See <a href="#docker">the bottom of
