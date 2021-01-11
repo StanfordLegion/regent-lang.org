@@ -15,7 +15,7 @@ permalink: /resources/index.html
   * [Mailing List](https://groups.google.com/forum/#!forum/legionusers) (for announcements and general discussion)
   * [Bug Tracker](https://github.com/StanfordLegion/legion/issues) (for bug reports)
 
-# Editor Support
+## Editor Support
 
   * [Emacs](https://github.com/StanfordLegion/regent-mode)
   * [Vim](https://github.com/StanfordLegion/regent.vim)
