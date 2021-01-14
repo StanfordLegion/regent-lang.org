@@ -347,6 +347,12 @@ region are considered to be uninitialized following a detach
 operation, and region is no longer restricted.</p>
 <p>See below for detailed instructions on using <a href="#file-io-with-hdf5">file I/O with
 HDF5</a>.</p>
+<p><strong>Important:</strong> attach and detach currently require that you <strong>not use
+the region within the task where you attach or detach</strong>. If you
+attempt to do so, the behavior is undefined. One way to guarantee that
+you do this correctly is to require the task to be
+<a href="#inner-optimization">inner</a>, though this is a more strict condition
+than is required for correctness.</p>
 <h2>Acquire and Release</h2>
 <p>A region which is restricted (e.g. due to an
 <a href="#attach-and-detach">attach</a> operation) cannot be copied, and
