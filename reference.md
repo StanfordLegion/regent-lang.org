@@ -290,6 +290,13 @@ operation, and region is no longer restricted.
 See below for detailed instructions on using [file I/O with
 HDF5](#file-io-with-hdf5).
 
+**Important:** attach and detach currently require that you **not use
+the region within the task where you attach or detach**. If you
+attempt to do so, the behavior is undefined. One way to guarantee that
+you do this correctly is to require the task to be
+[inner](#inner-optimization), though this is a more strict condition
+than is required for correctness.
+
 ## Acquire and Release
 
 A region which is restricted (e.g. due to an
