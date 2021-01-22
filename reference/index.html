@@ -825,7 +825,10 @@ should be traced. This is only possible when the sequence of tasks
 called within the traced loop is identical on every trip through the
 loop.</p>
 <p>Currently the Regent compiler consider <em>only</em> statements marked with
-this annotation for the optimization.</p>
+this annotation for the optimization. The compiler does not currently
+have the ability to check whether traced loops are valid (i.e., will
+always execute the same sequence of tasks), so invalid loops will
+result in a runtime error.</p>
 <p>This annotation can be used in conjunction with the <code>__spmd</code>
 optimization via <code>__demand(__spmd, __trace)</code>.</p>
 <figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
@@ -836,6 +839,24 @@ optimization via <code>__demand(__spmd, __trace)</code>.</p>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">g</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
   <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+<p>Note that this will traces the <em>inside</em> of the loop. That is, the
+above code is more or less equivalent to:</p>
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span> <span class="k">do</span>
+  <span class="n">begin_trace</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  <span class="k">end</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+    <span class="n">g</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  <span class="k">end</span>
+  <span class="n">end_trace</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+<p>If you would like to trace an arbitrary block of code (instead of a
+loop), this can be accomplished with:</p>
+<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
+<span class="k">do</span>
+  <span class="o">...</span>
 <span class="k">end</span></code></pre></figure>
 <h4>CUDA Code Generation</h4>
 <p>The <code>__cuda</code> annotation on a task indicates that the marked task
