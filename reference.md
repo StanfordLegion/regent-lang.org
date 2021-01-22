@@ -999,7 +999,10 @@ called within the traced loop is identical on every trip through the
 loop.
 
 Currently the Regent compiler consider *only* statements marked with
-this annotation for the optimization.
+this annotation for the optimization. The compiler does not currently
+have the ability to check whether traced loops are valid (i.e., will
+always execute the same sequence of tasks), so invalid loops will
+result in a runtime error.
 
 This annotation can be used in conjunction with the `__spmd`
 optimization via `__demand(__spmd, __trace)`.
@@ -1013,6 +1016,32 @@ for t = 0, t_final do
   for i in is do
     g(q[i])
   end
+end
+{% endhighlight %}
+
+Note that this will traces the *inside* of the loop. That is, the
+above code is more or less equivalent to:
+
+{% highlight regent %}
+for t = 0, t_final do
+  begin_trace(...)
+  for i in is do
+    f(p[i])
+  end
+  for i in is do
+    g(q[i])
+  end
+  end_trace(...)
+end
+{% endhighlight %}
+
+If you would like to trace an arbitrary block of code (instead of a
+loop), this can be accomplished with:
+
+{% highlight regent %}
+__demand(__trace)
+do
+  ...
 end
 {% endhighlight %}
 
