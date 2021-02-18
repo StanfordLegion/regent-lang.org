@@ -65,6 +65,7 @@ Regent requires:
   * LLVM and Clang **with headers**:
       * LLVM 6.0 is recommended
       * See the [version support table](https://github.com/terralang/terra#supported-llvm-versions) for more details
+  * *Optional (but recommended)*: CMake 3.5 or newer
 
 There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
