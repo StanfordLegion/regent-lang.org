@@ -23,7 +23,7 @@ permalink: /install/index.html
 If you use Ubuntu, you can install Regent by running:
 
 {% highlight bash %}
-sudo apt-get install clang-6.0 libclang-6.0-dev llvm-6.0-dev
+sudo apt-get install build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
 ./install.py --debug
@@ -60,8 +60,8 @@ this page](#docker) for instructions.
 Regent requires:
 
   * Linux, macOS, or another Unix
-  * A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
-  * Python 2.7 (or 3.x)
+  * A C++ 11 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make
+  * Python 3.5 or newer
   * LLVM and Clang **with headers**:
       * LLVM 6.0 is recommended
       * See the [version support table](https://github.com/terralang/terra#supported-llvm-versions) for more details
@@ -70,7 +70,7 @@ There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
 as-needed basis.
 
-  * *Optional*: CUDA 5.0 or newer (for NVIDIA GPUs)
+  * *Optional*: CUDA 7.0 or newer (for NVIDIA GPUs)
   * *Optional*: [GASNet](https://gasnet.lbl.gov/) (for networking, see
      [installation instructions](http://legion.stanford.edu/gasnet/))
   * *Optional*: HDF5 (for file I/O)
