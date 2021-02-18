@@ -127,7 +127,7 @@
 <h1>Quickstart</h1>
 <h2>Ubuntu</h2>
 <p>If you use Ubuntu, you can install Regent by running:</p>
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>clang-6.0 libclang-6.0-dev llvm-6.0-dev
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
 ./install.py <span class="nt">--debug</span></code></pre></figure>
@@ -152,8 +152,8 @@ this page</a> for instructions.</p>
 <p>Regent requires:</p>
 <ul>
 <li>Linux, macOS, or another Unix</li>
-<li>A C++ 98 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make</li>
-<li>Python 2.7 (or 3.x)</li>
+<li>A C++ 11 (or newer) compiler (GCC, Clang, Intel, or PGI) and GNU Make</li>
+<li>Python 3.5 or newer</li>
 <li>LLVM and Clang <strong>with headers</strong>:
 <ul>
 <li>LLVM 6.0 is recommended</li>
@@ -165,7 +165,7 @@ this page</a> for instructions.</p>
 recommend skipping these initially and installing them later on an
 as-needed basis.</p>
 <ul>
-<li><em>Optional</em>: CUDA 5.0 or newer (for NVIDIA GPUs)</li>
+<li><em>Optional</em>: CUDA 7.0 or newer (for NVIDIA GPUs)</li>
 <li><em>Optional</em>: <a href="https://gasnet.lbl.gov/">GASNet</a> (for networking, see
 <a href="http://legion.stanford.edu/gasnet/">installation instructions</a>)</li>
 <li><em>Optional</em>: HDF5 (for file I/O)</li>
