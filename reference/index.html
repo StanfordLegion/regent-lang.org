@@ -115,8 +115,7 @@
 <li><a href="#luaterra-compatibility">Lua/Terra Compatibility</a>
 <ul>
 <li><a href="#unsupported-terra-features">Unsupported Terra Features</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#execution-model">Execution Model</a>
 <ul>
 <li><a href="#tasks">Tasks</a></li>
@@ -129,8 +128,7 @@
 <li><a href="#attach-and-detach">Attach and Detach</a></li>
 <li><a href="#acquire-and-release">Acquire and Release</a></li>
 <li><a href="#file-io-with-hdf5">File I/O with HDF5</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#data-model">Data Model</a>
 <ul>
 <li><a href="#field-spaces">Field Spaces</a></li>
@@ -140,44 +138,39 @@
 <li><a href="#regions">Regions</a></li>
 <li><a href="#partitions">Partitions</a></li>
 <li><a href="#partition-operators">Partition Operators</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#annotations">Annotations</a>
 <ul>
 <li><a href="#task-annotations">Task Annotations</a></li>
 <li><a href="#statement-annotations">Statement Annotations</a></li>
 <li><a href="#expression-annotations">Expression Annotations</a></li>
 <li><a href="#experimental-annotations">Experimental Annotations</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#metaprogramming">Metaprogramming</a>
 <ul>
 <li><a href="#symbols">Symbols</a></li>
 <li><a href="#statement-quotes">Statement Quotes</a></li>
 <li><a href="#expression-quotes">Expressions Quotes</a></li>
 <li><a href="#task-generation">Task Generation</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#foreign-function-interface">Foreign Function Interface</a>
 <ul>
 <li><a href="#calling-the-legion-c-api">Calling the Legion C API</a></li>
 <li><a href="#obtaining-c-api-handles-from-regent-values">Obtaining C API Handles from Regent Values</a></li>
 <li><a href="#importing-c-api-handles-into-regent">Importing C API Handles into Regent</a></li>
-</ul>
-</li>
+</ul></li>
 <li><a href="#standard-library">Standard Library</a></li>
 </ul>
-<h1>Frontmatter</h1>
-<p>Regent is implemented as a <a href="http://terralang.org">Terra</a> language
-extension. Every Regent source file must therefore start with:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span></code></pre></figure>
-<p>This loads the Regent compiler and enables hooks to start Regent on
-certain keywords (<code>task</code> and <code>fspace</code>).</p>
-<h1>Lua/Terra Compatibility</h1>
-<p>The top-level of a Regent source file executes in a Lua/Terra context,
-and Lua, Terra, and Regent constructs can be freely mixed at this
-level. For example:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">-- Define a Lua variable (constant from the perspective of Regent).</span>
+<h1 id="frontmatter">Frontmatter</h1>
+<p>Regent is implemented as a <a href="http://terralang.org">Terra</a> language extension. Every Regent source file must therefore start with:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span></code></pre>
+</figure>
+<p>This loads the Regent compiler and enables hooks to start Regent on certain keywords (<code>task</code> and <code>fspace</code>).</p>
+<h1 id="luaterra-compatibility">Lua/Terra Compatibility</h1>
+<p>The top-level of a Regent source file executes in a Lua/Terra context, and Lua, Terra, and Regent constructs can be freely mixed at this level. For example:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1">-- Define a Lua variable (constant from the perspective of Regent).</span>
 <span class="k">function</span> <span class="nf">make_fg</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="c1">-- Define a Lua function.</span>
   <span class="kd">local</span> <span class="k">terra</span> <span class="nf">f</span><span class="p">(</span><span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="c1">-- Define a local Terra function.</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
@@ -188,328 +181,230 @@ level. For example:</p>
   <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span>
 <span class="k">end</span>
 <span class="kd">local</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">make_fb</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1">-- Call the Lua function to create</span>
-<span class="kd">local</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">make_fb</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="c1">-- specialized versions of the functions.</span></code></pre></figure>
-<p>Most <a href="http://terralang.org">Terra</a> language features can also be used
-in Regent tasks, and compilation of Regent programs proceeds similarly
-to Terra. For example, Lua variables referenced in Regent tasks are
-specialized prior to type checking, and are effectively constant from
-the perspective of Regent.</p>
-<h2>Unsupported Terra Features</h2>
+<span class="kd">local</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">make_fb</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="c1">-- specialized versions of the functions.</span></code></pre>
+</figure>
+<p>Most <a href="http://terralang.org">Terra</a> language features can also be used in Regent tasks, and compilation of Regent programs proceeds similarly to Terra. For example, Lua variables referenced in Regent tasks are specialized prior to type checking, and are effectively constant from the perspective of Regent.</p>
+<h2 id="unsupported-terra-features">Unsupported Terra Features</h2>
 <p>The following Terra features are not supported in Regent:</p>
 <ul>
-<li>The method call operator <code>o:f()</code> does not automatically
-dereference Regent’s <code>ptr</code> type.</li>
+<li>The method call operator <code>o:f()</code> does not automatically dereference Regent’s <code>ptr</code> type.</li>
 <li>Terra <a href="http://terralang.org/api.html#macro">macros</a>.</li>
 <li>Terra <a href="http://terralang.org/api.html#quote">quotes</a>.</li>
 </ul>
-<p>In general, use Terra’s raw pointer types (<code>&amp;T</code>) with caution. Regent
-may execute tasks in a distributed environment, so a pointer created
-in one task might not be valid in another. As long as pointers stay
-within a task, it is ok to use raw pointers (and traditional C APIs
-like <code>malloc</code> and <code>free</code>). The same principle applies to process-local
-data such as file descriptors: they are ok to use within a task but
-should not be passed between tasks.</p>
-<h1>Execution Model</h1>
-<h2>Tasks</h2>
-<p>Tasks are the fundamental unit of execution in Regent. Tasks are
-similar to functions in most other programming languages: tasks take
-arguments and (optionally) return a value, and contain a body of
-statements which execute top-to-bottom. Unlike traditional functions,
-tasks must explicitly specify any interactions with the calling
-context through <em>privileges</em>, <em>coherence modes</em>, and <em>constraints</em>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="c1">-- Task with inferred return type.</span>
+<p>In general, use Terra’s raw pointer types (<code>&amp;T</code>) with caution. Regent may execute tasks in a distributed environment, so a pointer created in one task might not be valid in another. As long as pointers stay within a task, it is ok to use raw pointers (and traditional C APIs like <code>malloc</code> and <code>free</code>). The same principle applies to process-local data such as file descriptors: they are ok to use within a task but should not be passed between tasks.</p>
+<h1 id="execution-model">Execution Model</h1>
+<h2 id="tasks">Tasks</h2>
+<p>Tasks are the fundamental unit of execution in Regent. Tasks are similar to functions in most other programming languages: tasks take arguments and (optionally) return a value, and contain a body of statements which execute top-to-bottom. Unlike traditional functions, tasks must explicitly specify any interactions with the calling context through <em>privileges</em>, <em>coherence modes</em>, and <em>constraints</em>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="c1">-- Task with inferred return type.</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">a0</span> <span class="p">:</span> <span class="n">t0</span><span class="p">,</span> <span class="n">a1</span> <span class="p">:</span> <span class="n">t1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">aN</span> <span class="p">:</span> <span class="n">tN</span><span class="p">)</span>
   <span class="o">...</span>
 <span class="k">end</span>
-<p><span class="c1">– Task with explicit return type.</span>
-<span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">a0</span> <span class="p">:</span> <span class="n">t0</span><span class="p">,</span> <span class="n">a1</span> <span class="p">:</span> <span class="n">t1</span><span class="p">,</span> <span class="o">…</span><span class="p">,</span> <span class="n">aN</span> <span class="p">:</span> <span class="n">tN</span><span class="p">)</span> <span class="p">:</span> <span class="n">return_type</span>
-<span class="o">…</span>
-<span class="k">end</span></p>
-<p><span class="c1">– Task with privileges, coherence modes, and constraints.</span>
-<span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">a0</span> <span class="p">:</span> <span class="n">t0</span><span class="p">,</span> <span class="n">a1</span> <span class="p">:</span> <span class="n">t1</span><span class="p">,</span> <span class="o">…</span><span class="p">,</span> <span class="n">aN</span> <span class="p">:</span> <span class="n">tN</span><span class="p">)</span> <span class="p">:</span> <span class="n">return_type</span>
-<span class="k">where</span> <span class="o">…</span> <span class="k">do</span>
-<span class="o">…</span>
-<span class="k">end</span></code></pre></figure></p>
-<h2>Top-level Task</h2>
-<p>Regent programs execute in a top-level Lua/Terra context, but Regent
-tasks cannot be called from Lua/Terra. Instead, a Regent program may
-begin execution of tasks by calling <code>regentlib.start</code> with a task
-argument. This task becomes the top-level task in the Regent program,
-and may call other tasks as desired.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+
+<span class="c1">-- Task with explicit return type.</span>
+<span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">a0</span> <span class="p">:</span> <span class="n">t0</span><span class="p">,</span> <span class="n">a1</span> <span class="p">:</span> <span class="n">t1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">aN</span> <span class="p">:</span> <span class="n">tN</span><span class="p">)</span> <span class="p">:</span> <span class="n">return_type</span>
   <span class="o">...</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
-<p>The call does not return, and is typically placed at the end of a
-Regent source file. At this time, the runtime is not reentrant, so
-even if the call did return, it would still not be possible to launch
-another top-level task.</p>
-<h2>Privileges</h2>
-<p>Privileges describe how a task interacts with <a href="#region">region</a>-typed
-arguments. For example, <code>reads</code> is required in order to read from a
-region argument, and <code>writes</code> is required to modify a
-region. Reductions allow the application of certain commutative
-operators to regions. Note that privileges in general apply only to
-region-typed, and not immediate arguments passed by-value (such as
-<code>int</code>, <code>float</code>, and <code>ptr</code> data types).</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+<span class="c1">-- Task with privileges, coherence modes, and constraints.</span>
+<span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">a0</span> <span class="p">:</span> <span class="n">t0</span><span class="p">,</span> <span class="n">a1</span> <span class="p">:</span> <span class="n">t1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">aN</span> <span class="p">:</span> <span class="n">tN</span><span class="p">)</span> <span class="p">:</span> <span class="n">return_type</span>
+<span class="k">where</span> <span class="o">...</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="top-level-task">Top-level Task</h2>
+<p>Regent programs execute in a top-level Lua/Terra context, but Regent tasks cannot be called from Lua/Terra. Instead, a Regent program may begin execution of tasks by calling <code>regentlib.start</code> with a task argument. This task becomes the top-level task in the Regent program, and may call other tasks as desired.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="o">...</span>
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
+</figure>
+<p>The call does not return, and is typically placed at the end of a Regent source file. At this time, the runtime is not reentrant, so even if the call did return, it would still not be possible to launch another top-level task.</p>
+<h2 id="privileges">Privileges</h2>
+<p>Privileges describe how a task interacts with <a href="#region">region</a>-typed arguments. For example, <code>reads</code> is required in order to read from a region argument, and <code>writes</code> is required to modify a region. Reductions allow the application of certain commutative operators to regions. Note that privileges in general apply only to region-typed, and not immediate arguments passed by-value (such as <code>int</code>, <code>float</code>, and <code>ptr</code> data types).</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="k">reduces</span> <span class="o">&lt;</span><span class="n">op</span><span class="o">&gt;</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="c1">-- for op in +, *, -, /, min, max</span></code></pre></figure>
-<p>Privileges are most frequently seen in the <code>where</code> clause of a
-<a href="#tasks">task</a>.</p>
-<h2>Coherence Modes</h2>
-<p>Coherence modes specify a task’s expectations of isolation with
-respect to sibling tasks on the marked regions. Regent supports four
-coherence modes:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">exclusive</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="k">reduces</span> <span class="o">&lt;</span><span class="n">op</span><span class="o">&gt;</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="c1">-- for op in +, *, -, /, min, max</span></code></pre>
+</figure>
+<p>Privileges are most frequently seen in the <code>where</code> clause of a <a href="#tasks">task</a>.</p>
+<h2 id="coherence-modes">Coherence Modes</h2>
+<p>Coherence modes specify a task’s expectations of isolation with respect to sibling tasks on the marked regions. Regent supports four coherence modes:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">exclusive</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="k">atomic</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="k">simultaneous</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="k">relaxed</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre></figure>
+<span class="k">relaxed</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre>
+</figure>
 <p>The modes behave as follows:</p>
 <ul>
-<li>
-<p><code>exclusive</code> mode (the default) guarantees that tasks will execute
-in a manner that preserves the original sequential semantics of
-the code.</p>
-</li>
-<li>
-<p><code>atomic</code> mode allows tasks to be reordered in a manner that
-preserves serializability, similar to a transaction-based
-system. Atomicity is provided at the level of a task.</p>
-</li>
-<li>
-<p><code>simultaneous</code> mode allows tasks to run concurrently as long as
-they use the same physical instance for all simultaneous
-regions. This guarantees that the regions in question behave with
-shared memory semantics, similar to pthreads, etc.</p>
-</li>
-<li>
-<p><code>relaxed</code> mode allows marked tasks to run concurrently with no
-restrictions.</p>
-</li>
+<li><p><code>exclusive</code> mode (the default) guarantees that tasks will execute in a manner that preserves the original sequential semantics of the code.</p></li>
+<li><p><code>atomic</code> mode allows tasks to be reordered in a manner that preserves serializability, similar to a transaction-based system. Atomicity is provided at the level of a task.</p></li>
+<li><p><code>simultaneous</code> mode allows tasks to run concurrently as long as they use the same physical instance for all simultaneous regions. This guarantees that the regions in question behave with shared memory semantics, similar to pthreads, etc.</p></li>
+<li><p><code>relaxed</code> mode allows marked tasks to run concurrently with no restrictions.</p></li>
 </ul>
-<p>Coherence modes are most frequently seen in the <code>where</code> clause of a
-<a href="#tasks">task</a>.</p>
-<h2>Constraints</h2>
-<p>Constraints specify the desired relationships between
-regions. Constraints are checked at compile time and must be satisfied
-by the caller. The supported constraints are disjointness (<code>*</code>) and
-subregion (<code>&lt;=</code>).</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">r</span> <span class="o">*</span> <span class="n">s</span>  <span class="c1">-- r and s are disjoint.</span>
-<span class="n">r</span> <span class="o">&lt;=</span> <span class="n">s</span> <span class="c1">-- r is a subregion of s.</span></code></pre></figure>
-<p>Constraints are most frequently seen in the <code>where</code> clause of a
-<a href="#tasks">task</a> or <a href="#field-spaces">field space</a>.</p>
-<h2>Copies</h2>
-<p>Copy operations copy the contents of one region to another (for all or
-some subset of fields). The number and types of fields so named must
-match.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">copy</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>                     <span class="c1">-- Copy all fields.</span>
+<p>Coherence modes are most frequently seen in the <code>where</code> clause of a <a href="#tasks">task</a>.</p>
+<h2 id="constraints">Constraints</h2>
+<p>Constraints specify the desired relationships between regions. Constraints are checked at compile time and must be satisfied by the caller. The supported constraints are disjointness (<code>*</code>) and subregion (<code>&lt;=</code>).</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span> <span class="o">*</span> <span class="n">s</span>  <span class="c1">-- r and s are disjoint.</span>
+<span class="n">r</span> <span class="o">&lt;=</span> <span class="n">s</span> <span class="c1">-- r is a subregion of s.</span></code></pre>
+</figure>
+<p>Constraints are most frequently seen in the <code>where</code> clause of a <a href="#tasks">task</a> or <a href="#field-spaces">field space</a>.</p>
+<h2 id="copies">Copies</h2>
+<p>Copy operations copy the contents of one region to another (for all or some subset of fields). The number and types of fields so named must match.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">copy</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>                     <span class="c1">-- Copy all fields.</span>
 <span class="k">copy</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>                 <span class="c1">-- Copy field x to y.</span>
-<span class="k">copy</span><span class="p">(</span><span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">s</span><span class="p">.{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">})</span> <span class="c1">-- Copy fields x, y, z to fields u, v, w.</span></code></pre></figure>
-<h3>Restrictions on Copy Operations</h3>
-<p>The following restrictions apply to the source <code>S</code> and destination <code>D</code>
-regions in a copy operations. Note that the restrictions depend on
-which branch of the Legion runtime is being used.</p>
+<span class="k">copy</span><span class="p">(</span><span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">s</span><span class="p">.{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">})</span> <span class="c1">-- Copy fields x, y, z to fields u, v, w.</span></code></pre>
+</figure>
+<h3 id="restrictions-on-copy-operations">Restrictions on Copy Operations</h3>
+<p>The following restrictions apply to the source <code>S</code> and destination <code>D</code> regions in a copy operations. Note that the restrictions depend on which branch of the Legion runtime is being used.</p>
 <p>On <code>master</code> branch: <code>D &lt;= S</code>, that is, <code>D</code> must be a subregion of <code>S</code>.</p>
-<p>On <code>nopaint</code> branch (and branches derived from <code>nopaint</code> such as
-<code>control_replication</code>): <code>D</code> must contain a subset of the elements in
-<code>S</code>, but is not otherwise required to be related. That is, it must be
-valid to write the following code:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">D</span> <span class="k">do</span>
+<p>On <code>nopaint</code> branch (and branches derived from <code>nopaint</code> such as <code>control_replication</code>): <code>D</code> must contain a subset of the elements in <code>S</code>, but is not otherwise required to be related. That is, it must be valid to write the following code:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">D</span> <span class="k">do</span>
   <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="k">end</span></code></pre></figure>
-<h2>Fills</h2>
-<p>Fill operations replace the contents of a region (for all or some
-subset of fields) with a single specified value. The type of the value
-must match the named fields.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fill</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>           <span class="c1">-- Fill r with v.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="fills">Fills</h2>
+<p>Fill operations replace the contents of a region (for all or some subset of fields) with a single specified value. The type of the value must match the named fields.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">fill</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>           <span class="c1">-- Fill r with v.</span>
 <span class="k">fill</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>         <span class="c1">-- Fill field x of r with v.</span>
-<span class="k">fill</span><span class="p">(</span><span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">v</span><span class="p">)</span> <span class="c1">-- Fill fields x, y, z of r with v.</span></code></pre></figure>
-<h2>Attach and Detach</h2>
-<p>The attach and detach operations connect a region with an external
-resource, like a file on disk. Attaching a region overwrites the
-contents of the region and replaces it with the contents of the
-external resource. Note that for external resources such as files,
-attaching a region does <strong>NOT</strong> copy the contents of the file from
-disk into memory. Instead the region should be thought of as a view
-onto the contents of the on-disk file. Such a region is said to be
-<em>restricted</em> and must be <a href="#acquire-and-release">acquired</a> before it
-can be used by a task.</p>
+<span class="k">fill</span><span class="p">(</span><span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">v</span><span class="p">)</span> <span class="c1">-- Fill fields x, y, z of r with v.</span></code></pre>
+</figure>
+<h2 id="attach-and-detach">Attach and Detach</h2>
+<p>The attach and detach operations connect a region with an external resource, like a file on disk. Attaching a region overwrites the contents of the region and replaces it with the contents of the external resource. Note that for external resources such as files, attaching a region does <strong>NOT</strong> copy the contents of the file from disk into memory. Instead the region should be thought of as a view onto the contents of the on-disk file. Such a region is said to be <em>restricted</em> and must be <a href="#acquire-and-release">acquired</a> before it can be used by a task.</p>
 <p>For example, using an external HDF5 file:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="c1">-- Read fields x, y and z from my_file.h5 into the region r.</span>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="c1">-- Read fields x, y and z from my_file.h5 into the region r.</span>
 <span class="kd">var</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">"my_file.h5"</span>
 <span class="n">attach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">filename</span><span class="p">,</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">file_read_write</span><span class="p">)</span>
 <span class="o">...</span>
-<span class="n">detach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">})</span></code></pre></figure>
-<p>The detach operation is used to disassociate the region from an
-attached resource once it is no longer being used. The contents of the
-region are considered to be uninitialized following a detach
-operation, and region is no longer restricted.</p>
-<p>See below for detailed instructions on using <a href="#file-io-with-hdf5">file I/O with
-HDF5</a>.</p>
-<p><strong>Important:</strong> attach and detach currently require that you <strong>not use
-the region within the task where you attach or detach</strong>. If you
-attempt to do so, the behavior is undefined. One way to guarantee that
-you do this correctly is to require the task to be
-<a href="#inner-optimization">inner</a>, though this is a more strict condition
-than is required for correctness.</p>
-<h2>Acquire and Release</h2>
-<p>A region which is restricted (e.g. due to an
-<a href="#attach-and-detach">attach</a> operation) cannot be copied, and
-therefore cannot be directly accessed by a task if the original
-contents are e.g. on disk. The acquire operation is used to indicate
-that it is safe to make a copy of the region (e.g. into memory) so
-that can be directly accessed by a task. After using acquire, the
-region is no longer considered restricted.</p>
-<p>The release operation guarrantees that any copies of a region made
-following an acquire operation are flushed back to their original
-location (e.g. disk).</p>
-<p>Note that if the original contents of the region are on disk, any
-concurrent writes (e.g. by other processes running on the machine) to
-the file on disk may or may not be seen by tasks. In order to safely
-perform concurrent writes to the file, the region must be released
-prior to any external writes being made, and only re-acquired after
-the writes are complete. Similarly, any external process which reads
-the file must wait until after the region is released. The user is
-responsible for ensuring that the correct synchronization is used with
-any external processes that perform concurrent access to the file.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">acquire</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="n">detach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">})</span></code></pre>
+</figure>
+<p>The detach operation is used to disassociate the region from an attached resource once it is no longer being used. The contents of the region are considered to be uninitialized following a detach operation, and region is no longer restricted.</p>
+<p>See below for detailed instructions on using <a href="#file-io-with-hdf5">file I/O with HDF5</a>.</p>
+<p><strong>Important:</strong> attach and detach currently require that you <strong>not use the region within the task where you attach or detach</strong>. If you attempt to do so, the behavior is undefined. One way to guarantee that you do this correctly is to require the task to be <a href="#inner-optimization">inner</a>, though this is a more strict condition than is required for correctness.</p>
+<h2 id="acquire-and-release">Acquire and Release</h2>
+<p>A region which is restricted (e.g. due to an <a href="#attach-and-detach">attach</a> operation) cannot be copied, and therefore cannot be directly accessed by a task if the original contents are e.g. on disk. The acquire operation is used to indicate that it is safe to make a copy of the region (e.g. into memory) so that can be directly accessed by a task. After using acquire, the region is no longer considered restricted.</p>
+<p>The release operation guarrantees that any copies of a region made following an acquire operation are flushed back to their original location (e.g. disk).</p>
+<p>Note that if the original contents of the region are on disk, any concurrent writes (e.g. by other processes running on the machine) to the file on disk may or may not be seen by tasks. In order to safely perform concurrent writes to the file, the region must be released prior to any external writes being made, and only re-acquired after the writes are complete. Similarly, any external process which reads the file must wait until after the region is released. The user is responsible for ensuring that the correct synchronization is used with any external processes that perform concurrent access to the file.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">acquire</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="n">some_task</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">release</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre></figure>
-<h2>File I/O with HDF5</h2>
-<p>Regent supports file I/O via the HDF5 file format. Support for HDF5
-can be enabled by passing the <code>--hdf5</code> argument to <code>install.py</code> or
-setting the environment variable <code>USE_HDF5=1</code>. Note that a <strong>serial
-build of HDF5 is required</strong>, as parallel support in HDF5 depends on
-MPI.</p>
-<h4>Creating an HDF5 File</h4>
-<p>Currently, Regent does not support creating HDF5 files directly. HDF5
-files can be created either prior to running the Regent program, or
-can be created by calling the HDF5 C API directly from inside
-Regent. For an example of creating an HDF5 file in Regent, see <a href="https://github.com/StanfordLegion/legion/blob/stable/language/tests/hdf5/run_pass/attach_hdf5.rg">this
-test program</a>.</p>
-<h4>Reading or Writing an Existing HDF5 File</h4>
-<p>To read or write an existing HDF5 file, the <a href="#attach-and-detach">attach
-operation</a> is used to connect the region to the
-contents of the external file. Using attach effectively overwrites the
-region, and any existing contents will be lost.</p>
-<p>Following an attach operation, the region should be thought of as a
-view onto the data stored on disk. Note that the contents of the file
-are <strong>NOT</strong> automatically copied from disk into memory. The
-<a href="#acquire-and-release">acquire</a> operation is subsequently used to
-permit the contents of the region to be copied into memory. In the
-example below, the copy will be issued prior to executing <code>some_task</code>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="c1">-- Read fields x, y and z from my_file.h5 into the region r.</span>
+<span class="n">release</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre>
+</figure>
+<h2 id="file-io-with-hdf5">File I/O with HDF5</h2>
+<p>Regent supports file I/O via the HDF5 file format. Support for HDF5 can be enabled by passing the <code>--hdf5</code> argument to <code>install.py</code> or setting the environment variable <code>USE_HDF5=1</code>. Note that a <strong>serial build of HDF5 is required</strong>, as parallel support in HDF5 depends on MPI.</p>
+<h4 id="creating-an-hdf5-file">Creating an HDF5 File</h4>
+<p>Currently, Regent does not support creating HDF5 files directly. HDF5 files can be created either prior to running the Regent program, or can be created by calling the HDF5 C API directly from inside Regent. For an example of creating an HDF5 file in Regent, see <a href="https://github.com/StanfordLegion/legion/blob/stable/language/tests/hdf5/run_pass/attach_hdf5.rg">this test program</a>.</p>
+<h4 id="reading-or-writing-an-existing-hdf5-file">Reading or Writing an Existing HDF5 File</h4>
+<p>To read or write an existing HDF5 file, the <a href="#attach-and-detach">attach operation</a> is used to connect the region to the contents of the external file. Using attach effectively overwrites the region, and any existing contents will be lost.</p>
+<p>Following an attach operation, the region should be thought of as a view onto the data stored on disk. Note that the contents of the file are <strong>NOT</strong> automatically copied from disk into memory. The <a href="#acquire-and-release">acquire</a> operation is subsequently used to permit the contents of the region to be copied into memory. In the example below, the copy will be issued prior to executing <code>some_task</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="c1">-- Read fields x, y and z from my_file.h5 into the region r.</span>
 <span class="kd">var</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">"my_file.h5"</span>
 <span class="n">attach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="n">filename</span><span class="p">,</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">file_read_write</span><span class="p">)</span>
 <span class="n">acquire</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="n">some_task</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="n">release</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">detach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">})</span></code></pre></figure>
-<p>The value <code>regentlib.file_read_only</code> can be used with attach if the
-file is to be read and not written.</p>
-<p>The release and detach operations reverse the actions performed by
-acquire and attach, respectively. For more information on the
-semantics of these operations, see the documentation on <a href="#attach-and-detach">attach and
-detach</a> and <a href="#acquire-and-release">acquire and
-release</a> above.</p>
-<p>More examples of using HDF5 file I/O can be found in the <a href="https://github.com/StanfordLegion/legion/tree/stable/language/tests/hdf5/run_pass">test
-suite</a>.</p>
-<h1>Data Model</h1>
-<h2>Field Spaces</h2>
-<p>Field spaces are sets of fields, and behave similarly to Terra
-structs. For example, field spaces may be instantiated by casting an
-anonymous struct to the appropriate type.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
+<span class="n">detach</span><span class="p">(</span><span class="n">hdf5</span><span class="p">,</span> <span class="n">r</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">})</span></code></pre>
+</figure>
+<p>The value <code>regentlib.file_read_only</code> can be used with attach if the file is to be read and not written.</p>
+<p>The release and detach operations reverse the actions performed by acquire and attach, respectively. For more information on the semantics of these operations, see the documentation on <a href="#attach-and-detach">attach and detach</a> and <a href="#acquire-and-release">acquire and release</a> above.</p>
+<p>More examples of using HDF5 file I/O can be found in the <a href="https://github.com/StanfordLegion/legion/tree/stable/language/tests/hdf5/run_pass">test suite</a>.</p>
+<h1 id="data-model">Data Model</h1>
+<h2 id="field-spaces">Field Spaces</h2>
+<p>Field spaces are sets of fields, and behave similarly to Terra structs. For example, field spaces may be instantiated by casting an anonymous struct to the appropriate type.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
   <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
   <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
 <span class="p">}</span>
-<p><span class="k">task</span> <span class="nf">make_point</span><span class="p">(</span><span class="n">a</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">point</span>
-<span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">point</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span> <span class="c1">– Define a local variable of type point.</span>
-<span class="k">return</span> <span class="n">p</span>
-<span class="k">end</span></code></pre></figure></p>
-<p>Field spaces differ from structs in that they may take region-typed
-arguments. Such arguments are useful for declaring recursive data
-types. References to field spaces with arguments must be escaped.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
+
+<span class="k">task</span> <span class="nf">make_point</span><span class="p">(</span><span class="n">a</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">point</span>
+  <span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">point</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span> <span class="c1">-- Define a local variable of type point.</span>
+  <span class="k">return</span> <span class="n">p</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Field spaces differ from structs in that they may take region-typed arguments. Such arguments are useful for declaring recursive data types. References to field spaces with arguments must be escaped.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
   <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span> <span class="c1">-- Multiple fields may be declared with a single type.</span>
 <span class="p">}</span>
-<p><span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
-<span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
-<span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
-<span class="p">}</span></p>
-<p><span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
-<span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></figure></p>
-<p>In the presence of <a href="#partitions">partitions</a>, it can be difficult to
-choose right region to use as an argument to a field space. In these
-cases, it can be helpful to use the <code>wild</code> operator (which matches any
-region) in the declaration of the field space. Note that this
-currently exposes unsoundness in the type system; the user is
-responsible for making sure that the right regions are used when the
-field space is actually instantiated. (For those interested in the
-type theory behind this, see the <a href="http://legion.stanford.edu/pdfs/dpl2016.pdf">DPL
-paper</a>.)</p>
-<p>For example, a quad-tree implementation might feature the following
-field space declaration:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">quad</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">)))</span> <span class="p">{</span>
+
+<span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
+  <span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+  <span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
+  <span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>In the presence of <a href="#partitions">partitions</a>, it can be difficult to choose right region to use as an argument to a field space. In these cases, it can be helpful to use the <code>wild</code> operator (which matches any region) in the declaration of the field space. Note that this currently exposes unsoundness in the type system; the user is responsible for making sure that the right regions are used when the field space is actually instantiated. (For those interested in the type theory behind this, see the <a href="http://legion.stanford.edu/pdfs/dpl2016.pdf">DPL paper</a>.)</p>
+<p>For example, a quad-tree implementation might feature the following field space declaration:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">quad</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">)))</span> <span class="p">{</span>
   <span class="n">val</span><span class="p">:</span> <span class="n">double</span><span class="p">,</span>
   <span class="n">ne</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
   <span class="n">nw</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
   <span class="n">se</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
   <span class="n">sw</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
-<span class="p">}</span></code></pre></figure>
-<h2>Index Types</h2>
-<p>Index types define points in an N dimensional space, and are used to
-define the elements of <a href="#index-spaces">index spaces</a>. Regent supports
-10 built-in index types: <code>ptr</code>, <code>int1d</code>, <code>int2d</code>, <code>int3d</code>, and so on
-up to <code>int9d</code>. Note that <code>int4d</code> and above require additional flags at
-compile-time and runtime (see below).</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">x0</span> <span class="o">=</span> <span class="kt">ptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">-- Pointer to the first element of an index space.</span>
+<span class="p">}</span></code></pre>
+</figure>
+<h2 id="index-types">Index Types</h2>
+<p>Index types define points in an N dimensional space, and are used to define the elements of <a href="#index-spaces">index spaces</a>. Regent supports 10 built-in index types: <code>ptr</code>, <code>int1d</code>, <code>int2d</code>, <code>int3d</code>, and so on up to <code>int9d</code>. Note that <code>int4d</code> and above require additional flags at compile-time and runtime (see below).</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">x0</span> <span class="o">=</span> <span class="kt">ptr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">-- Pointer to the first element of an index space.</span>
 <span class="kd">var</span> <span class="n">x1</span> <span class="o">=</span> <span class="kt">int1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">-- Index 0 in a 1-dimensional space.</span>
 <span class="kd">var</span> <span class="n">x2</span> <span class="o">=</span> <span class="kt">int2d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0 in a 2-dimensional space.</span>
 <span class="kd">var</span> <span class="n">x3</span> <span class="o">=</span> <span class="kt">int3d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0 in a 3-dimensional space.</span>
-<span class="kd">var</span> <span class="n">x4</span> <span class="o">=</span> <span class="n">int4d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0,0 in a 4-dimensional space.</span></code></pre></figure>
-<p>The fields of the build-in index types are called <code>x</code>, <code>y</code>, <code>z</code>, <code>w</code>,
-<code>v</code>, <code>u</code>, <code>t</code>, <code>s</code>, and <code>r</code>, respectively (up to the maximum number of
-dimensions of the particular index type).</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">sum4</span> <span class="o">=</span> <span class="n">x4</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">w</span></code></pre></figure>
-<p>When using <code>int4d</code> or above (or custom index types with 4 or more
-dimensions), Regent must be compiled and run with additional flags as
-shown below.</p>
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">MAX_DIM</span><span class="o">=</span>4 ./install.py
-./regent.py your_file.rg <span class="nt">-flegion-dim</span> 4</code></pre></figure>
-<h2>Custom Index Types</h2>
-<p>Custom index types can be defined in Regent with any number of
-dimensions by defining a struct and passing it to the function
-<code>index_type</code>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">i2</span> <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span> <span class="p">}</span>
-<span class="kd">local</span> <span class="n">i2d</span> <span class="o">=</span> <span class="n">index_type</span><span class="p">(</span><span class="n">i2</span><span class="p">,</span> <span class="s2">"i2d"</span><span class="p">)</span></code></pre></figure>
-<p>Note when creating custom index types with 4 or more dimensions, it is
-important to ensure that Regent is compiled and run with the necessary
-flags, shown above.</p>
-<h2>Index Spaces</h2>
-<p>Index spaces are sets of indices, used most frequently to define the
-set of keys in a <a href="#regions">region</a>. Index spaces may be unstructured
-(i.e. indices are opaque pointers), or structured (i.e. indices are
-N-dimensional points with an implied geometric relationship). Index
-spaces of either type are created with a size (this is an
-N-dimensional point for structured index spaces) and optional offset.</p>
-<h4>Creating an Unstructured Index Space</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="c1">-- Unstructured space with 5 elements.</span>
-<span class="kd">var</span> <span class="n">i0</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></code></pre></figure>
-<h4>Creating a Structured Index Space</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="c1">-- Structured 1D space with 10 elements.</span>
+<span class="kd">var</span> <span class="n">x4</span> <span class="o">=</span> <span class="n">int4d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0,0 in a 4-dimensional space.</span></code></pre>
+</figure>
+<p>The fields of the build-in index types are called <code>x</code>, <code>y</code>, <code>z</code>, <code>w</code>, <code>v</code>, <code>u</code>, <code>t</code>, <code>s</code>, and <code>r</code>, respectively (up to the maximum number of dimensions of the particular index type).</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">sum4</span> <span class="o">=</span> <span class="n">x4</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">x4</span><span class="p">.</span><span class="n">w</span></code></pre>
+</figure>
+<p>When using <code>int4d</code> or above (or custom index types with 4 or more dimensions), Regent must be compiled and run with additional flags as shown below.</p>
+<figure class="highlight">
+<pre><code class="language-bash" data-lang="bash"><span class="nv">MAX_DIM</span><span class="o">=</span>4 ./install.py
+./regent.py your_file.rg <span class="nt">-flegion-dim</span> 4</code></pre>
+</figure>
+<h2 id="custom-index-types">Custom Index Types</h2>
+<p>Custom index types can be defined in Regent with any number of dimensions by defining a struct and passing it to the function <code>index_type</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">i2</span> <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span> <span class="p">}</span>
+<span class="kd">local</span> <span class="n">i2d</span> <span class="o">=</span> <span class="n">index_type</span><span class="p">(</span><span class="n">i2</span><span class="p">,</span> <span class="s2">"i2d"</span><span class="p">)</span></code></pre>
+</figure>
+<p>Note when creating custom index types with 4 or more dimensions, it is important to ensure that Regent is compiled and run with the necessary flags, shown above.</p>
+<h2 id="index-spaces">Index Spaces</h2>
+<p>Index spaces are sets of indices, used most frequently to define the set of keys in a <a href="#regions">region</a>. Index spaces may be unstructured (i.e. indices are opaque pointers), or structured (i.e. indices are N-dimensional points with an implied geometric relationship). Index spaces of either type are created with a size (this is an N-dimensional point for structured index spaces) and optional offset.</p>
+<h4 id="creating-an-unstructured-index-space">Creating an Unstructured Index Space</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="c1">-- Unstructured space with 5 elements.</span>
+<span class="kd">var</span> <span class="n">i0</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></code></pre>
+</figure>
+<h4 id="creating-a-structured-index-space">Creating a Structured Index Space</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="c1">-- Structured 1D space with 10 elements.</span>
 <span class="c1">-- Elements range from 0 to 9 (inclusive).</span>
 <span class="kd">var</span> <span class="n">i1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<p><span class="c1">– Structured 2D space of size 6x6, starting at 0,0.</span>
-<span class="c1">– Elements range from 0,0 to 5,5 (inclusive).</span>
-<span class="kd">var</span> <span class="n">i2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">})</span></p>
-<p><span class="c1">– Same but offset by -1,-1.</span>
-<span class="c1">– Elements range from -1,-1 to 4,4 (inclusive).</span>
-<span class="kd">var</span> <span class="n">i2b</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span></code></pre></figure></p>
-<h4>Iterating an Index Space</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">i0</span> <span class="k">do</span>
+
+<span class="c1">-- Structured 2D space of size 6x6, starting at 0,0.</span>
+<span class="c1">-- Elements range from 0,0 to 5,5 (inclusive).</span>
+<span class="kd">var</span> <span class="n">i2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">})</span>
+
+<span class="c1">-- Same but offset by -1,-1.</span>
+<span class="c1">-- Elements range from -1,-1 to 4,4 (inclusive).</span>
+<span class="kd">var</span> <span class="n">i2b</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span></code></pre>
+</figure>
+<h4 id="iterating-an-index-space">Iterating an Index Space</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">i0</span> <span class="k">do</span>
   <span class="c1">-- point is a ptr(i0).</span>
 <span class="k">end</span>
 <span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">i1</span> <span class="k">do</span>
@@ -517,26 +412,32 @@ N-dimensional point for structured index spaces) and optional offset.</p>
 <span class="k">end</span>
 <span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">i2</span> <span class="k">do</span>
   <span class="c1">-- point is an int2d(i2).</span>
-<span class="k">end</span></code></pre></figure>
-<h4>Finding the Bounds of an Index Space</h4>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="finding-the-bounds-of-an-index-space">Finding the Bounds of an Index Space</h4>
 <p>Currently this is only possible for structured index spaces:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">i2</span><span class="p">.</span><span class="n">bounds</span> <span class="c1">-- Returns a rect2d.</span>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">i2</span><span class="p">.</span><span class="n">bounds</span> <span class="c1">-- Returns a rect2d.</span>
 <span class="n">i2</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">lo</span> <span class="c1">-- Returns lower corner of the rectangle.</span>
-<span class="n">i2</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">hi</span> <span class="c1">-- Returns upper corner.</span></code></pre></figure>
-<h4>Finding the Volume of an Index Space</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">i0</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- Returns 5.</span>
+<span class="n">i2</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">hi</span> <span class="c1">-- Returns upper corner.</span></code></pre>
+</figure>
+<h4 id="finding-the-volume-of-an-index-space">Finding the Volume of an Index Space</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">i0</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- Returns 5.</span>
 <span class="n">i1</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- Returns 10.</span>
-<span class="n">i2</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- Returns 36.</span></code></pre></figure>
-<h2>Regions</h2>
-<p>Regions are the cross-product between an index space and a field
-space. The name of the region exists in the scope of the declaration,
-so recursive data types may refer to the region being defined.</p>
-<h4>Creating a Region</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r0</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>                       <span class="c1">-- A region of ints on index space i0.</span>
+<span class="n">i2</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- Returns 36.</span></code></pre>
+</figure>
+<h2 id="regions">Regions</h2>
+<p>Regions are the cross-product between an index space and a field space. The name of the region exists in the scope of the declaration, so recursive data types may refer to the region being defined.</p>
+<h4 id="creating-a-region">Creating a Region</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r0</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span>                       <span class="c1">-- A region of ints on index space i0.</span>
 <span class="kd">var</span> <span class="n">r1</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">list_node</span><span class="p">(</span><span class="n">r1</span><span class="p">))</span> <span class="c1">-- A linked list with 5 elements.</span>
-<span class="kd">var</span> <span class="n">r2</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">i2</span><span class="p">,</span> <span class="n">grid_point</span><span class="p">)</span>                <span class="c1">-- A 2D region of grid_points.</span></code></pre></figure>
-<h4>Iterating a Region</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">r0</span> <span class="k">do</span>
+<span class="kd">var</span> <span class="n">r2</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">i2</span><span class="p">,</span> <span class="n">grid_point</span><span class="p">)</span>                <span class="c1">-- A 2D region of grid_points.</span></code></pre>
+</figure>
+<h4 id="iterating-a-region">Iterating a Region</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">r0</span> <span class="k">do</span>
   <span class="c1">-- point is a ptr(int, r0).</span>
 <span class="k">end</span>
 <span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">r1</span> <span class="k">do</span>
@@ -544,271 +445,234 @@ so recursive data types may refer to the region being defined.</p>
 <span class="k">end</span>
 <span class="k">for</span> <span class="n">point</span> <span class="k">in</span> <span class="n">r2</span> <span class="k">do</span>
   <span class="c1">-- point is a int2d(grid_point, r2).</span>
-<span class="k">end</span></code></pre></figure>
-<h4>Finding the Index Space of a Region</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">r0</span><span class="p">.</span><span class="n">ispace</span> <span class="c1">-- Returns i0.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="finding-the-index-space-of-a-region">Finding the Index Space of a Region</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r0</span><span class="p">.</span><span class="n">ispace</span> <span class="c1">-- Returns i0.</span>
 <span class="n">r1</span><span class="p">.</span><span class="n">ispace</span> <span class="c1">-- Returns an anonymous unstructured index space of size 5.</span>
-<span class="n">r2</span><span class="p">.</span><span class="n">ispace</span> <span class="c1">-- Returns i2.</span></code></pre></figure>
-<h4>Finding the Bounds of a Region</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">r2</span><span class="p">.</span><span class="n">bounds</span> <span class="c1">-- Returns i2.bounds.</span></code></pre></figure>
-<h2>Partitions</h2>
-<p>Partitions subdivide regions into subregions, in order to more
-precisely specify the data used by tasks and to enable
-parallelism. Partitions in Regent may be:</p>
+<span class="n">r2</span><span class="p">.</span><span class="n">ispace</span> <span class="c1">-- Returns i2.</span></code></pre>
+</figure>
+<h4 id="finding-the-bounds-of-a-region">Finding the Bounds of a Region</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r2</span><span class="p">.</span><span class="n">bounds</span> <span class="c1">-- Returns i2.bounds.</span></code></pre>
+</figure>
+<h2 id="partitions">Partitions</h2>
+<p>Partitions subdivide regions into subregions, in order to more precisely specify the data used by tasks and to enable parallelism. Partitions in Regent may be:</p>
 <ul>
 <li><code>disjoint</code> or <code>aliased</code>.
 <ul>
-<li><code>disjoint</code> subregions are non-overlapping, and therefore can
-be safely modified in parallel.</li>
-<li><code>aliased</code> subregions are permitted to overlap, but can only be
-used in parallel with <code>reads</code> or <code>reduces</code> privileges.</li>
-<li>A partition is <code>disjoint</code> <strong>IFF</strong> all of its subregions are
-mutually disjoint.</li>
-<li>Several partition operators allow disjointness to be specified
-optionally; if it is not specified, it will be computed at
-runtime.</li>
-</ul>
-</li>
+<li><code>disjoint</code> subregions are non-overlapping, and therefore can be safely modified in parallel.</li>
+<li><code>aliased</code> subregions are permitted to overlap, but can only be used in parallel with <code>reads</code> or <code>reduces</code> privileges.</li>
+<li>A partition is <code>disjoint</code> <strong>IFF</strong> all of its subregions are mutually disjoint.</li>
+<li>Several partition operators allow disjointness to be specified optionally; if it is not specified, it will be computed at runtime.</li>
+</ul></li>
 <li><code>complete</code> or <code>incomplete</code>.
 <ul>
-<li><code>complete</code> partitions cover their parent region (i.e., the
-union of the all the subregions is equal to the parent
-region). This is useful for several optimizations, though it
-does not impact parallelism.</li>
+<li><code>complete</code> partitions cover their parent region (i.e., the union of the all the subregions is equal to the parent region). This is useful for several optimizations, though it does not impact parallelism.</li>
 <li><code>incomplete</code> partitions do not cover their parent region.</li>
-<li>Specifying completeness is always optional; if it is not
-specified, it will be computed at runtime.</li>
-</ul>
-</li>
+<li>Specifying completeness is always optional; if it is not specified, it will be computed at runtime.</li>
+</ul></li>
 <li>Dense or sparse.
 <ul>
-<li>Dense subregions consist of a single contiguous rectangle of
-elements.</li>
-<li>Sparse subregions may consist of arbitrary sets of elements
-within the original region.</li>
+<li>Dense subregions consist of a single contiguous rectangle of elements.</li>
+<li>Sparse subregions may consist of arbitrary sets of elements within the original region.</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p>Subregions should be thought of as views onto the original
-region. They do not contain their own data but instead reference the
-data contained by the parent region.</p>
-<p>A given region can be partitioned multiple times, and the subregions
-can be partitioned recursively into finer regions.</p>
-<p>The subregions of a partition are identified by points in a special
-index space called a <em>color space</em>. Subregions can be retrieved by
-their color within the partition.</p>
-<p>Regent provides a very expressive sub-language of <a href="#partition-operators">partition
-operators</a> for creating partitions, described in
-more detail below.</p>
-<h4>Creating a Partition</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">c0</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">p0</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">c0</span><span class="p">)</span></code></pre></figure>
-<h4>Iterating the Subregions of a Partition</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">c</span> <span class="k">in</span> <span class="n">c0</span> <span class="k">do</span>
+<p>Subregions should be thought of as views onto the original region. They do not contain their own data but instead reference the data contained by the parent region.</p>
+<p>A given region can be partitioned multiple times, and the subregions can be partitioned recursively into finer regions.</p>
+<p>The subregions of a partition are identified by points in a special index space called a <em>color space</em>. Subregions can be retrieved by their color within the partition.</p>
+<p>Regent provides a very expressive sub-language of <a href="#partition-operators">partition operators</a> for creating partitions, described in more detail below.</p>
+<h4 id="creating-a-partition">Creating a Partition</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">c0</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p0</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r0</span><span class="p">,</span> <span class="n">c0</span><span class="p">)</span></code></pre>
+</figure>
+<h4 id="iterating-the-subregions-of-a-partition">Iterating the Subregions of a Partition</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">c</span> <span class="k">in</span> <span class="n">c0</span> <span class="k">do</span>
   <span class="n">p0</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="c1">-- Returns a subregion of r0 with color c.</span>
-<span class="k">end</span></code></pre></figure>
-<h4>Finding the Color Space of a Partition</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">p0</span><span class="p">.</span><span class="n">colors</span> <span class="c1">-- Returns c0.</span></code></pre></figure>
-<h4>Passing a Partition to a Task</h4>
-<p>To pass a partition to a task, declare the region which is the parent
-of the partition first, so that the region variable can be used to
-define the partition type:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">p</span> <span class="p">:</span> <span class="kt">partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">)))</span></code></pre></figure>
-<p>Note that <code>r</code> is referred to in the type of <code>p</code> so that the compiler
-can determine what region <code>p</code> is a partition of.</p>
-<h2>Partition Operators</h2>
-<h4>Equal</h4>
-<p>Produces roughly equal subregions, one for each color in the supplied
-color space. The resulting partition is guaranteed to be disjoint. If
-the size of the color space is evenly divisible by the requested number
-of subregions then they will be of equal size and contiguous—otherwise
-the exact way in which the remaining elements are partitioned is unspecified.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
-<p>Equal partitons are always disjoint and complete by construction, so
-there is not need to specify this explicitly.</p>
-<h4>By Field</h4>
-<p>Partitions a region based on a coloring stored in a field of the
-region. The resulting partition is guaranteed to be disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
-<p>Partitions by field are always disjoint by construction, so this need
-not be specified. They are <strong>NOT</strong> always complete, as the color space
-may not cover all of the values of the color field (and therefore some
-points may not be inclued in the final partition). If the user wishes
-to specify that the partition is complete (i.e., that all color field
-values are in the color space), then this can be accomplished with an
-optional <code>complete</code> keyword:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">complete</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre></figure>
-<h4>Image</h4>
-<p>Partitions a region by computing the image of each of the subregions
-of a partition through the supplied (pointer-typed) field of a
-region. The resulting partition is <strong>NOT</strong> guaranteed to be disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
-<p>Disjointness and completeness can be specified via optional
-<code>disjoint</code>/<code>complete</code> keywords:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
-<h4>Preimage</h4>
-<p>Partitions a region by computing the preimage of each of the
-subregions of a partition through the supplied (pointer-typed) field
-of a region. The resulting partition is guaranteed to be disjoint
-<strong>IF</strong> the supplied target partition is disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
-<p>Disjointness and completeness can be specified via optional
-<code>disjoint</code>/<code>complete</code> keywords:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre></figure>
-<h4>Union</h4>
-<p>Computes the zipped union of the subregions in the supplied
-partitions. The resulting partition is <strong>NOT</strong> guaranteed to be
-disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">|</span> <span class="n">rhs_partition</span></code></pre></figure>
-<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code>
-to be equal to <code>lhs_partition[i] | rhs_partition[i]</code>.</p>
-<h4>Intersection</h4>
-<p>Computes the zipped intersection of the subregions in the supplied
-partitions. The resulting partition is guaranteed to be disjoint
-<strong>IF</strong> either or both of the arguments are disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">&amp;</span> <span class="n">rhs_partition</span></code></pre></figure>
-<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code>
-to be equal to <code>lhs_partition[i] &amp; rhs_partition[i]</code>.</p>
-<h4>Difference</h4>
-<p>Computes the zipped difference of the subregions in the supplied
-partitions. The resulting partition is guaranteed to be disjoint
-<strong>IF</strong> the left-hand-side partition is disjoint.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">-</span> <span class="n">rhs_partition</span></code></pre></figure>
-<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code>
-to be equal to <code>lhs_partition[i] - rhs_partition[i]</code>.</p>
-<h1>Annotations</h1>
-<p>Annotations can be applied to tasks, statements, or expressions and
-control the optimizations applied by the Regent compiler to the
-code. Annotations come in two basic flavors:</p>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="finding-the-color-space-of-a-partition">Finding the Color Space of a Partition</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">p0</span><span class="p">.</span><span class="n">colors</span> <span class="c1">-- Returns c0.</span></code></pre>
+</figure>
+<h4 id="passing-a-partition-to-a-task">Passing a Partition to a Task</h4>
+<p>To pass a partition to a task, declare the region which is the parent of the partition first, so that the region variable can be used to define the partition type:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">f</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">p</span> <span class="p">:</span> <span class="kt">partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">)))</span></code></pre>
+</figure>
+<p>Note that <code>r</code> is referred to in the type of <code>p</code> so that the compiler can determine what region <code>p</code> is a partition of.</p>
+<h2 id="partition-operators">Partition Operators</h2>
+<h4 id="equal">Equal</h4>
+<p>Produces roughly equal subregions, one for each color in the supplied color space. The resulting partition is guaranteed to be disjoint. If the size of the color space is evenly divisible by the requested number of subregions then they will be of equal size and contiguous—otherwise the exact way in which the remaining elements are partitioned is unspecified.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre>
+</figure>
+<p>Equal partitons are always disjoint and complete by construction, so there is not need to specify this explicitly.</p>
+<h4 id="by-field">By Field</h4>
+<p>Partitions a region based on a coloring stored in a field of the region. The resulting partition is guaranteed to be disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre>
+</figure>
+<p>Partitions by field are always disjoint by construction, so this need not be specified. They are <strong>NOT</strong> always complete, as the color space may not cover all of the values of the color field (and therefore some points may not be inclued in the final partition). If the user wishes to specify that the partition is complete (i.e., that all color field values are in the color space), then this can be accomplished with an optional <code>complete</code> keyword:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">complete</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="n">color_field</span><span class="p">,</span> <span class="n">color_space</span><span class="p">)</span></code></pre>
+</figure>
+<h4 id="image">Image</h4>
+<p>Partitions a region by computing the image of each of the subregions of a partition through the supplied (pointer-typed) field of a region. The resulting partition is <strong>NOT</strong> guaranteed to be disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre>
+</figure>
+<p>Disjointness and completeness can be specified via optional <code>disjoint</code>/<code>complete</code> keywords:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">image</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">source_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre>
+</figure>
+<h4 id="preimage">Preimage</h4>
+<p>Partitions a region by computing the preimage of each of the subregions of a partition through the supplied (pointer-typed) field of a region. The resulting partition is guaranteed to be disjoint <strong>IF</strong> the supplied target partition is disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre>
+</figure>
+<p>Disjointness and completeness can be specified via optional <code>disjoint</code>/<code>complete</code> keywords:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p3</span> <span class="o">=</span> <span class="k">preimage</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="k">complete</span><span class="p">,</span> <span class="n">parent_region</span><span class="p">,</span> <span class="n">target_partition</span><span class="p">,</span> <span class="n">data_region</span><span class="p">.</span><span class="n">field</span><span class="p">)</span></code></pre>
+</figure>
+<h4 id="union">Union</h4>
+<p>Computes the zipped union of the subregions in the supplied partitions. The resulting partition is <strong>NOT</strong> guaranteed to be disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">|</span> <span class="n">rhs_partition</span></code></pre>
+</figure>
+<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code> to be equal to <code>lhs_partition[i] | rhs_partition[i]</code>.</p>
+<h4 id="intersection">Intersection</h4>
+<p>Computes the zipped intersection of the subregions in the supplied partitions. The resulting partition is guaranteed to be disjoint <strong>IF</strong> either or both of the arguments are disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">&amp;</span> <span class="n">rhs_partition</span></code></pre>
+</figure>
+<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code> to be equal to <code>lhs_partition[i] &amp; rhs_partition[i]</code>.</p>
+<h4 id="difference">Difference</h4>
+<p>Computes the zipped difference of the subregions in the supplied partitions. The resulting partition is guaranteed to be disjoint <strong>IF</strong> the left-hand-side partition is disjoint.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">-</span> <span class="n">rhs_partition</span></code></pre>
+</figure>
+<p>This can be thought to be equivalent to setting each subregion <code>p[i]</code> to be equal to <code>lhs_partition[i] - rhs_partition[i]</code>.</p>
+<h1 id="annotations">Annotations</h1>
+<p>Annotations can be applied to tasks, statements, or expressions and control the optimizations applied by the Regent compiler to the code. Annotations come in two basic flavors:</p>
 <ul>
-<li><code>__demand</code> requests that the compiler throw an error if an
-optimization cannot be applied.</li>
+<li><code>__demand</code> requests that the compiler throw an error if an optimization cannot be applied.</li>
 <li><code>__forbid</code> requires that the compiler not apply an optimization.</li>
 </ul>
-<p>Note that in contrast to pragmas in languages like C++, annotations
-cannot be used to force the compiler to optimize code when it is not
-safe to do so. Instead, the effect of the <code>__demand</code> annotation is to
-force the compiler to issue an error if a given optimization cannot be
-applied. Thus, it is better to think of annotations as a defensive
-programming feature that allows the programmer to sanity check that
-the compiler is behaving as expected, rather than as a way to enable
-or force optimizations.</p>
-<p>In some cases, annotations labeled as “experimental” may deviate from
-this behavior. These are described in a separate <a href="#experimental-annotations">section
-below</a>.</p>
-<h2>Task Annotations</h2>
-<h4>Leaf Optimization</h4>
-<p>The <code>__leaf</code> annotation indicates that a task will not call any
-subtasks, copies, fills, or create regions or partitions. In certain
-cases such tasks can be executed more efficiently.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__leaf</span><span class="p">)</span>
+<p>Note that in contrast to pragmas in languages like C++, annotations cannot be used to force the compiler to optimize code when it is not safe to do so. Instead, the effect of the <code>__demand</code> annotation is to force the compiler to issue an error if a given optimization cannot be applied. Thus, it is better to think of annotations as a defensive programming feature that allows the programmer to sanity check that the compiler is behaving as expected, rather than as a way to enable or force optimizations.</p>
+<p>In some cases, annotations labeled as “experimental” may deviate from this behavior. These are described in a separate <a href="#experimental-annotations">section below</a>.</p>
+<h2 id="task-annotations">Task Annotations</h2>
+<h4 id="leaf-optimization">Leaf Optimization</h4>
+<p>The <code>__leaf</code> annotation indicates that a task will not call any subtasks, copies, fills, or create regions or partitions. In certain cases such tasks can be executed more efficiently.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__leaf</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will be marked as a leaf task.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__leaf</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__leaf</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
-<span class="o">…</span> <span class="c1">– This task will NOT be marked as a leaf task.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h4>Inner Optimization</h4>
-<p>The <code>__inner</code> annotation indicates that a task will not directly
-access the contents of any regions. In certain cases such tasks can be
-executed more efficiently.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
+  <span class="o">...</span> <span class="c1">-- This task will NOT be marked as a leaf task.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="inner-optimization">Inner Optimization</h4>
+<p>The <code>__inner</code> annotation indicates that a task will not directly access the contents of any regions. In certain cases such tasks can be executed more efficiently.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will be marked as a inner task.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
-<span class="o">…</span> <span class="c1">– This task will NOT be marked as a inner task.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h4>Idempotent Optimization</h4>
-<p>The <code>__idempotent</code> annotation indicates that a task will not perform
-I/O or any other action with externally-visible side effects. (Writing
-to regions is ok.) Currently this annotation has no effect, but will
-be used to enable optimizations in the future.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__idempotent</span><span class="p">)</span>
+  <span class="o">...</span> <span class="c1">-- This task will NOT be marked as a inner task.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="idempotent-optimization">Idempotent Optimization</h4>
+<p>The <code>__idempotent</code> annotation indicates that a task will not perform I/O or any other action with externally-visible side effects. (Writing to regions is ok.) Currently this annotation has no effect, but will be used to enable optimizations in the future.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__idempotent</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will be marked as an idempotent task.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__idempotent</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__idempotent</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
-<span class="o">…</span> <span class="c1">– This task will NOT be marked as an idempotent task.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h4>Replicable Optimization</h4>
-<p>The <code>__replicable</code> annotation indicates that a task is <em>control
-deterministic</em>, i.e. that all tasks (and other operations) are issued
-with the same arguments. Idempotent tasks are replicable by
-definition, but a task need not be idempotent to be
-replicable. Currently this annotation has effect only in the
-<code>control_replication</code> branch of Legion, where it enables dynamic
-control replication.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__replicable</span><span class="p">)</span>
+  <span class="o">...</span> <span class="c1">-- This task will NOT be marked as an idempotent task.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="replicable-optimization">Replicable Optimization</h4>
+<p>The <code>__replicable</code> annotation indicates that a task is <em>control deterministic</em>, i.e. that all tasks (and other operations) are issued with the same arguments. Idempotent tasks are replicable by definition, but a task need not be idempotent to be replicable. Currently this annotation has effect only in the <code>control_replication</code> branch of Legion, where it enables dynamic control replication.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__replicable</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will be marked as an replicable task.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__replicable</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__replicable</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
-<span class="o">…</span> <span class="c1">– This task will NOT be marked as an replicable task.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h4>Inline Optimization</h4>
-<p>The <code>__inline</code> annotation indicates that calls to the marked task must
-(or must not) be inlined into the caller, and will cause the compiler
-to issue an error if this is not possible.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inline</span><span class="p">)</span>
+  <span class="o">...</span> <span class="c1">-- This task will NOT be marked as an replicable task.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="inline-optimization">Inline Optimization</h4>
+<p>The <code>__inline</code> annotation indicates that calls to the marked task must (or must not) be inlined into the caller, and will cause the compiler to issue an error if this is not possible.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inline</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- The compiler will throw an error if it is not possible to inline this task.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__inline</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__inline</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
-<span class="o">…</span> <span class="c1">– This task will NOT be inlined.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h2>Statement Annotations</h2>
-<h4>Index Launch Optimization</h4>
-<p>The <code>__index_launch</code> annotation on a <code>for</code> loop indicates that the marked
-loop must be converted into an index launch, and will cause the
-compiler to issue an error if this is not possible. Index launches of
-tasks can be analyzed in <code>O(1)</code> time instead of <code>O(N)</code> for <code>N</code> tasks.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
+  <span class="o">...</span> <span class="c1">-- This task will NOT be inlined.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="statement-annotations">Statement Annotations</h2>
+<h4 id="index-launch-optimization">Index Launch Optimization</h4>
+<p>The <code>__index_launch</code> annotation on a <code>for</code> loop indicates that the marked loop must be converted into an index launch, and will cause the compiler to issue an error if this is not possible. Index launches of tasks can be analyzed in <code>O(1)</code> time instead of <code>O(N)</code> for <code>N</code> tasks.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- The compiler will throw an error if this loop cannot be converted into an index launch.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
-<span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">– This loop will NOT be converted into an index launch.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h4>Vectorization</h4>
-<p>The <code>__vectorize</code> annotation on a <code>for</code> loop indicates that the marked
-loop must be vectorized, and will cause the compiler to issue an error
-if this is not possible.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__vectorize</span><span class="p">)</span>
+  <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- This loop will NOT be converted into an index launch.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="vectorization">Vectorization</h4>
+<p>The <code>__vectorize</code> annotation on a <code>for</code> loop indicates that the marked loop must be vectorized, and will cause the compiler to issue an error if this is not possible.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__vectorize</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="o">...</span> <span class="c1">-- The compiler will throw an error if this loop cannot be vectorized.</span>
 <span class="k">end</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__vectorize</span><span class="p">)</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__vectorize</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
-<span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">– This loop will NOT be vectorized.</span>
-<span class="k">end</span></code></pre></figure></p>
-<h2>Expression Annotations</h2>
-<h4>Inline Optimization</h4>
-<p>The <code>__inline</code> annotation on a task call expression indicates that the
-marked call must (or must not) be inlined into the caller, and will
-cause the compiler to issue an error if this is not possible. This
-annotation overrides any <code>__inline</code> annotations on the called task.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inline</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1">-- The compiler will throw an error if this call cannot be inlined.</span>
-<p><span class="n">__forbid</span><span class="p">(</span><span class="n">__inline</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="o">…</span><span class="p">))</span> <span class="c1">– This call will NOT be inlined.</span></code></pre></figure></p>
-<h2>Experimental Annotations</h2>
-<h4>SPMD Optimization</h4>
-<p>The <code>__spmd</code> annotation on a loop or block indicates that the marked
-loop or block must be optimized with <em>static control replication</em>, an
-optimization described <a href="https://legion.stanford.edu/pdfs/cr2017.pdf">in this
-paper</a>. Control
-replicated programs are substantially more scalable than non-control
-replicated programs.</p>
-<p>Currently the Regent compiler consider <em>only</em> statements marked with
-this annotation for the optimization.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__spmd</span><span class="p">)</span>
+  <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- This loop will NOT be vectorized.</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="expression-annotations">Expression Annotations</h2>
+<h4 id="inline-optimization-1">Inline Optimization</h4>
+<p>The <code>__inline</code> annotation on a task call expression indicates that the marked call must (or must not) be inlined into the caller, and will cause the compiler to issue an error if this is not possible. This annotation overrides any <code>__inline</code> annotations on the called task.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inline</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1">-- The compiler will throw an error if this call cannot be inlined.</span>
+
+<span class="n">__forbid</span><span class="p">(</span><span class="n">__inline</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1">-- This call will NOT be inlined.</span></code></pre>
+</figure>
+<h2 id="experimental-annotations">Experimental Annotations</h2>
+<h4 id="spmd-optimization">SPMD Optimization</h4>
+<p>The <code>__spmd</code> annotation on a loop or block indicates that the marked loop or block must be optimized with <em>static control replication</em>, an optimization described <a href="https://legion.stanford.edu/pdfs/cr2017.pdf">in this paper</a>. Control replicated programs are substantially more scalable than non-control replicated programs.</p>
+<p>Currently the Regent compiler consider <em>only</em> statements marked with this annotation for the optimization.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__spmd</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -816,22 +680,15 @@ this annotation for the optimization.</p>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">g</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
-<p>This annotation can be used in conjunction with the <code>__trace</code>
-optimization via <code>__demand(__spmd, __trace)</code>.</p>
-<h4>Trace Optimization</h4>
-<p>The <code>__trace</code> annotation on a loop indicates that the marked loop
-should be traced. This is only possible when the sequence of tasks
-called within the traced loop is identical on every trip through the
-loop.</p>
-<p>Currently the Regent compiler consider <em>only</em> statements marked with
-this annotation for the optimization. The compiler does not currently
-have the ability to check whether traced loops are valid (i.e., will
-always execute the same sequence of tasks), so invalid loops will
-result in a runtime error.</p>
-<p>This annotation can be used in conjunction with the <code>__spmd</code>
-optimization via <code>__demand(__spmd, __trace)</code>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>This annotation can be used in conjunction with the <code>__trace</code> optimization via <code>__demand(__spmd, __trace)</code>.</p>
+<h4 id="trace-optimization">Trace Optimization</h4>
+<p>The <code>__trace</code> annotation on a loop indicates that the marked loop should be traced. This is only possible when the sequence of tasks called within the traced loop is identical on every trip through the loop.</p>
+<p>Currently the Regent compiler consider <em>only</em> statements marked with this annotation for the optimization. The compiler does not currently have the ability to check whether traced loops are valid (i.e., will always execute the same sequence of tasks), so invalid loops will result in a runtime error.</p>
+<p>This annotation can be used in conjunction with the <code>__spmd</code> optimization via <code>__demand(__spmd, __trace)</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -839,10 +696,11 @@ optimization via <code>__demand(__spmd, __trace)</code>.</p>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">g</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
-<p>Note that this will traces the <em>inside</em> of the loop. That is, the
-above code is more or less equivalent to:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span> <span class="k">do</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Note that this will traces the <em>inside</em> of the loop. That is, the above code is more or less equivalent to:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span> <span class="k">do</span>
   <span class="n">begin_trace</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -851,79 +709,72 @@ above code is more or less equivalent to:</p>
     <span class="n">g</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
   <span class="k">end</span>
   <span class="n">end_trace</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="k">end</span></code></pre></figure>
-<p>If you would like to trace an arbitrary block of code (instead of a
-loop), this can be accomplished with:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>If you would like to trace an arbitrary block of code (instead of a loop), this can be accomplished with:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__trace</span><span class="p">)</span>
 <span class="k">do</span>
   <span class="o">...</span>
-<span class="k">end</span></code></pre></figure>
-<h4>CUDA Code Generation</h4>
-<p>The <code>__cuda</code> annotation on a task indicates that the marked task
-should be considered for CUDA code generation. Any loops over regions
-inside the marked task must not contain loop-carried dependencies
-except for reductions via commutative and associative operators.</p>
-<p>Currently the Regent compiler consider <em>only</em> statements marked with
-this annotation for the optimization.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__cuda</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="cuda-code-generation">CUDA Code Generation</h4>
+<p>The <code>__cuda</code> annotation on a task indicates that the marked task should be considered for CUDA code generation. Any loops over regions inside the marked task must not contain loop-carried dependencies except for reductions via commutative and associative operators.</p>
+<p>Currently the Regent compiler consider <em>only</em> statements marked with this annotation for the optimization.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__cuda</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">h</span><span class="p">()</span>
   <span class="o">...</span>
-<span class="k">end</span></code></pre></figure>
-<h4>OpenMP Code Generation</h4>
-<p>The <code>__openmp</code> annotation on a <code>for</code> loop indicates that the marked
-loop should be considered for OpenMP code generation. The loop must
-not contain loop-carried dependencies except for reductions via
-commutative and associative operators.</p>
-<p>Currently the Regent compiler consider <em>only</em> statements marked with
-this annotation for the optimization.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__openmp</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="openmp-code-generation">OpenMP Code Generation</h4>
+<p>The <code>__openmp</code> annotation on a <code>for</code> loop indicates that the marked loop should be considered for OpenMP code generation. The loop must not contain loop-carried dependencies except for reductions via commutative and associative operators.</p>
+<p>Currently the Regent compiler consider <em>only</em> statements marked with this annotation for the optimization.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__openmp</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="o">...</span>
-<span class="k">end</span></code></pre></figure>
-<h4>Auto-Parallelizer</h4>
-<p>The <code>__parallel</code> annotation on a task indicates that the task should
-be considered for auto-parallelization. Any loops over regions inside
-the marked task must not contain loop-carried dependencies except for
-reductions via commutative and associative operators.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h4 id="auto-parallelizer">Auto-Parallelizer</h4>
+<p>The <code>__parallel</code> annotation on a task indicates that the task should be considered for auto-parallelization. Any loops over regions inside the marked task must not contain loop-carried dependencies except for reductions via commutative and associative operators.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">h</span><span class="p">()</span>
   <span class="o">...</span>
-<span class="k">end</span></code></pre></figure>
-<h1>Metaprogramming</h1>
-<p>Regent supports <a href="http://terralang.org/getting-started.html#meta-programming">Terra-style
-metaprogramming</a>. Metaprogramming
-can be used to accomplish a variety of purposes:</p>
+<span class="k">end</span></code></pre>
+</figure>
+<h1 id="metaprogramming">Metaprogramming</h1>
+<p>Regent supports <a href="http://terralang.org/getting-started.html#meta-programming">Terra-style metaprogramming</a>. Metaprogramming can be used to accomplish a variety of purposes:</p>
 <ul>
 <li>Field spaces with input-dependent sets of fields</li>
 <li>Index spaces with input-dependent dimensionality</li>
 <li>Tasks with input-dependent arguments, privileges, and/or contents</li>
 </ul>
-<p>More generally, Regent can be used as a full-featured code generator
-for Legion, in the same way that Terra is used (by Regent itself) as a
-code generator for LLVM.</p>
-<p>For the most part, these features work the same as in Terra. (For
-example, types are still Lua expressions, and quotes can still be
-inserted with the escape operator <code>[]</code>.) Regent-specific features are
-described below.</p>
-<h2>Symbols</h2>
-<p>A symbol can be used as a variable or task parameter. To generate a
-fresh, unique symbol, call:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">newsymbol</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span></code></pre></figure>
-<h2>Statement Quotes</h2>
-<p>Regent provides an <code>rquote</code> operator which is analogous to Terra’s
-<code>quote</code> feature.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">rquote</span>
+<p>More generally, Regent can be used as a full-featured code generator for Legion, in the same way that Terra is used (by Regent itself) as a code generator for LLVM.</p>
+<p>For the most part, these features work the same as in Terra. (For example, types are still Lua expressions, and quotes can still be inserted with the escape operator <code>[]</code>.) Regent-specific features are described below.</p>
+<h2 id="symbols">Symbols</h2>
+<p>A symbol can be used as a variable or task parameter. To generate a fresh, unique symbol, call:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">newsymbol</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span></code></pre>
+</figure>
+<h2 id="statement-quotes">Statement Quotes</h2>
+<p>Regent provides an <code>rquote</code> operator which is analogous to Terra’s <code>quote</code> feature.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">rquote</span>
   <span class="kd">var</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
   <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="k">end</span></code></pre></figure>
-<h2>Expression Quotes</h2>
-<p>Regent provides an <code>rexpr</code> operator which is analogous to Terra’s
-<code>`</code>. (Unfortunately, Regent is not able to overload punctuation
-operators at this time, making this somewhat more verbose than Terra.)</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">repxr</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">end</span></code></pre></figure>
-<h2>Task Generation</h2>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="expression-quotes">Expression Quotes</h2>
+<p>Regent provides an <code>rexpr</code> operator which is analogous to Terra’s <code>`</code>. (Unfortunately, Regent is not able to overload punctuation operators at this time, making this somewhat more verbose than Terra.)</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">repxr</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">end</span></code></pre>
+</figure>
+<h2 id="task-generation">Task Generation</h2>
 <p>The example below shows how to generate a simple type-parametric task.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="k">function</span> <span class="nf">make_increment_task</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="n">by_value</span><span class="p">)</span>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="k">function</span> <span class="nf">make_increment_task</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="n">by_value</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">newsymbol</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">inc</span> <span class="o">=</span> <span class="k">rexpr</span> <span class="n">x</span> <span class="o">+</span> <span class="n">by_value</span> <span class="k">end</span>
   <span class="kd">local</span> <span class="k">task</span> <span class="nf">t</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
@@ -932,11 +783,11 @@ operators at this time, making this somewhat more verbose than Terra.)</p>
   <span class="k">return</span> <span class="n">t</span>
 <span class="k">end</span>
 <span class="kd">local</span> <span class="n">inc_int_by_1</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">inc_double_by_pi</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="n">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">)</span></code></pre></figure>
-<p>To inspect the contents of generated tasks, invoke Regent with the
-flag <code>-fpretty 1</code>. On the code above, this produces the following
-output.</p>
-<figure class="highlight"><pre><code class="language-text" data-lang="text">task t($x : int32) : int32
+<span class="kd">local</span> <span class="n">inc_double_by_pi</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="n">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">)</span></code></pre>
+</figure>
+<p>To inspect the contents of generated tasks, invoke Regent with the flag <code>-fpretty 1</code>. On the code above, this produces the following output.</p>
+<figure class="highlight">
+<pre><code class="language-text" data-lang="text">task t($x : int32) : int32
 -- leaf (true), inner (false), idempotent (false)
   return ($x+1)
 end
@@ -944,98 +795,80 @@ config options  true    false
 task t($x : double) : double
 -- leaf (true), inner (false), idempotent (false)
   return ($x+3.14)
-end</code></pre></figure>
-<p>This can also be used to determine what optimizations are being
-triggered. (For example, leaf optimization is enabled on the tasks
-above.)</p>
-<h1>Foreign Function Interface</h1>
-<p>Regent code can call C functions via Terra’s foreign function
-interface (FFI). For example, the following snippet calls the C standard
-library function <code>printf</code>:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
-<p><span class="k">task</span> <span class="nf">hello</span><span class="p">()</span>
-<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“hello!\n”</span><span class="p">)</span>
-<span class="k">end</span></code></pre></figure></p>
-<p>For more information on Terra’s FFI, please see the
-<a href="http://terralang.org/api.html#using-c-inside-terra">FFI documentation</a>.</p>
-<h2>Calling the Legion C API</h2>
-<p>In some cases, it can be useful to call to call Legion APIs
-directly. These work the same as any other C function. As a
-convenience, Regent exposes a standard set of headers via the variable
-<code>regentlib.c</code>. This corresponds to the Legion header file
-<code>legion_c.h</code>.</p>
-<p>Certain Legion API calls may require a runtime and/or context. These
-can be obtained in Regent via the operators <code>__runtime()</code> and
-<code>__context()</code>. A full list of <a href="#operators-to-obtain-c-api-object-handles">operators to obtain C API object
-handles</a> is available
-below.</p>
+end</code></pre>
+</figure>
+<p>This can also be used to determine what optimizations are being triggered. (For example, leaf optimization is enabled on the tasks above.)</p>
+<h1 id="foreign-function-interface">Foreign Function Interface</h1>
+<p>Regent code can call C functions via Terra’s foreign function interface (FFI). For example, the following snippet calls the C standard library function <code>printf</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+
+<span class="k">task</span> <span class="nf">hello</span><span class="p">()</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"hello!\n"</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>For more information on Terra’s FFI, please see the <a href="http://terralang.org/api.html#using-c-inside-terra">FFI documentation</a>.</p>
+<h2 id="calling-the-legion-c-api">Calling the Legion C API</h2>
+<p>In some cases, it can be useful to call to call Legion APIs directly. These work the same as any other C function. As a convenience, Regent exposes a standard set of headers via the variable <code>regentlib.c</code>. This corresponds to the Legion header file <code>legion_c.h</code>.</p>
+<p>Certain Legion API calls may require a runtime and/or context. These can be obtained in Regent via the operators <code>__runtime()</code> and <code>__context()</code>. A full list of <a href="#operators-to-obtain-c-api-object-handles">operators to obtain C API object handles</a> is available below.</p>
 <p>For example, the following code calls a Legion execution fence:</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span>
-<p><span class="k">task</span> <span class="nf">a</span><span class="p">()</span>
-<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“this task will run first\n”</span><span class="p">)</span>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span>
+
+<span class="k">task</span> <span class="nf">a</span><span class="p">()</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"this task will run first\n"</span><span class="p">)</span>
 <span class="k">end</span>
 <span class="k">task</span> <span class="nf">b</span><span class="p">()</span>
-<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“this task will run second\n”</span><span class="p">)</span>
-<span class="k">end</span></p>
-<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-<span class="n">a</span><span class="p">()</span>
-<span class="c1">– Force a and b to be serialized by inserting a fence.</span>
-<span class="c1">– Note: The fence will <em>NOT</em> block the main task.</span>
-<span class="n">c</span><span class="p">.</span><span class="n">legion_runtime_issue_execution_fence</span><span class="p">(</span><span class="n">__runtime</span><span class="p">(),</span> <span class="n">__context</span><span class="p">())</span>
-<span class="n">b</span><span class="p">()</span>
-<span class="k">end</span></code></pre></figure></p>
-<p>At this time, the best source of documentation on the C API is the
-<a href="https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion_c.h">source code of the <code>legion_c.h</code> header
-file</a>. Note
-that in most cases, the functions of the C API correspond one-to-one
-with the C++ API, so most C APIs are documented simply by pointing to
-the corresponding methods in <code>legion.h</code>.</p>
-<h2>Obtaining C API Handles from Regent Values</h2>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"this task will run second\n"</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="n">a</span><span class="p">()</span>
+  <span class="c1">-- Force a and b to be serialized by inserting a fence.</span>
+  <span class="c1">-- Note: The fence will *NOT* block the main task.</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">legion_runtime_issue_execution_fence</span><span class="p">(</span><span class="n">__runtime</span><span class="p">(),</span> <span class="n">__context</span><span class="p">())</span>
+  <span class="n">b</span><span class="p">()</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>At this time, the best source of documentation on the C API is the <a href="https://github.com/StanfordLegion/legion/blob/master/runtime/legion/legion_c.h">source code of the <code>legion_c.h</code> header file</a>. Note that in most cases, the functions of the C API correspond one-to-one with the C++ API, so most C APIs are documented simply by pointing to the corresponding methods in <code>legion.h</code>.</p>
+<h2 id="obtaining-c-api-handles-from-regent-values">Obtaining C API Handles from Regent Values</h2>
 <ul>
 <li><code>__runtime()</code> returns the Legion runtime (<code>legion_runtime_t</code>).</li>
 <li><code>__context()</code> returns the Legion context (<code>legion_context_t</code>).</li>
-<li><code>__physical(r.{f, g, ...})</code> returns an array of physical regions
-(<code>legion_physical_region_t</code>) for <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order
-that the fields are listed in the call.</li>
-<li><code>__fields(r.{f, g, ...})</code> returns an array of the field IDs
-(<code>legion_field_id_t</code>) of <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order
-that the fields are listed in the call.</li>
-<li><code>__raw(r)</code> returns the C API object handle that corresponds to the
-given object, e.g. a <code>legion_logical_region_t</code> for a region or
-<code>legion_logical_partition_t</code> for a partition.</li>
+<li><code>__physical(r.{f, g, ...})</code> returns an array of physical regions (<code>legion_physical_region_t</code>) for <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order that the fields are listed in the call.</li>
+<li><code>__fields(r.{f, g, ...})</code> returns an array of the field IDs (<code>legion_field_id_t</code>) of <code>r</code>, one per field, for fields <code>f</code>, <code>g</code>, etc. in the order that the fields are listed in the call.</li>
+<li><code>__raw(r)</code> returns the C API object handle that corresponds to the given object, e.g. a <code>legion_logical_region_t</code> for a region or <code>legion_logical_partition_t</code> for a partition.</li>
 </ul>
-<h2>Importing C API Handles into Regent</h2>
-<p>The operators below can be used to import C API handles for objects
-created in C/C++ so that they can be used in Regent.</p>
-<p><strong>Important:</strong> C API handles can only be imported once into
-Regent. Subsequent attempts to import C API handles will fail. All
-objects created by Regent are considered to be already imported and
-thus cannot be imported again using this mechanism. These restrictions
-guarrantee that certain assumptions made by the Regent compiler are
-not violated, and are critical to ensuring that Regent’s type checker
-and optimizer work correctly.</p>
-<h4>Importing Index Spaces</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="n">__import_ispace</span><span class="p">(</span><span class="kt">int3d</span><span class="p">,</span> <span class="n">raw_ispace</span><span class="p">)</span></code></pre></figure>
+<h2 id="importing-c-api-handles-into-regent">Importing C API Handles into Regent</h2>
+<p>The operators below can be used to import C API handles for objects created in C/C++ so that they can be used in Regent.</p>
+<p><strong>Important:</strong> C API handles can only be imported once into Regent. Subsequent attempts to import C API handles will fail. All objects created by Regent are considered to be already imported and thus cannot be imported again using this mechanism. These restrictions guarrantee that certain assumptions made by the Regent compiler are not violated, and are critical to ensuring that Regent’s type checker and optimizer work correctly.</p>
+<h4 id="importing-index-spaces">Importing Index Spaces</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="n">__import_ispace</span><span class="p">(</span><span class="kt">int3d</span><span class="p">,</span> <span class="n">raw_ispace</span><span class="p">)</span></code></pre>
+</figure>
 <p><code>raw_ispace</code> is of type <code>legion_index_space_t</code>.</p>
-<h4>Importing Regions</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="n">__import_region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">raw_region</span><span class="p">,</span> <span class="n">raw_field_id_array</span><span class="p">)</span></code></pre></figure>
+<h4 id="importing-regions">Importing Regions</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="n">__import_region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">raw_region</span><span class="p">,</span> <span class="n">raw_field_id_array</span><span class="p">)</span></code></pre>
+</figure>
 <p><code>raw_region</code> is of type <code>legion_logical_region_t</code>.</p>
-<p><code>raw_field_id_array</code> is of type <code>legion_field_id_t[N]</code> where <code>N</code> is
-the number of fields in field space <code>fs</code>. Field IDs are enumerated in
-the same order as listed in the original field space or struct. Note
-that field spaces and structs in Regent are recursively flattened,
-such that the field space <code>fs</code> below contains 3 fields (<code>center.x</code>,
-<code>center.y</code> and <code>mass</code>).</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">vec2</span>  <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span>
-<span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span> <span class="n">center</span> <span class="p">:</span> <span class="n">vec2</span><span class="p">,</span> <span class="n">mass</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span></code></pre></figure>
-<h4>Importing Partitions</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p_disjoint</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_disjoint</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">p_aliased</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">aliased</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_aliased</span><span class="p">)</span></code></pre></figure>
+<p><code>raw_field_id_array</code> is of type <code>legion_field_id_t[N]</code> where <code>N</code> is the number of fields in field space <code>fs</code>. Field IDs are enumerated in the same order as listed in the original field space or struct. Note that field spaces and structs in Regent are recursively flattened, such that the field space <code>fs</code> below contains 3 fields (<code>center.x</code>, <code>center.y</code> and <code>mass</code>).</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">vec2</span>  <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span>
+<span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span> <span class="n">center</span> <span class="p">:</span> <span class="n">vec2</span><span class="p">,</span> <span class="n">mass</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span></code></pre>
+</figure>
+<h4 id="importing-partitions">Importing Partitions</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p_disjoint</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_disjoint</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p_aliased</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">aliased</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_aliased</span><span class="p">)</span></code></pre>
+</figure>
 <p><code>raw_partition_*</code> are of type <code>legion_logical_partition_t</code>.</p>
-<h4>Importing Futures</h4>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f</span> <span class="o">=</span> <span class="n">__future</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code></pre></figure>
+<h4 id="importing-futures">Importing Futures</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f</span> <span class="o">=</span> <span class="n">__future</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code></pre>
+</figure>
 <p><code>x</code> is of type <code>legion_future_t</code> and <code>f</code> will have type <code>T</code>. If <code>-ffuture 1</code> is enabled, this can be automatically optimized into a Regent future.</p>
-<h1>Standard Library</h1>
+<h1 id="standard-library">Standard Library</h1>
 <p>See the <a href="/doc">documentation for the standard library</a>.</p>
 
     </div>

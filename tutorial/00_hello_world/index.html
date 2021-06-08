@@ -110,73 +110,56 @@
         </h1>
       
 
-      <p>No tutorial would be complete without a Hello World example. Below is
-the source code for Hello World in Regent. The source for this and
-other tutorials can also be found in the <a href="https://github.com/StanfordLegion/legion/tree/master/tutorial">GitHub
-repository</a>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdio.h”</span><span class="p">)</span></p>
-<p><span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
-<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“Hello World!\n”</span><span class="p">)</span>
-<span class="k">end</span></p>
-<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-<span class="n">hello_world</span><span class="p">()</span>
-<span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
-<h2>Preamble</h2>
-<p>Regent is an embedded language. The outermost level of the source code
-is a <a href="https://www.lua.org/">Lua script</a>. <em>Two</em> languages are embedded
-inside this context: <a href="http://terralang.org/">Terra</a> and Regent
-itself. Each language provides special keywords (e.g. <code>task</code>) which
-trigger execution of the compiler. First, though, Regent needs to
-register its language definition so that these keywords available to
-the program.</p>
-<p>In order to load this language definition, every Regent program starts
-with the following line.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span></code></pre></figure>
-<p>(If you forget this line, you will typically see some obscure parser
-errors, as Lua attempts to interpret Regent keywords as Lua variable
-names.)</p>
-<h2>Lua Code</h2>
-<p>The script executes top-to-bottom in Lua. From the perspective of
-Regent, this is happening at compile time, similar to the execution of
-templates in C++. However, Lua is a full-featured programming
-language, making powerful metaprogramming possible.</p>
-<p>For example, the line below parses the C header file <code>stdio.h</code> and
-stores the result into a Lua variable. (So <code>printf</code> can be accessed as
-<code>c.printf</code>.) This makes it easy to interact with arbitrary C code.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span></code></pre></figure>
-<h2>Hello World Task</h2>
-<p>Next execution hits the definition of the hello world task
-itself. Conceptually, execution of the task definition functions to
-invoke the Regent compiler on the source code of the task. That is,
-after the following code executes, there will be a new Lua global
-variable <code>hello_world</code> which points to a task object (corresponding to
-the source code below).</p>
-<p>The task itself won’t run until we star the Legion runtime. Remember:
-the script executes <em>at compile time</em>. But this feature makes it
-possible to perform powerful
-<a href="/reference#metaprogramming">metaprogramming</a> on Regent code.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
+      <p>No tutorial would be complete without a Hello World example. Below is the source code for Hello World in Regent. The source for this and other tutorials can also be found in the <a href="https://github.com/StanfordLegion/legion/tree/master/tutorial">GitHub repository</a>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
+
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+
+<span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
   <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello World!\n"</span><span class="p">)</span>
-<span class="k">end</span></code></pre></figure>
-<h2>Main Task</h2>
-<p>After this, we define the main task. The main task, like <code>main</code> in
-many languages, takes no arguments and produces no result. (Unlike
-many languages, the name <code>main</code> is just a convention in Regent.)</p>
-<p>The main task will invoke <code>hello_world</code> to produce the output message.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
   <span class="n">hello_world</span><span class="p">()</span>
-<span class="k">end</span></code></pre></figure>
-<h2>Starting the Runtime</h2>
-<p>Finally, at the end of the file, we invoke the Legion runtime. This
-kicks off execution of the main task (and subsequent execution of the
-rest of the program).</p>
-<p>The <code>start</code> call <em>does not return</em>. Furthermore, the Lua execution
-environment used to compile the Regent program is also unavailable
-after this function is called. So complete any Lua programming prior
-to calling this function.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure>
+<span class="k">end</span>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
+</figure>
+<h2 id="preamble">Preamble</h2>
+<p>Regent is an embedded language. The outermost level of the source code is a <a href="https://www.lua.org/">Lua script</a>. <em>Two</em> languages are embedded inside this context: <a href="http://terralang.org/">Terra</a> and Regent itself. Each language provides special keywords (e.g. <code>task</code>) which trigger execution of the compiler. First, though, Regent needs to register its language definition so that these keywords available to the program.</p>
+<p>In order to load this language definition, every Regent program starts with the following line.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span></code></pre>
+</figure>
+<p>(If you forget this line, you will typically see some obscure parser errors, as Lua attempts to interpret Regent keywords as Lua variable names.)</p>
+<h2 id="lua-code">Lua Code</h2>
+<p>The script executes top-to-bottom in Lua. From the perspective of Regent, this is happening at compile time, similar to the execution of templates in C++. However, Lua is a full-featured programming language, making powerful metaprogramming possible.</p>
+<p>For example, the line below parses the C header file <code>stdio.h</code> and stores the result into a Lua variable. (So <code>printf</code> can be accessed as <code>c.printf</code>.) This makes it easy to interact with arbitrary C code.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span></code></pre>
+</figure>
+<h2 id="hello-world-task">Hello World Task</h2>
+<p>Next execution hits the definition of the hello world task itself. Conceptually, execution of the task definition functions to invoke the Regent compiler on the source code of the task. That is, after the following code executes, there will be a new Lua global variable <code>hello_world</code> which points to a task object (corresponding to the source code below).</p>
+<p>The task itself won’t run until we star the Legion runtime. Remember: the script executes <em>at compile time</em>. But this feature makes it possible to perform powerful <a href="/reference#metaprogramming">metaprogramming</a> on Regent code.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello World!\n"</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="main-task">Main Task</h2>
+<p>After this, we define the main task. The main task, like <code>main</code> in many languages, takes no arguments and produces no result. (Unlike many languages, the name <code>main</code> is just a convention in Regent.)</p>
+<p>The main task will invoke <code>hello_world</code> to produce the output message.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="n">hello_world</span><span class="p">()</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="starting-the-runtime">Starting the Runtime</h2>
+<p>Finally, at the end of the file, we invoke the Legion runtime. This kicks off execution of the main task (and subsequent execution of the rest of the program).</p>
+<p>The <code>start</code> call <em>does not return</em>. Furthermore, the Lua execution environment used to compile the Regent program is also unavailable after this function is called. So complete any Lua programming prior to calling this function.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
+</figure>
 
     </div>
   </div>

@@ -110,57 +110,42 @@
         </h1>
       
 
-      <p>Regent provides a number of optimizations to ensure that tasks execute
-in parallel and with maximum efficiency. One of the most important of
-these is <em>index task</em> optimization. An <em>index task launch</em>
-encapsulates a parallel loop and ensures that the runtime is able to
-amortize the cost of analysis of the contained tasks.</p>
-<h2>Optimizing Index Tasks</h2>
-<p>Loops are a common pattern in parallel codes. Regent optimizes loops
-to ensure that they execute efficiently on the Legion runtime. Recall
-that tasks execute in parallel only if they do not interfere. Legion
-must expend effort analyzing each task to determine non-interference
-with respect to surrounding tasks. Index tasks ensure that this
-analysis is amortized over a loop of task calls, increasing the
-efficiency of the runtime.</p>
-<p>Regent generates index task launches on loops containing tasks
-calls. For example, the following code calls a task <code>double_of</code> in a
-loop, and accumulates the results into the variable <code>total</code>.</p>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+      <p>Regent provides a number of optimizations to ensure that tasks execute in parallel and with maximum efficiency. One of the most important of these is <em>index task</em> optimization. An <em>index task launch</em> encapsulates a parallel loop and ensures that the runtime is able to amortize the cost of analysis of the contained tasks.</p>
+<h2 id="optimizing-index-tasks">Optimizing Index Tasks</h2>
+<p>Loops are a common pattern in parallel codes. Regent optimizes loops to ensure that they execute efficiently on the Legion runtime. Recall that tasks execute in parallel only if they do not interfere. Legion must expend effort analyzing each task to determine non-interference with respect to surrounding tasks. Index tasks ensure that this analysis is amortized over a loop of task calls, increasing the efficiency of the runtime.</p>
+<p>Regent generates index task launches on loops containing tasks calls. For example, the following code calls a task <code>double_of</code> in a loop, and accumulates the results into the variable <code>total</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
   <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
-<span class="k">end</span></code></pre></figure>
-<p>The line <code>__demand(__parallel)</code> marks the loop as an index
-launch. This annotation is <em>not required</em>, and is shown mostly for
-pedagogical purposes. Regent will optimize this loop
-regardless.</p>
-<p>Generally speaking, annotations are recommended only as a means of
-<a href="https://en.wikipedia.org/wiki/Defensive_programming">defensive
-programming</a>
-against bugs (in the application or compiler). The <code>__parallel</code>
-annotation guarantees that the compiler will produce an error if it
-is unable to optimize the loop in question. Most often, this happens
-because of a loop-carried dependence between the iterations of the
-loop. (This is in contrast to an OpenMP-style <code>#pragma</code>, which applies the
-optimization even if it is unsound.)</p>
-<h2>Final Code</h2>
-<figure class="highlight"><pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
-<p><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">“stdio.h”</span><span class="p">)</span></p>
-<p><span class="k">task</span> <span class="nf">double_of</span><span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
-<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">“Hello world from task %d!\n”</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-<span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
-<span class="k">end</span></p>
-<p><span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
-<span class="kd">var</span> <span class="n">num_points</span> <span class="o">=</span> <span class="mi">4</span></p>
-<p><span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
-<span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>The line <code>__demand(__parallel)</code> marks the loop as an index launch. This annotation is <em>not required</em>, and is shown mostly for pedagogical purposes. Regent will optimize this loop regardless.</p>
+<p>Generally speaking, annotations are recommended only as a means of <a href="https://en.wikipedia.org/wiki/Defensive_programming">defensive programming</a> against bugs (in the application or compiler). The <code>__parallel</code> annotation guarantees that the compiler will produce an error if it is unable to optimize the loop in question. Most often, this happens because of a loop-carried dependence between the iterations of the loop. (This is in contrast to an OpenMP-style <code>#pragma</code>, which applies the optimization even if it is unsound.)</p>
+<h2 id="final-code">Final Code</h2>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
+
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+
+<span class="k">task</span> <span class="nf">double_of</span><span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello world from task %d!\n"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+  <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">total</span> <span class="o">==</span> <span class="mi">92</span><span class="p">,</span> <span class="s2">“check failed”</span><span class="p">)</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="kd">var</span> <span class="n">num_points</span> <span class="o">=</span> <span class="mi">4</span>
+
+  <span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
+    <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">regentlib</span><span class="p">.</span><span class="n">assert</span><span class="p">(</span><span class="n">total</span> <span class="o">==</span> <span class="mi">92</span><span class="p">,</span> <span class="s2">"check failed"</span><span class="p">)</span>
 <span class="k">end</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre></figure></p>
+<span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
+</figure>
 
     </div>
   </div>
