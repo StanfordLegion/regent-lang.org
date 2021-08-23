@@ -307,7 +307,7 @@ that it is safe to make a copy of the region (e.g. into memory) so
 that can be directly accessed by a task. After using acquire, the
 region is no longer considered restricted.
 
-The release operation guarrantees that any copies of a region made
+The release operation guarantees that any copies of a region made
 following an acquire operation are flushed back to their original
 location (e.g. disk).
 
@@ -1262,7 +1262,7 @@ created in C/C++ so that they can be used in Regent.
 Regent. Subsequent attempts to import C API handles will fail. All
 objects created by Regent are considered to be already imported and
 thus cannot be imported again using this mechanism. These restrictions
-guarrantee that certain assumptions made by the Regent compiler are
+guarantee that certain assumptions made by the Regent compiler are
 not violated, and are critical to ensuring that Regent's type checker
 and optimizer work correctly.
 
