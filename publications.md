@@ -27,5 +27,5 @@ Papers about applications written in Regent:
       * [Overview](https://doi.org/10.1016/j.cpc.2020.107262) (CPC 2020) \[[PDF](https://doi.org/10.1016/j.cpc.2020.107262)]
       * [DNS of Hypersonic Transitional Boundary Layer at Suborbital Enthalpies](https://doi.org/10.1017/jfm.2020.1144) (JFM 2021) \[[PDF](https://doi.org/10.1017/jfm.2020.1144)]
   * [Task Bench](https://legion.stanford.edu/publications/#taskbench2020) (SC 2020) \[[PDF](https://legion.stanford.edu/pdfs/taskbench2020.pdf)]
-  * [*In Situ* Data Compression](https://sourceryinstitute.github.io/PAW/PAW-ATM20/indexPAW-ATM20.html) \[[PDF](https://raw.githubusercontent.com/sourceryinstitute/PAW/gh-pages/PAW-ATM20/extendedAbstracts/PAW-ATM2020_abstract1.pdf)]
+  * [*In Situ* Data Compression](https://sourceryinstitute.github.io/PAW/PAW-ATM20/indexPAW-ATM20.html) (PAW-ATM 2020) \[[PDF](https://raw.githubusercontent.com/sourceryinstitute/PAW/gh-pages/PAW-ATM20/extendedAbstracts/PAW-ATM2020_abstract1.pdf)]
   * [Meshfree Solver](https://legion.stanford.edu/publications/#meshfree2020) (PAW-ATM 2020) \[[PDF](https://legion.stanford.edu/pdfs/pawatm2020.pdf)]
