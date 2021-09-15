@@ -27,8 +27,7 @@ navigation:
   - label: Resources
     url: "/resources"
   - label: Publications
-    url: "http://legion.stanford.edu/publications"
-    external: true
+    url: "/publications"
 
 # Content configuration defaults:
 defaults:
