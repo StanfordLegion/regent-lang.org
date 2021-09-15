@@ -22,6 +22,7 @@ Papers about the Legion runtime that feature experiments written in Regent:
 
 Papers about applications written in Regent:
 
+  * [*In Situ* Visualization](https://legion.stanford.edu/publications/#isav2017) (ISAV 2017) \[[PDF](https://legion.stanford.edu/pdfs/isav2017.pdf)]
   * [Soleil-X](https://legion.stanford.edu/publications/#soleilx2018) (APS 2018) \[[PDF](https://legion.stanford.edu/pdfs/soleilx2018.pdf)]
   * HTR:
       * [Overview](https://doi.org/10.1016/j.cpc.2020.107262) (CPC 2020) \[[PDF](https://doi.org/10.1016/j.cpc.2020.107262)]
