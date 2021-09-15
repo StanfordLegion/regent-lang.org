@@ -22,6 +22,7 @@ permalink: /resources/index.html
 
 ## Applications
 
+  * [Hypersonics Task-based Research (HTR) solver](https://github.com/stanfordhpccenter/HTR-solver)
   * [Soleil-X: multi-physics solver (explicit compressible flow, point particles, DOM radiation)](https://github.com/stanfordhpccenter/soleil-x)
   * [Circuit simulation](https://github.com/StanfordLegion/legion/blob/master/language/examples/circuit_sparse.rg)
   * [PENNANT: unstructured mesh, Lagrangian staggered-grid hydrodynamics](https://github.com/StanfordLegion/legion/blob/master/language/examples/pennant_fast.rg)
