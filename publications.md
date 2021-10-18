@@ -11,7 +11,7 @@ Papers about the Regent language, compiler, and/or optimizations:
   * [Overview](https://legion.stanford.edu/publications/#sc2015) (SC 2015) \[[PDF](https://legion.stanford.edu/pdfs/regent2015.pdf)]
   * [Control Replication](https://legion.stanford.edu/publications/#cr2017) (SC 2017) \[[PDF](https://legion.stanford.edu/pdfs/cr2017.pdf)]
   * [Auto-Parallelizer](https://legion.stanford.edu/publications/#parallel2019) (SC 2019) \[[PDF](https://legion.stanford.edu/pdfs/parallelizer2019.pdf)]
-  * Index Launches (SC 2021) \[forthcoming]
+  * [Index Launches](https://legion.stanford.edu/publications/#idx2021) (SC 2021) \[[PDF](https://legion.stanford.edu/pdfs/idx2021.pdf)]
 
 Papers about the Legion runtime that feature experiments written in Regent:
 
