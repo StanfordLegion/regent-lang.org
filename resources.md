@@ -33,3 +33,4 @@ permalink: /resources/index.html
   * [Particle advection with GC solver](https://github.com/StanfordLegion/legion/blob/master/language/examples/particles.rg)
   * [QR decomposition](hpacella@stanford.edu)
   * [Sparse Cholesky](seshu@slac.stanford.edu)
+  * [Meshfree Solver](https://github.com/rupanshusoi/meshfree_solver_regent)
