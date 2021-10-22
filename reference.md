@@ -795,10 +795,10 @@ A cross product is defined by two or more partitions of the same underlying regi
 and creates intersections of the sub-regions of these partitions in a natural way.
 
 Consider a general cross product of `N` partitions `cp = cross_product(p1, p2, ..., pN)`.
-The expression `cp[i1][i2]...[iN]` returns a partition where each sub-region is
+The expression `cp[i1][i2]...[iN]` returns the sub-region
 `p1[i1] & p2[i2] & ... & pN[iN]`, where `&` is the intersection operator.
 Note that each index `iK` must be valid for the corresponding partition `pK`,
-and that empty intersections are allowed.
+and that empty sub-regions can be returned.
 
 
 {% highlight regent %}
