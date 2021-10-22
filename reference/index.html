@@ -141,6 +141,7 @@
 <li><a href="#index-spaces">Index Spaces</a></li>
 <li><a href="#regions">Regions</a></li>
 <li><a href="#partitions">Partitions</a></li>
+<li><a href="#cross-products">Cross Products</a></li>
 <li><a href="#partition-operators">Partition Operators</a></li>
 </ul></li>
 <li><a href="#annotations">Annotations</a>
@@ -562,6 +563,20 @@
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="n">lhs_partition</span> <span class="o">-</span> <span class="n">rhs_partition</span></code></pre>
 </figure>
 <p>This can be thought to be equivalent to setting each subregion <code>p[i]</code> to be equal to <code>lhs_partition[i] - rhs_partition[i]</code>.</p>
+<h2 id="cross-products">Cross Products</h2>
+<p>A cross product is the cartesian product of two or more partitions of a single parent region, resulting in a tree of nested partitions defined by the intersections of the corresponding subregions.</p>
+<p>In the general case of <code>N</code> partitions <code>p1</code> through <code>pN</code>, a cross product can be created with:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cross_product</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">pN</span><span class="p">)</span></code></pre>
+</figure>
+<p>Afterwards, the expression <code>cp[i1][i2]...[iN]</code> returns the subregion <code>p1[i1] &amp; p2[i2] &amp; ... &amp; pN[iN]</code>, where <code>&amp;</code> is the intersection operator. Note that each index <code>iK</code> must be valid for the corresponding partition <code>pK</code>, and that empty sub-regions can be returned (if there are no elements in the resulting intersection).</p>
+<p>For example, a cross product of two partitions might be defined as <code>cp = cross_product(p, q)</code>. In this case, <code>cp[i]</code> is a partition defined by the intersection of <code>p[i]</code> with <code>q</code>, and <code>cp[i][j]</code> is <code>p[i] &amp; q[j]</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="kd">var</span> <span class="n">q</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="kd">var</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cross_product</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span></code></pre>
+</figure>
 <h1 id="annotations">Annotations</h1>
 <p>Annotations can be applied to tasks, statements, or expressions and control the optimizations applied by the Regent compiler to the code. Annotations come in two basic flavors:</p>
 <ul>
@@ -867,6 +882,11 @@ end</code></pre>
 <span class="kd">var</span> <span class="n">p_aliased</span> <span class="o">=</span> <span class="n">__import_partition</span><span class="p">(</span><span class="k">aliased</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">raw_partition_aliased</span><span class="p">)</span></code></pre>
 </figure>
 <p><code>raw_partition_*</code> are of type <code>legion_logical_partition_t</code>.</p>
+<h4 id="importing-cross-products">Importing Cross Products</h4>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">__import_cross_product</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">raw_cp</span><span class="p">)</span></code></pre>
+</figure>
+<p><code>p</code> and <code>q</code> are the source partitions of the cross product, <code>colors</code> is an array of <code>uint32</code> containing one color for each source partition, and <code>raw_cp</code> is of type <code>legion_terra_index_cross_product_t</code>.</p>
 <h4 id="importing-futures">Importing Futures</h4>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f</span> <span class="o">=</span> <span class="n">__future</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code></pre>
