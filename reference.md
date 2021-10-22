@@ -791,18 +791,26 @@ to be equal to `lhs_partition[i] - rhs_partition[i]`.
 
 ## Cross Products
 
-A cross product is defined by two or more partitions of the same underlying region
-and creates intersections of the sub-regions of these partitions in a natural way.
+A cross product is the cartesian product of two or more partitions of
+a single parent region, resulting in a tree of nested partitions
+defined by the intersections of the corresponding subregions.
 
-Consider a general cross product of `N` partitions `cp = cross_product(p1, p2, ..., pN)`.
-Then, the expression `cp[i1][i2]...[iN]` returns the sub-region
-`p1[i1] & p2[i2] & ... & pN[iN]`, where `&` is the intersection operator.
-Note that each index `iK` must be valid for the corresponding partition `pK`,
-and that empty sub-regions can be returned.
+In the general case of `N` partitions `p1` through `pN`, a cross
+product can be created with:
 
-As an example, consider a cross product of two partitions `cp = cross_product(p, q)`.
-Then, `cp[i]` is a partition where each sub-region is the intersection of `p[i]`
-with a sub-region of `q`. Therefore, `cp[i][j]` is the sub-region `p[i] & q[j]`.
+{% highlight regent %}
+var cp = cross_product(p1, p2, ..., pN)
+{% endhighlight %}
+
+Afterwards, the expression `cp[i1][i2]...[iN]` returns the subregion
+`p1[i1] & p2[i2] & ... & pN[iN]`, where `&` is the intersection
+operator.  Note that each index `iK` must be valid for the
+corresponding partition `pK`, and that empty sub-regions can be
+returned (if there are no elements in the resulting intersection).
+
+For example, a cross product of two partitions might be defined as `cp
+= cross_product(p, q)`. In this case, `cp[i]` is a partition defined
+by the intersection of `p[i]` with `q`, and `cp[i][j]` is `p[i] & q[j]`.
 
 {% highlight regent %}
 var r = region(ispace(int1d), 10)
@@ -810,7 +818,6 @@ var p = partition(equal, r, ispace(int1d, 2))
 var q = partition(equal, r, ispace(int1d, 5))
 var cp = cross_product(p, q)
 {% endhighlight %}
-
 
 # Annotations
 
@@ -1333,8 +1340,8 @@ var p_aliased = __import_partition(aliased, r, cs, raw_partition_aliased)
 var cp = __import_cross_product(p, q, colors, raw_cp)
 {% endhighlight %}
 
-`p` and `q` are partitions that define the cross product,
-`colors` is a `uint` array containing a color for each dimension,
+`p` and `q` are the source partitions of the cross product,
+`colors` is an array of `uint32` containing one color for each source partition,
 and `raw_cp` is of type `legion_terra_index_cross_product_t`.
 
 #### Importing Futures
