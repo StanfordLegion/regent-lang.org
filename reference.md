@@ -27,6 +27,7 @@ permalink: /reference/index.html
       * [Index Spaces](#index-spaces)
       * [Regions](#regions)
       * [Partitions](#partitions)
+      * [Cross Products](#cross-products)
       * [Partition Operators](#partition-operators)
   * [Annotations](#annotations)
       * [Task Annotations](#task-annotations)
@@ -788,6 +789,29 @@ var p = lhs_partition - rhs_partition
 This can be thought to be equivalent to setting each subregion `p[i]`
 to be equal to `lhs_partition[i] - rhs_partition[i]`.
 
+## Cross Products
+
+A cross product is defined by two or more partitions of the same underlying region
+and creates intersections of the sub-regions of these partitions in a natural way.
+
+Consider a general cross product of `N` partitions `cp = cross_product(p1, p2, ..., pN)`.
+Then, the expression `cp[i1][i2]...[iN]` returns the sub-region
+`p1[i1] & p2[i2] & ... & pN[iN]`, where `&` is the intersection operator.
+Note that each index `iK` must be valid for the corresponding partition `pK`,
+and that empty sub-regions can be returned.
+
+As an example, consider a cross product of two partitions `cp = cross_product(p, q)`.
+Then, `cp[i]` is a partition where each sub-region is the intersection of `p[i]`
+with a sub-region of `q`. Therefore, `cp[i][j]` is the sub-region `p[i] & q[j]`.
+
+{% highlight regent %}
+var r = region(ispace(int1d), 10)
+var p = partition(equal, r, ispace(int1d, 2))
+var q = partition(equal, r, ispace(int1d, 5))
+var cp = cross_product(p, q)
+{% endhighlight %}
+
+
 # Annotations
 
 Annotations can be applied to tasks, statements, or expressions and
@@ -1302,6 +1326,16 @@ var p_aliased = __import_partition(aliased, r, cs, raw_partition_aliased)
 {% endhighlight %}
 
 `raw_partition_*` are of type `legion_logical_partition_t`.
+
+#### Importing Cross Products
+
+{% highlight regent %}
+var cp = __import_cross_product(p, q, colors, raw_cp)
+{% endhighlight %}
+
+`p` and `q` are partitions that define the cross product,
+`colors` is a `uint` array containing a color for each dimension,
+and `raw_cp` is of type `legion_terra_index_cross_product_t`.
 
 #### Importing Futures
 
