@@ -95,7 +95,7 @@ var {x_a = a, x_b = b, x_c = c, x_d = d} = x -- where x is of type fs
 
 ## Index Spaces
 
-An index space (ispace) is a collection in index points. This is most
+An index space (ispace) is a collection of index points. This is most
 directly analogous to the set of valid array indices for an array in
 C. While the latter is not a first-class feature of C, index spaces
 are first-class objects in Regent and can be created dynamically,
@@ -197,7 +197,7 @@ amount. The offset is zero by default. Some examples are shown below:
 {% highlight regent %}
 var is1 = ispace(int1d, 10) -- [0, 1, ... 9]
 var is2 = ispace(int2d, {4, 4}) -- [{0, 0}, {0, 1}, ... {0, 3}, ... {3, 3}]
-var is3 = ispace(int3d, {9, 9, 9}, {1, 1, 1}) -- [{1, 1, 1}, ... {9, 9, 9}]
+var is3 = ispace(int3d, {5, 5, 5}, {1, 2, 3}) -- [{1, 2, 3}, ... {5, 6, 7}]
 {% endhighlight %}
 
 ### "Unstructured" Index Spaces
@@ -216,18 +216,100 @@ be created via partitioning, a feature discussed in a later tutorial.
 
 ## Regions
 
-Regions are the cross-product between an index space and a field space.
+Regions take a field space and an index space and put them together to
+get a data structure that is similar to an array in C. Here's an
+example, using the `fs` field space from earlier:
 
 {% highlight regent %}
-var unstructured_lr = region(unstructured_is, fs)
-var structured_lr = region(structured_is, fs)
+var r = region(ispace(int1d, 10), fs)
 {% endhighlight %}
 
-Note that you can create multiple regions with the same index space and field space. This is a new region, distinct from structured_lr above.
+The index space may either be specified inline (as above) or
+out-of-line. The latter allows multiple regions to be created with the
+same index space (and the same or different field space).
 
 {% highlight regent %}
-var other_structured_lr = region(structured_is, fs)
+var is = ispace(int1d, 10)
+var s = region(is, fs)
+var t = region(is, fs)
+var u = region(is, int)
 {% endhighlight %}
+
+Like index spaces, regions can be iterated. One difference is that
+when regions are iterated, the iteration ranges over pointers to the
+elements of the region. The `@` (dereference) operator may be used on
+pointers to access (read or write) the corresponding region
+element. In the following loop, each element of the region `i` is
+assigned the value `i+1`.
+
+{% highlight regent %}
+var r = region(ispace(int1d, 10), int)
+for x in r do
+  @x = int(x) + 1
+end
+{% endhighlight %}
+
+In the case where the region's field space is not a primitive type
+(i.e., not `int`, `double`, `float`, etc.), the `.` (dot) operator can
+be used to implicitly dereference a pointer.
+
+{% highlight regent %}
+var r = region(ispace(int1d, 10), fs)
+for x in r do
+  x.a = 3.14
+  x.b = 2
+  x.c = x.b + int(x)
+  x.d = x.c * x.c
+end
+{% endhighlight %}
+
+### Region Typing and Assignment
+
+Unlike other types, region variables in Regent *cannot* be assigned a
+new value. This is a type error. Every region created in a region
+program is given a unique type, and even if it seems compatible,
+cannot be mixed with any other region in the program.
+
+{% highlight regent %}
+var is = ispace(int1d, 10)
+var s = region(is, fs)
+var t = region(is, fs)
+s = t -- ERROR: type mismatch between region(...) and region(...)
+{% endhighlight %}
+
+These error messages can sometimes be confusing to read. To help
+disambiguate the regions in an error message, use the `-fdebug 1`
+flag. With the example above, this would produce something like:
+
+{% highlight regent %}
+s = t -- ERROR: type mismatch between region#1(...) and region#2(...)
+{% endhighlight %}
+
+### Region Arguments
+
+Despite the restrictions on region assignment, regions *can* be passed
+to tasks. For example, the task:
+
+{% highlight regent %}
+task take_region(r : region(ispace(int1d), fs))
+end
+{% endhighlight %}
+
+Can be called as:
+
+{% highlight regent %}
+take_region(r)
+{% endhighlight %}
+
+Assuming `r` has a compatible type.
+
+Note that regions *do* allow mutation through task arguments (in fact,
+they are the only type in Regent that permits this). However, in order
+to do this, tasks must explicitly declare the privileges (`reads`,
+`writes`, etc.) they intend to use for their region arguments. As
+written, `task_region` declares no privileges on `r` and thus would be
+unable to either read or write its contents. Privileges and region
+access are discussed in a future tutorial.
 
 ## Final Code
 
