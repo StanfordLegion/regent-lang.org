@@ -272,9 +272,10 @@
 </figure>
 <p>Can be called as:</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="n">take_region</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">s</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">take_region</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
 </figure>
-<p>Assuming <code>r</code> has a compatible type.</p>
+<p>At the point where <code>take_region</code> is called, <code>s</code> is matched to <code>r</code>. Even though they have different types, they are still compatible, and the call is valid.</p>
 <p>Note that regions <em>do</em> allow mutation through task arguments (in fact, they are the only type in Regent that permits this). However, in order to do this, tasks must explicitly declare the privileges (<code>reads</code>, <code>writes</code>, etc.) they intend to use for their region arguments. As written, <code>task_region</code> declares no privileges on <code>r</code> and thus would be unable to either read or write its contents. Privileges and region access are discussed in a future tutorial.</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
