@@ -18,6 +18,9 @@ permalink: /install/index.html
 
 # Quickstart
 
+These quickstart instructions describe how to install Regent on Ubuntu
+and macOS, respectively.
+
 ## Ubuntu
 
 If you use Ubuntu, you can install Regent by running:
