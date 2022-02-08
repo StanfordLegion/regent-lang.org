@@ -9,43 +9,51 @@ permalink: /tutorial/01_tasks_and_futures/index.html
 This example introduces task launches and futures in Regent with a
 naive (but parallel) implementation of the Fibonacci numbers. This is
 not the fastest way to compute Fibonacci numbers, but demonstrates the
-functional nature of Regent tasks. The complete code for this example
+basic properties of Regent tasks. The complete code for this example
 follows at the bottom of the page and can also be found in the [GitHub
 repository](https://github.com/StanfordLegion/legion/tree/master/tutorial).
 
 ## Tasks
 
-*Tasks* are the fundamental unit of execution in Regent. Tasks are
-like functions in traditional languages. In fact, tasks execute
-sequentially. This means you can read the body of task from
-top-to-bottom, just like a normal sequential language.
+*Tasks* are the basic unit of execution in Regent, like functions in
+traditional languages. In fact, the bodies of tasks literally execute
+sequentially. This means you can read the code for a task from top to
+bottom, as in a conventional programming language.
 
-*Parallelism* occurs only among child tasks. (The terms *child tasks*
-and *subtasks* simply refer to the set of tasks called by a given
-task.) Though the two calls to `fibonacci` below appear to execute in
-sequence, they will actually run in parallel with each other.
+In Regent, when a task calls other tasks (called *child tasks* or
+*subtasks*), those tasks may execute in parallel. However, Regent
+always ensures that the program as a whole behaves as if it were
+executing sequentially. Thus, when reading a program to understand
+what it does, it is sufficient to imagine that the tasks are simply
+running in order, one after another.
+
+Behind the scenes, Regent analyzes the sequence of task calls to
+determine what is safe to execute in parallel. In the example below,
+the two calls to `fibonacci` below run in parallel because they do not
+*interfere* (i.e., there is no way for one task to influence the
+result of the other).
 
 {% highlight regent %}
 var f1 = fibonacci(n - 1)
 var f2 = fibonacci(n - 2)
 {% endhighlight %}
 
-Two tasks can execute in parallel only if they do not interfere. For
-the two calls above, this is trivial: the parameters to the tasks
-above are passed by-value, and there are no mutable global variables
-in Regent. Thus there is no way for them to modify state used in the
-other task (and thus no possibility of interference).
+For the `fibonacci` tasks above, checking for interference is trivial:
+the parameters to the tasks are passed by-value, and Regent programs
+never contain mutable global variables. Thus there is no way for
+either task to modify state used in the other task (and thus no
+possibility of interference).
 
 Regent does support mutable state, however. We'll consider this (and
 how it results in potential interference) in later tutorials.
 
 ## Futures
 
-The `fibonacci` task itself is declared to take two `int` arguments,
-and returns an `int`. (The return type can be inferred in general and
-is shown below for pedagogical purposes only.) The body of the task
-stores the results of the two recursive calls in variables `f1` and
-`f2` and returns the sum of their values.
+The `fibonacci` task takes one `int` argument, and returns an
+`int`. (The return type can be inferred in general and is shown below
+for pedagogical purposes only.) The body of the task stores the
+results of the two recursive calls in variables `f1` and `f2` and
+returns the sum of their values.
 
 {% highlight regent %}
 task fibonacci(n : int) : int
@@ -59,26 +67,53 @@ task fibonacci(n : int) : int
 end
 {% endhighlight %}
 
-In order to maximize parallelism, it's important to avoid blocking the
-execution of a task as it calls subtasks. Regent has a number of
-optimizations that help ensure this. For example, the `fibonacci` task
-above returns a *future*, rather than a direct value. This means that
-the execution continues past the line `var f1 = fibonacci(n - 1)` to
-the second `fibonacci` call, even though the result of the call may
-not be ready yet. The `+` operator is also lifted to operate on
-futures. Thus, the task only blocks at the final `return` statement,
-after all parallel operations have been issued.
+As noted above, the body of a Regent task literally executes
+sequentially. In the example above, that means the first call (to
+`fibonacci(n - 1)`) will be considered prior to the second call
+(`fibonacci(n - 2)`). Each task call is issued asynchronously. That is,
+execution proceeds in parallel to the parent task (assuming Regent can
+determine that this is safe to do). This is important, because if the
+parent blocks prior to the second call, Regent is unable to analyze it
+for parallelism.
 
-It is important to note that futures are *not* an a part of the Regent
-programming model. They are purely an optimization, inserted
-automatically by the compiler where appropriate. However, there are a
-number of ways to defeat the optimization---for example, a call to a C
-function cannot be issued in parallel, and thus must block execution
-if one of the arguments is a future.
+An example of something that might block execution would be calling
+into a C function with the value of `f1`:
 
-The main task calls `fibonacci` in a loop. In order to avoid blocking
-on the call to `c.printf`, the call is extracted into a task and
-called on the result of each `fibonacci` call.
+{% highlight regent %}
+var f1 = fibonacci(n - 1)
+regentlib.c.printf("value of first fibonnaci is %d\n", f1) -- blocks!
+var f2 = fibonacci(n - 2)
+{% endhighlight %}
+
+The second line in this snippet blocks, because it calls a C function
+(`printf`). In general, Regent has no ability to analyze the contents
+or effects of C functions, and such functions (if passed values
+resulting from tasks) may inhibit parallelism. An easy way to work
+around this is to wrap the call to `printf` in a task. This way,
+Regent can analyze the task for parallelism, as it does with the rest
+of the program.
+
+Behind the scenes, Regent maximizes parallelism by making each task
+return a *future*. Futures represent the results of tasks yet to be
+completed. In most cases, users don't need to be concerned with
+futures: as noted above, as long as the program avoids passing any
+futures into C functions, Regent will handle the parallelism
+automatically. Tasks accept futures directly, so passing a future to a
+task does not block. Operators like `+` can also be optimized by
+Regent to work on futures, so they do not block either. Similarly,
+Regent can optimize most conditional statements (such as `if` and
+`while`) that are predicated on futures, as long as those conditionals
+do not control the execution of C functions. The few remaining
+statements that block on futures (e.g., `return`) are usually not a
+problem for parallelism.
+
+Returning to our original example, `main` calls `fibonacci` in a
+loop. In order to avoid blocking on the call to the C function
+`c.printf`, the call is extracted into a task and called on the result
+of each `fibonacci` call. Thus the entire body of `main` will execute
+in parallel, with each `print_result` waiting on its corresponding
+`fibonnaci`, but not otherwise blocking the execution of other
+`fibonnaci` or `print_result` calls.
 
 {% highlight regent %}
 task print_result(n : int, result : int)
@@ -98,8 +133,6 @@ end
 {% highlight regent %}
 import "regent"
 
-local c = terralib.includec("stdio.h")
-
 task fibonacci(n : int) : int
   if n == 0 then return 0 end
   if n == 1 then return 1 end
@@ -111,7 +144,7 @@ task fibonacci(n : int) : int
 end
 
 task print_result(n : int, result : int)
-  c.printf("Fibonacci(%d) = %d\n", n, result)
+  regentlib.c.printf("Fibonacci(%d) = %d\n", n, result)
 end
 
 task main()
