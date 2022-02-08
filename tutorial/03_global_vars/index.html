@@ -114,9 +114,18 @@
         </h1>
       
 
-      <p>Regent has no global variables. C-style pointers are allowed, but must be used with caution. Mechanisms within the language for achieving mutable state are discussed in later tutorials.</p>
-<h2 id="lua-variables">Lua Variables</h2>
-<p>Regent has no concept of a global variable. Technically, Lua variables are global, but from Regent’s perspective they are fixed at compile time. For example, the code below is equivalent to attempting the assignment <code>2 = 3</code>, and fails with a compile error.</p>
+      <p>This example covers some features that are <em>not</em> supported by Regent. In particular, any use of mutable state must be carefully controlled, because it may be a hazard for parallel and distributed execution. Regent has features specifically to allow mutable state (that are safe within the language); these will be considered in a later tutorial.</p>
+<h2 id="global-variables">Global Variables</h2>
+<p>Regent has no mutable global variables.</p>
+<p>Lua variables (introduced with <code>local</code> outside of a task) are global, but from Regent’s perspective they are fixed at compile time. Remember that Lua cannot call Regent directly, so the execution of the Lua portion of a program completes before <code>regentlib.start</code> is called. Any references to Lua variables in Regent are replaced, as if the user had written directly the value of the variable in the Regent task itself.</p>
+<p>So for example, the following program is ok and prints the value <code>2</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">task</span> <span class="nf">print_x</span><span class="p">()</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"value of x is %d\n"</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="c1">-- ok, x is replaced by 2 at compile time</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>On the other hand, it makes no sense to attempt to modify a Lua variable inside Regent. In the code below, <code>x</code> is replaced by <code>2</code>, resulting in the nonsensical assignment <code>2 = 3</code>. This fails with a compile error.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="k">task</span> <span class="nf">set_x</span><span class="p">()</span>
@@ -124,14 +133,13 @@
 <span class="k">end</span></code></pre>
 </figure>
 <h2 id="pointers">Pointers</h2>
-<p>Regent allows calls to C functions, and permits the use of C pointers. However, these features must be used carefully in order to comply with the Legion programming model. Consider, for example, that a subtask may execute on a different processor than its parent—so a pointer passed from parent to child might not be valid, and could result in a crash.</p>
-<p>Similarly, pointers to C functions may vary between processors and should not be relied upon to be stable.</p>
-<p>The restrictions of the Legion programming model are discussed in the <a href="http://legion.stanford.edu/tutorial/hybrid.html">C++ tutorial</a>.</p>
+<p>Regent allows calls to C functions, and permits the use of C pointers. However, these features must be used carefully. Consider, for example, that a subtask may execute on a processor in a different address space (on a different node in a distributed machine) than its parent—so a pointer passed from parent to child might not be valid, and could result in a crash. In most cases it is not safe to pass C pointers to Regent tasks, and Regent will issue a warning if this is attempted.</p>
+<p>For further reading on restrictions to the use of pointers, see the discussion in the <a href="http://legion.stanford.edu/tutorial/hybrid.html">Legion tutorial</a>.</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
 
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span>
 
 <span class="kd">local</span> <span class="n">global_constant</span> <span class="o">=</span> <span class="mi">4</span>
 
