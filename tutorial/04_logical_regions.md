@@ -301,10 +301,13 @@ end
 Can be called as:
 
 {% highlight regent %}
-take_region(r)
+var s = region(ispace(int1d, 10), fs)
+take_region(s)
 {% endhighlight %}
 
-Assuming `r` has a compatible type.
+At the point where `take_region` is called, `s` is matched to
+`r`. Even though they have different types, they are still compatible,
+and the call is valid.
 
 Note that regions *do* allow mutation through task arguments (in fact,
 they are the only type in Regent that permits this). However, in order
