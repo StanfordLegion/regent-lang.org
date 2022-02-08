@@ -23,30 +23,45 @@ permalink: /install/index.html
 If you use Ubuntu, you can install Regent by running:
 
 {% highlight bash %}
+# install dependencies
 sudo apt-get install build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
+
+# download and build Regent
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
 ./install.py --debug
+
+# run Regent example
+./regent.py examples/circuit_sparse.rg
 {% endhighlight %}
+
+(These instructions have been tested on Ubuntu 18.04 and 20.04.)
 
 ## macOS
 
 If you use macOS, you can install Regent by running:
 
 {% highlight bash %}
+# install XCode command-line tools
+sudo xcode-select --install
+
+# download dependencies
 curl -O https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 tar xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+
+# environment variables needed to build/run Regent
 export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/clang+llvm-9.0.1-x86_64-apple-darwin"
 export INCLUDE_PATH="$(xcrun --sdk macosx --show-sdk-path)/usr/include"
+export CXXFLAGS="-std=c++11"
+
+# download and build Regent
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
-CXXFLAGS=-std=c++11 ./install.py --debug
-{% endhighlight %}
+./install.py --debug
 
-Note: Previously we recommended Homebrew to install LLVM, but as of
-December 2020, this route does not work unless you have a full
-installation of XCode (i.e., the command-line tools are not
-sufficient).
+# run Regent example
+./regent.py examples/circuit_sparse.rg
+{% endhighlight %}
 
 ## Other Systems
 
