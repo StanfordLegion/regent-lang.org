@@ -81,7 +81,7 @@ into a C function with the value of `f1`:
 
 {% highlight regent %}
 var f1 = fibonacci(n - 1)
-regentlib.c.printf("value of first fibonnaci is %d\n", f1) -- blocks!
+c.printf("value of first fibonnaci is %d\n", f1) -- blocks!
 var f2 = fibonacci(n - 2)
 {% endhighlight %}
 
@@ -133,6 +133,8 @@ end
 {% highlight regent %}
 import "regent"
 
+local c = regentlib.c
+
 task fibonacci(n : int) : int
   if n == 0 then return 0 end
   if n == 1 then return 1 end
@@ -144,7 +146,7 @@ task fibonacci(n : int) : int
 end
 
 task print_result(n : int, result : int)
-  regentlib.c.printf("Fibonacci(%d) = %d\n", n, result)
+  c.printf("Fibonacci(%d) = %d\n", n, result)
 end
 
 task main()
