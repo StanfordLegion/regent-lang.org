@@ -114,24 +114,25 @@
         </h1>
       
 
-      <p>Regent provides a number of optimizations to ensure that tasks execute in parallel and with maximum efficiency. One of the most important of these is <em>index task</em> optimization. An <em>index task launch</em> encapsulates a parallel loop and ensures that the runtime is able to amortize the cost of analysis of the contained tasks.</p>
-<h2 id="optimizing-index-tasks">Optimizing Index Tasks</h2>
-<p>Loops are a common pattern in parallel codes. Regent optimizes loops to ensure that they execute efficiently on the Legion runtime. Recall that tasks execute in parallel only if they do not interfere. Legion must expend effort analyzing each task to determine non-interference with respect to surrounding tasks. Index tasks ensure that this analysis is amortized over a loop of task calls, increasing the efficiency of the runtime.</p>
-<p>Regent generates index task launches on loops containing tasks calls. For example, the following code calls a task <code>double_of</code> in a loop, and accumulates the results into the variable <code>total</code>.</p>
+      <p>Regent provides a number of optimizations to ensure that tasks execute in parallel and with maximum efficiency. One of the most important of these is the <em>index launch</em> optimization. An index launch encapsulates a parallel loop and ensures that Regent is able to amortize the cost of analyzing the enclosed tasks. This is an important optimization that is used in nearly all production codes, and is critical for scaling most Regent programs to large numbers of nodes.</p>
+<p>As with nearly all of Regent’s optimizations, this is applied automatically to Regent programs. Any loop that matches Regent’s criteria will be converted into an index launch, without any specific action by the user. However, it is still helpful for users to be aware of when their programs are being optimized, and what types of programs can generally be expected to work well in Regent. Regent also provides a feature, described below, to ensure that loops are being optimized the way that the user expects.</p>
+<h2 id="optimizing-index-launches">Optimizing Index Launches</h2>
+<p>Recall that tasks execute in parallel only if they do not interfere. Regent must expend effort analyzing each task to determine non-interference with respect to the other children of the same parent task. The index launch optimization amortizes this analysis over a loop of task calls, increasing efficiency when the number of tasks is large.</p>
+<p>The following code calls a task <code>double_of</code> in a loop, and accumulates the results into the variable <code>total</code>. This loop will be index launched by Regent.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
   <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>The line <code>__demand(__parallel)</code> marks the loop as an index launch. This annotation is <em>not required</em>, and is shown mostly for pedagogical purposes. Regent will optimize this loop regardless.</p>
-<p>Generally speaking, annotations are recommended only as a means of <a href="https://en.wikipedia.org/wiki/Defensive_programming">defensive programming</a> against bugs (in the application or compiler). The <code>__parallel</code> annotation guarantees that the compiler will produce an error if it is unable to optimize the loop in question. Most often, this happens because of a loop-carried dependence between the iterations of the loop. (This is in contrast to an OpenMP-style <code>#pragma</code>, which applies the optimization even if it is unsound.)</p>
+<p>The annotation <code>__demand(__index_launch)</code> ensures that Regent performs the index launch as expected. Note that this is primarily a <a href="https://en.wikipedia.org/wiki/Defensive_programming">defensive programming</a> feature. Regent will optimize this code, regardless of whether the user adds the annotation or not. The effect of the annotation is not to “force” Regent to optimize the code (Regent will refuse to do so if it is not safe), but instead to produce an error if the optimization is not performed. This can help, especially in large codebases, to ensure that important parts of the program are not deoptimized unexpectedly. It is considered good code hygiene to mark loops with <code>__demand(__index_launch)</code> because it helps users confirm their understanding of how the code will behave. This also helps to improve the error messages generated by Regent, as the compiler can point to specifically those parts of the program (if any) that inhibited optimization.</p>
+<p>(This style of annotation is in particular contrast to an OpenMP-style <code>#pragma</code>, which applies the optimization even if it is unsound.)</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
 
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span>
 
 <span class="k">task</span> <span class="nf">double_of</span><span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
   <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello world from task %d!\n"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
@@ -142,7 +143,7 @@
   <span class="kd">var</span> <span class="n">num_points</span> <span class="o">=</span> <span class="mi">4</span>
 
   <span class="kd">var</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
   <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_points</span> <span class="k">do</span>
     <span class="n">total</span> <span class="o">+=</span> <span class="n">double_of</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
   <span class="k">end</span>

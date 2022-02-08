@@ -142,7 +142,7 @@
 <p>An example of something that might block execution would be calling into a C function with the value of <code>f1</code>:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">regentlib</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"value of first fibonnaci is %d\n"</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span> <span class="c1">-- blocks!</span>
+<span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"value of first fibonnaci is %d\n"</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span> <span class="c1">-- blocks!</span>
 <span class="kd">var</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span></code></pre>
 </figure>
 <p>The second line in this snippet blocks, because it calls a C function (<code>printf</code>). In general, Regent has no ability to analyze the contents or effects of C functions, and such functions (if passed values resulting from tasks) may inhibit parallelism. An easy way to work around this is to wrap the call to <code>printf</code> in a task. This way, Regent can analyze the task for parallelism, as it does with the rest of the program.</p>
@@ -164,6 +164,8 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
 
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span>
+
 <span class="k">task</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="kt">int</span>
   <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span> <span class="k">end</span>
   <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span>
@@ -175,7 +177,7 @@
 <span class="k">end</span>
 
 <span class="k">task</span> <span class="nf">print_result</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">result</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
-  <span class="n">regentlib</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Fibonacci(%d) = %d\n"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Fibonacci(%d) = %d\n"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 <span class="k">end</span>
 
 <span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
