@@ -114,8 +114,11 @@
         </h1>
       
 
-      <h2 id="field-spaces">Field spaces</h2>
-<p>Field spaces are sets of fields, and behave similarly to structs in C or Terra.</p>
+      <p>We now come to one of the central abstractions for data in Regent, <em>logical regions</em> (or just “regions” for short). As hinted in earlier tutorials, regions allow mutable to be used (safely) within Regent. Idiomatic Regent programs usually store most or all of their data in regions.</p>
+<p>At their most basic, regions are like arrays of structs in a language like C. The main differences are that regions are not fixed to a single memory allocation, but can seamlessly move around a distributed machine, be copied down to the GPU, etc. In most cases, this happens without any specific user intervention, and users need only be concerned with what data is placed in regions and how that data is used.</p>
+<p>Regions consist of a <em>field space</em> (like a C struct) and an <em>index space</em>. The latter doesn’t have a first-class analog in C, but is conceptually the set of indices used to refer to elements within a region (like indices in an array). Each of these components is described in more detail below.</p>
+<h2 id="field-spaces">Field Spaces</h2>
+<p>Field spaces are sets of fields, and behave similarly to structs in C.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
   <span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
@@ -144,7 +147,7 @@
   <span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
 <span class="k">end</span></code></pre>
 </figure>
-<h2 id="index-spaces">Index spaces</h2>
+<h2 id="index-spaces">Index Spaces</h2>
 <p>An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.</p>
 <p>An unstructured ispace is a collection of opaque points, useful for pointer data structures such as graphs, trees, linked lists, and unstructured meshes.</p>
 <figure class="highlight">
