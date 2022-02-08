@@ -114,50 +114,114 @@
         </h1>
       
 
-      <p>We now come to one of the central abstractions for data in Regent, <em>logical regions</em> (or just “regions” for short). As hinted in earlier tutorials, regions allow mutable to be used (safely) within Regent. Idiomatic Regent programs usually store most or all of their data in regions.</p>
+      <p>We now come to one of the central abstractions for data in Regent, <em>logical regions</em> (or just “regions” for short). As hinted in earlier tutorials, regions allow mutable data to be used (safely) within Regent. Idiomatic Regent programs usually store most or all of their data in regions.</p>
 <p>At their most basic, regions are like arrays of structs in a language like C. The main differences are that regions are not fixed to a single memory allocation, but can seamlessly move around a distributed machine, be copied down to the GPU, etc. In most cases, this happens without any specific user intervention, and users need only be concerned with what data is placed in regions and how that data is used.</p>
 <p>Regions consist of a <em>field space</em> (like a C struct) and an <em>index space</em>. The latter doesn’t have a first-class analog in C, but is conceptually the set of indices used to refer to elements within a region (like indices in an array). Each of these components is described in more detail below.</p>
 <h2 id="field-spaces">Field Spaces</h2>
-<p>Field spaces are sets of fields, and behave similarly to structs in C.</p>
+<p>A field space (fspace) works much like a struct in C. The following code declares a field space with four fields:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
-  <span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+  <span class="n">a</span> <span class="p">:</span> <span class="kt">double</span><span class="p">,</span>
+  <span class="n">b</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">c</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">d</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
+<span class="p">}</span></code></pre>
+</figure>
+<p>As a convenience, multiple, consecutive fields with the same type may be collapsed into a single line. The code below is identical to the version above:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
+  <span class="n">a</span> <span class="p">:</span> <span class="kt">double</span><span class="p">,</span>
   <span class="p">{</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">-- Multiple fields may be declared with a single type.</span>
 <span class="p">}</span></code></pre>
 </figure>
-<p>Field spaces may also be instantiated by casting an anonymous struct to the appropriate type.</p>
+<p>In Regent code, <code>fs</code> names a type (the type of the field space), and can be instantiated to create values of this type. For example, the following code defines a variable <code>x</code> of type <code>fs</code>:</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
-  <span class="kd">var</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">z</span> <span class="p">}</span> <span class="c1">-- Define a local variable of type fs.</span>
-  <span class="k">return</span> <span class="n">obj</span>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">x</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">6</span> <span class="p">}</span></code></pre>
+</figure>
+<p>Values of field spaces can be used like any other type: they can be passed (by-value) to tasks, returned from tasks, modified, etc. To access the individual elements of a field space, use the <code>.</code> (dot) operator.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">sum_fs</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">fs</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">x</span><span class="p">.</span><span class="n">a</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">c</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">d</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">update_fs</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">fs</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+  <span class="n">y</span><span class="p">.</span><span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">25</span>
+  <span class="n">y</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">y</span><span class="p">.</span><span class="n">d</span>
+  <span class="k">return</span> <span class="n">y</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>Field spaces differ from structs in that they may also take region-typed arguments.</p>
+<p>There is also a syntax to unpack multiple values of a field space at the same time. The example below creates 4 new variables, <code>a</code>, <code>b</code>, <code>c</code>, and <code>d</code> with the values of <code>x.a</code>, <code>x.b</code>, <code>x.c</code>, and <code>x.d</code>.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
-  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span>
-<span class="p">}</span>
-
-<span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
- <span class="n">left</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
- <span class="n">right</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span>
-<span class="p">}</span>
-
-<span class="k">task</span> <span class="nf">make_edge</span><span class="p">(</span><span class="n">points</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">),</span> <span class="n">a</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">))</span>
-  <span class="k">return</span> <span class="p">[</span><span class="n">edge</span><span class="p">(</span><span class="n">points</span><span class="p">)]</span> <span class="p">{</span> <span class="n">left</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">b</span> <span class="p">}</span>
-<span class="k">end</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="p">{</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="o">=</span> <span class="n">x</span> <span class="c1">-- where x is of type fs</span></code></pre>
+</figure>
+<p>This syntax also supports creating variables with different names, if that is desired. In the code below, <code>x_a</code> and so on name the new variables, <code>a</code> etc. name the fields of the field space to be unpacked.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="p">{</span><span class="n">x_a</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">x_b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">x_c</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">x_d</span> <span class="o">=</span> <span class="n">d</span><span class="p">}</span> <span class="o">=</span> <span class="n">x</span> <span class="c1">-- where x is of type fs</span></code></pre>
 </figure>
 <h2 id="index-spaces">Index Spaces</h2>
-<p>An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.</p>
-<p>An unstructured ispace is a collection of opaque points, useful for pointer data structures such as graphs, trees, linked lists, and unstructured meshes.</p>
+<p>An index space (ispace) is a collection in index points. This is most directly analogous to the set of valid array indices for an array in C. While the latter is not a first-class feature of C, index spaces are first-class objects in Regent and can be created dynamically, passed to tasks and returned from tasks.</p>
+<p>The example below creates a 1-D index space with 1024 elements. This would be similar to <code>int[1024]</code> in C, except an index space refers to the set of valid indices only and contains no actual data.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">unstructured_is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">ptr</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span> <span class="c1">-- Create an ispace with 1024 elements.</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span></code></pre>
 </figure>
-<p>A structured ispace is a (multi-dimensional) rectangle of points.</p>
+<p>Index spaces can be passed to and returned from tasks:</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">i1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">-- Create an ispace including the 1-dimensional ints from 0 to 1023.</span>
-<span class="kd">var</span> <span class="n">i2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">},</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">})</span> <span class="c1">-- 2-dimensional 4x4 rectangle with indices starting at 1,1.</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">take_is</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">make_is</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">is</span>
+<span class="k">end</span></code></pre>
 </figure>
+<p>Index spaces can also be iterated. The code below executes 1024 iterations, for the values <code>0</code> through <code>1023</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+  <span class="c1">-- x takes the values 0, ... 1023</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h3 id="index-space-bounds">Index Space Bounds</h3>
+<p>One notable difference between index spaces and C arrays is that index spaces need not start at 0. The following index space contains the elements, <code>-1</code>, <code>0</code>, <code>1</code>, … <code>10</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></code></pre>
+</figure>
+<p>In its most general form, the arguments to the <code>ispace</code> operator are as follows:</p>
+<ol type="1">
+<li><p>The type of the index (e.g., <code>int1d</code>).</p></li>
+<li><p>The extent (size) of the index space (e.g., <code>12</code> indicates it contains 12 elements).</p></li>
+<li><p>The offset (start) of the index space (e.g., <code>-1</code> indicates the first element starts at index −1).</p></li>
+</ol>
+<p>Index spaces support two operators, <code>.bounds</code> and <code>.volume</code>, to retrieve the bounding rectangle and volume of the index space, respectively.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">is</span><span class="p">.</span><span class="n">bounds</span> <span class="c1">-- returns rect1d { lo = int1d(-1), hi = int1d(10) }</span>
+<span class="n">is</span><span class="p">.</span><span class="n">volume</span> <span class="c1">-- returns 12</span></code></pre>
+</figure>
+<h3 id="multi-dimensional-index-spaces">Multi-dimensional Index Spaces</h3>
+<p>Index spaces are not restricted to 1 dimension. Regent supports up to 9 dimensions, though for dimensions above 3, Regent must be recompiled with the appropriate support (set <code>MAX_DIM=N</code> when building). Regent provides a set of built-in index types for each of these dimensions: <code>int1d</code>, <code>int2d</code>, <code>int3d</code>, etc. up to <code>int9d</code> (if compiled with the right support).</p>
+<p><code>int1d</code> is a special case in that it corresponds directly into an <code>int</code>. For the other cases, each <code>intNd</code> is actually a field space with <code>N</code> fields. These fields always take the following ordering: <code>x</code>, <code>y</code>, <code>z</code>, <code>w</code>, <code>v</code>, <code>u</code>, <code>t</code>, <code>s</code>, <code>r</code>.</p>
+<p>Because <code>intNd</code> types are field spaces, their elements can be accessed with the usual field space syntax.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">sum_coordinates</span><span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="kt">int4d</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">i</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">i</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">i</span><span class="p">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">i</span><span class="p">.</span><span class="n">w</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">make_coordinate</span><span class="p">(</span><span class="n">a</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">b</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">c</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">d</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span>
+  <span class="c1">-- field names are matched positionally when unspecified</span>
+  <span class="k">return</span> <span class="kt">int4d</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">}</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Index spaces can be created from multi-dimensional index types. In this case, the extent specifies the upper-rectangular corner of a bounding box, and the offset shifts the box by the specified amount. The offset is zero by default. Some examples are shown below:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">-- [0, 1, ... 9]</span>
+<span class="kd">var</span> <span class="n">is2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span> <span class="c1">-- [{0, 0}, {0, 1}, ... {0, 3}, ... {3, 3}]</span>
+<span class="kd">var</span> <span class="n">is3</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int3d</span><span class="p">,</span> <span class="p">{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">})</span> <span class="c1">-- [{1, 1, 1}, ... {9, 9, 9}]</span></code></pre>
+</figure>
+<h3 id="unstructured-index-spaces">“Unstructured” Index Spaces</h3>
+<p>For historical reasons, Regent supports a notion of an “unstructured” index space via the index type <code>ptr</code>. It is functionally equivalent to <code>int1d</code> in all respects and is being maintained for backwards compatibility only. Most programs can use <code>int1d</code> instead with no negative consequences.</p>
+<h3 id="sparse-index-spaces">Sparse Index Spaces</h3>
+<p>In general, index spaces need not be dense rectangles. Regent does not provide a syntax to directly create a sparse index space, but they can be created via partitioning, a feature discussed in a later tutorial.</p>
 <h2 id="regions">Regions</h2>
 <p>Regions are the cross-product between an index space and a field space.</p>
 <figure class="highlight">
@@ -175,17 +239,17 @@
 <span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
 
 <span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span>
-  <span class="n">a</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+  <span class="n">a</span> <span class="p">:</span> <span class="kt">double</span><span class="p">,</span>
   <span class="p">{</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">}</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
+<span class="k">task</span> <span class="nf">make_fs</span><span class="p">(</span><span class="n">w</span> <span class="p">:</span> <span class="kt">double</span><span class="p">,</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">z</span> <span class="p">:</span> <span class="kt">int</span><span class="p">)</span> <span class="p">:</span> <span class="n">fs</span>
   <span class="kd">var</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">z</span> <span class="p">}</span>
   <span class="k">return</span> <span class="n">obj</span>
 <span class="k">end</span>
 
 <span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
-  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span>
+  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="kt">double</span>
 <span class="p">}</span>
 
 <span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>

@@ -338,7 +338,7 @@
 <p>Field spaces differ from structs in that they may take region-typed arguments. Such arguments are useful for declaring recursive data types. References to field spaces with arguments must be escaped.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">point</span> <span class="p">{</span>
-  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="n">double</span> <span class="c1">-- Multiple fields may be declared with a single type.</span>
+  <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="p">:</span> <span class="kt">double</span> <span class="c1">-- Multiple fields may be declared with a single type.</span>
 <span class="p">}</span>
 
 <span class="k">fspace</span> <span class="nf">edge</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="p">{</span>
@@ -354,7 +354,7 @@
 <p>For example, a quad-tree implementation might feature the following field space declaration:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">fspace</span> <span class="nf">quad</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">)))</span> <span class="p">{</span>
-  <span class="n">val</span><span class="p">:</span> <span class="n">double</span><span class="p">,</span>
+  <span class="n">val</span><span class="p">:</span> <span class="kt">double</span><span class="p">,</span>
   <span class="n">ne</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
   <span class="n">nw</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
   <span class="n">se</span><span class="p">:</span> <span class="kt">ptr</span><span class="p">(</span><span class="n">quad</span><span class="p">(</span><span class="n">wild</span><span class="p">),</span> <span class="n">r</span><span class="p">),</span>
@@ -368,7 +368,7 @@
 <span class="kd">var</span> <span class="n">x1</span> <span class="o">=</span> <span class="kt">int1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">-- Index 0 in a 1-dimensional space.</span>
 <span class="kd">var</span> <span class="n">x2</span> <span class="o">=</span> <span class="kt">int2d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0 in a 2-dimensional space.</span>
 <span class="kd">var</span> <span class="n">x3</span> <span class="o">=</span> <span class="kt">int3d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0 in a 3-dimensional space.</span>
-<span class="kd">var</span> <span class="n">x4</span> <span class="o">=</span> <span class="n">int4d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0,0 in a 4-dimensional space.</span></code></pre>
+<span class="kd">var</span> <span class="n">x4</span> <span class="o">=</span> <span class="kt">int4d</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="c1">-- Index 0,0,0,0 in a 4-dimensional space.</span></code></pre>
 </figure>
 <p>The fields of the build-in index types are called <code>x</code>, <code>y</code>, <code>z</code>, <code>w</code>, <code>v</code>, <code>u</code>, <code>t</code>, <code>s</code>, and <code>r</code>, respectively (up to the maximum number of dimensions of the particular index type).</p>
 <figure class="highlight">
@@ -655,12 +655,12 @@
 <h4 id="index-launch-optimization">Index Launch Optimization</h4>
 <p>The <code>__index_launch</code> annotation on a <code>for</code> loop indicates that the marked loop must be converted into an index launch, and will cause the compiler to issue an error if this is not possible. Index launches of tasks can be analyzed in <code>O(1)</code> time instead of <code>O(N)</code> for <code>N</code> tasks.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- The compiler will throw an error if this loop cannot be converted into an index launch.</span>
 <span class="k">end</span>
 
-<span class="n">__forbid</span><span class="p">(</span><span class="n">__index_launch</span><span class="p">)</span>
+<span class="n">__forbid</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
   <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">-- This loop will NOT be converted into an index launch.</span>
 <span class="k">end</span></code></pre>
@@ -758,7 +758,7 @@
 <h4 id="auto-parallelizer">Auto-Parallelizer</h4>
 <p>The <code>__parallel</code> annotation on a task indicates that the task should be considered for auto-parallelization. Any loops over regions inside the marked task must not contain loop-carried dependencies except for reductions via commutative and associative operators.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__parallel</span><span class="p">)</span>
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__parallel</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">h</span><span class="p">()</span>
   <span class="o">...</span>
 <span class="k">end</span></code></pre>
@@ -802,7 +802,7 @@
   <span class="k">return</span> <span class="n">t</span>
 <span class="k">end</span>
 <span class="kd">local</span> <span class="n">inc_int_by_1</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">inc_double_by_pi</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="n">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">)</span></code></pre>
+<span class="kd">local</span> <span class="n">inc_double_by_pi</span> <span class="o">=</span> <span class="n">make_increment_task</span><span class="p">(</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">)</span></code></pre>
 </figure>
 <p>To inspect the contents of generated tasks, invoke Regent with the flag <code>-fpretty 1</code>. On the code above, this produces the following output.</p>
 <figure class="highlight">
@@ -873,8 +873,8 @@ end</code></pre>
 <p><code>raw_region</code> is of type <code>legion_logical_region_t</code>.</p>
 <p><code>raw_field_id_array</code> is of type <code>legion_field_id_t[N]</code> where <code>N</code> is the number of fields in field space <code>fs</code>. Field IDs are enumerated in the same order as listed in the original field space or struct. Note that field spaces and structs in Regent are recursively flattened, such that the field space <code>fs</code> below contains 3 fields (<code>center.x</code>, <code>center.y</code> and <code>mass</code>).</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">vec2</span>  <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="n">double</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span>
-<span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span> <span class="n">center</span> <span class="p">:</span> <span class="n">vec2</span><span class="p">,</span> <span class="n">mass</span> <span class="p">:</span> <span class="n">double</span> <span class="p">}</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="k">struct</span> <span class="nf">vec2</span>  <span class="p">{</span> <span class="n">x</span> <span class="p">:</span> <span class="kt">double</span><span class="p">,</span> <span class="n">y</span> <span class="p">:</span> <span class="kt">double</span> <span class="p">}</span>
+<span class="k">fspace</span> <span class="nf">fs</span> <span class="p">{</span> <span class="n">center</span> <span class="p">:</span> <span class="n">vec2</span><span class="p">,</span> <span class="n">mass</span> <span class="p">:</span> <span class="kt">double</span> <span class="p">}</span></code></pre>
 </figure>
 <h4 id="importing-partitions">Importing Partitions</h4>
 <figure class="highlight">
