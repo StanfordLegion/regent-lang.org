@@ -160,7 +160,7 @@
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="p">{</span><span class="n">x_a</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">x_b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">x_c</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">x_d</span> <span class="o">=</span> <span class="n">d</span><span class="p">}</span> <span class="o">=</span> <span class="n">x</span> <span class="c1">-- where x is of type fs</span></code></pre>
 </figure>
 <h2 id="index-spaces">Index Spaces</h2>
-<p>An index space (ispace) is a collection in index points. This is most directly analogous to the set of valid array indices for an array in C. While the latter is not a first-class feature of C, index spaces are first-class objects in Regent and can be created dynamically, passed to tasks and returned from tasks.</p>
+<p>An index space (ispace) is a collection of index points. This is most directly analogous to the set of valid array indices for an array in C. While the latter is not a first-class feature of C, index spaces are first-class objects in Regent and can be created dynamically, passed to tasks and returned from tasks.</p>
 <p>The example below creates a 1-D index space with 1024 elements. This would be similar to <code>int[1024]</code> in C, except an index space refers to the set of valid indices only and contains no actual data.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span></code></pre>
@@ -216,22 +216,65 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">-- [0, 1, ... 9]</span>
 <span class="kd">var</span> <span class="n">is2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span> <span class="c1">-- [{0, 0}, {0, 1}, ... {0, 3}, ... {3, 3}]</span>
-<span class="kd">var</span> <span class="n">is3</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int3d</span><span class="p">,</span> <span class="p">{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">})</span> <span class="c1">-- [{1, 1, 1}, ... {9, 9, 9}]</span></code></pre>
+<span class="kd">var</span> <span class="n">is3</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int3d</span><span class="p">,</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">})</span> <span class="c1">-- [{1, 2, 3}, ... {5, 6, 7}]</span></code></pre>
 </figure>
 <h3 id="unstructured-index-spaces">“Unstructured” Index Spaces</h3>
 <p>For historical reasons, Regent supports a notion of an “unstructured” index space via the index type <code>ptr</code>. It is functionally equivalent to <code>int1d</code> in all respects and is being maintained for backwards compatibility only. Most programs can use <code>int1d</code> instead with no negative consequences.</p>
 <h3 id="sparse-index-spaces">Sparse Index Spaces</h3>
 <p>In general, index spaces need not be dense rectangles. Regent does not provide a syntax to directly create a sparse index space, but they can be created via partitioning, a feature discussed in a later tutorial.</p>
 <h2 id="regions">Regions</h2>
-<p>Regions are the cross-product between an index space and a field space.</p>
+<p>Regions take a field space and an index space and put them together to get a data structure that is similar to an array in C. Here’s an example, using the <code>fs</code> field space from earlier:</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">unstructured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">unstructured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">fs</span><span class="p">)</span></code></pre>
 </figure>
-<p>Note that you can create multiple regions with the same index space and field space. This is a new region, distinct from structured_lr above.</p>
+<p>The index space may either be specified inline (as above) or out-of-line. The latter allows multiple regions to be created with the same index space (and the same or different field space).</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">other_structured_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">structured_is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">s</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">t</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">u</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span></code></pre>
 </figure>
+<p>Like index spaces, regions can be iterated. One difference is that when regions are iterated, the iteration ranges over pointers to the elements of the region. The <code>@</code> (dereference) operator may be used on pointers to access (read or write) the corresponding region element. In the following loop, each element of the region <code>i</code> is assigned the value <code>i+1</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="kt">int</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="k">in</span> <span class="n">r</span> <span class="k">do</span>
+  <span class="o">@</span><span class="n">x</span> <span class="o">=</span> <span class="kt">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>In the case where the region’s field space is not a primitive type (i.e., not <code>int</code>, <code>double</code>, <code>float</code>, etc.), the <code>.</code> (dot) operator can be used to implicitly dereference a pointer.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">fs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="k">in</span> <span class="n">r</span> <span class="k">do</span>
+  <span class="n">x</span><span class="p">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span>
+  <span class="n">x</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">x</span><span class="p">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="kt">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">x</span><span class="p">.</span><span class="n">c</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h3 id="region-typing-and-assignment">Region Typing and Assignment</h3>
+<p>Unlike other types, region variables in Regent <em>cannot</em> be assigned a new value. This is a type error. Every region created in a region program is given a unique type, and even if it seems compatible, cannot be mixed with any other region in the program.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">s</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">t</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">t</span> <span class="c1">-- ERROR: type mismatch between region(...) and region(...)</span></code></pre>
+</figure>
+<p>These error messages can sometimes be confusing to read. To help disambiguate the regions in an error message, use the <code>-fdebug 1</code> flag. With the example above, this would produce something like:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">s</span> <span class="o">=</span> <span class="n">t</span> <span class="c1">-- ERROR: type mismatch between region#1(...) and region#2(...)</span></code></pre>
+</figure>
+<h3 id="region-arguments">Region Arguments</h3>
+<p>Despite the restrictions on region assignment, regions <em>can</em> be passed to tasks. For example, the task:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">take_region</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">fs</span><span class="p">))</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Can be called as:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">take_region</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></code></pre>
+</figure>
+<p>Assuming <code>r</code> has a compatible type.</p>
+<p>Note that regions <em>do</em> allow mutation through task arguments (in fact, they are the only type in Regent that permits this). However, in order to do this, tasks must explicitly declare the privileges (<code>reads</code>, <code>writes</code>, etc.) they intend to use for their region arguments. As written, <code>task_region</code> declares no privileges on <code>r</code> and thus would be unable to either read or write its contents. Privileges and region access are discussed in a future tutorial.</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
