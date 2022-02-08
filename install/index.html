@@ -137,7 +137,7 @@
 <span class="c"># download and build Regent</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
-./install.py <span class="nt">--debug</span>
+./install.py <span class="nt">--debug</span> <span class="nt">--rdir</span><span class="o">=</span>auto
 
 <span class="c"># run Regent example</span>
 ./regent.py examples/circuit_sparse.rg</code></pre>
@@ -149,8 +149,13 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <pre><code class="language-bash" data-lang="bash"><span class="c"># install XCode command-line tools</span>
 <span class="nb">sudo </span>xcode-select <span class="nt">--install</span>
 
-<span class="c"># download dependencies</span>
-curl <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+<span class="c"># download CMake</span>
+curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-macos-universal.tar.gz
+<span class="nb">tar </span>xfz cmake-3.22.2-macos-universal.tar.gz
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:cmake-3.22.2-macos-universal/CMake.app/Contents/bin"</span>
+
+<span class="c"># download LLVM</span>
+curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 <span class="nb">tar </span>xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 
 <span class="c"># environment variables needed to build/run Regent</span>
@@ -161,11 +166,12 @@ curl <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/do
 <span class="c"># download and build Regent</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
-./install.py <span class="nt">--debug</span>
+./install.py <span class="nt">--debug</span> <span class="nt">--rdir</span><span class="o">=</span>auto
 
 <span class="c"># run Regent example</span>
 ./regent.py examples/circuit_sparse.rg</code></pre>
 </figure>
+<p>(These instructions have been tested on macOS 11.6 on an x86 Mac.)</p>
 <h2 id="other-systems">Other Systems</h2>
 <p>Complete instructions for installation follow below.</p>
 <p>Regent is also available as a Docker container. See <a href="#docker">the bottom of this page</a> for instructions.</p>
