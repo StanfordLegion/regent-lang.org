@@ -48,7 +48,7 @@ sudo xcode-select --install
 # download CMake
 curl -L -O https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-macos-universal.tar.gz
 tar xfz cmake-3.22.2-macos-universal.tar.gz
-export PATH="$PATH:cmake-3.22.2-macos-universal/CMake.app/Contents/bin"
+export PATH="$PATH:$PWD/cmake-3.22.2-macos-universal/CMake.app/Contents/bin"
 
 # download LLVM
 curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
