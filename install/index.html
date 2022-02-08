@@ -128,6 +128,7 @@
 <li><a href="#docker">Docker</a></li>
 </ul>
 <h1 id="quickstart">Quickstart</h1>
+<p>These quickstart instructions describe how to install Regent on Ubuntu and macOS, respectively.</p>
 <h2 id="ubuntu">Ubuntu</h2>
 <p>If you use Ubuntu, you can install Regent by running:</p>
 <figure class="highlight">
@@ -152,7 +153,7 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <span class="c"># download CMake</span>
 curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-macos-universal.tar.gz
 <span class="nb">tar </span>xfz cmake-3.22.2-macos-universal.tar.gz
-<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:cmake-3.22.2-macos-universal/CMake.app/Contents/bin"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/cmake-3.22.2-macos-universal/CMake.app/Contents/bin"</span>
 
 <span class="c"># download LLVM</span>
 curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
