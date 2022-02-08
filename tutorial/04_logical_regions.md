@@ -8,7 +8,7 @@ permalink: /tutorial/04_logical_regions/index.html
 
 We now come to one of the central abstractions for data in Regent,
 *logical regions* (or just "regions" for short). As hinted in earlier
-tutorials, regions allow mutable to be used (safely) within
+tutorials, regions allow mutable data to be used (safely) within
 Regent. Idiomatic Regent programs usually store most or all of their
 data in regions.
 
@@ -28,7 +28,21 @@ described in more detail below.
 
 ## Field Spaces
 
-Field spaces are sets of fields, and behave similarly to structs in C.
+A field space (fspace) works much like a struct in C. The following
+code declares a field space with four fields:
+
+{% highlight regent %}
+fspace fs {
+  a : double,
+  b : int,
+  c : int,
+  d : int,
+}
+{% endhighlight %}
+
+As a convenience, multiple, consecutive fields with the same type may
+be collapsed into a single line. The code below is identical to the
+version above:
 
 {% highlight regent %}
 fspace fs {
@@ -37,48 +51,168 @@ fspace fs {
 }
 {% endhighlight %}
 
-Field spaces may also be instantiated by casting an anonymous struct to the appropriate type.
+In Regent code, `fs` names a type (the type of the field space), and
+can be instantiated to create values of this type. For example, the
+following code defines a variable `x` of type `fs`:
 
 {% highlight regent %}
-task make_fs(w : double, x : int, y : int, z : int) : fs
-  var obj = fs { a = w, b = x, c = y, d = z } -- Define a local variable of type fs.
-  return obj
+var x = fs { a = 3.14, b = 4, c = 5, c = 6 }
+{% endhighlight %}
+
+Values of field spaces can be used like any other type: they can be
+passed (by-value) to tasks, returned from tasks, modified, etc. To
+access the individual elements of a field space, use the `.` (dot)
+operator.
+
+{% highlight regent %}
+task sum_fs(x : fs)
+  return x.a + x.b + x.c + x.d
+end
+
+task update_fs(x : fs)
+  var y = x
+  y.a += 1.25
+  y.b = y.c * y.d
+  return y
 end
 {% endhighlight %}
 
-Field spaces differ from structs in that they may also take region-typed arguments.
+There is also a syntax to unpack multiple values of a field space at
+the same time. The example below creates 4 new variables, `a`, `b`,
+`c`, and `d` with the values of `x.a`, `x.b`, `x.c`, and `x.d`.
 
 {% highlight regent %}
-fspace point {
-  {x, y} : double
-}
+var {a, b, c, d} = x -- where x is of type fs
+{% endhighlight %}
 
-fspace edge(r : region(point)) {
- left: ptr(point, r),
- right: ptr(point, r),
-}
+This syntax also supports creating variables with different names, if
+that is desired. In the code below, `x_a` and so on name the new
+variables, `a` etc. name the fields of the field space to be unpacked.
 
-task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, points))
-  return [edge(points)] { left = a, right = b }
-end
+{% highlight regent %}
+var {x_a = a, x_b = b, x_c = c, x_d = d} = x -- where x is of type fs
 {% endhighlight %}
 
 ## Index Spaces
 
-An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.
+An index space (ispace) is a collection in index points. This is most
+directly analogous to the set of valid array indices for an array in
+C. While the latter is not a first-class feature of C, index spaces
+are first-class objects in Regent and can be created dynamically,
+passed to tasks and returned from tasks.
 
-An unstructured ispace is a collection of opaque points, useful for pointer data structures such as graphs, trees, linked lists, and unstructured meshes.
+The example below creates a 1-D index space with 1024 elements. This
+would be similar to `int[1024]` in C, except an index space refers to
+the set of valid indices only and contains no actual data.
 
 {% highlight regent %}
-var unstructured_is = ispace(ptr, 1024) -- Create an ispace with 1024 elements.
+var is = ispace(int1d, 1024)
 {% endhighlight %}
 
-A structured ispace is a (multi-dimensional) rectangle of points.
+Index spaces can be passed to and returned from tasks:
 
 {% highlight regent %}
-var i1 = ispace(int1d, 1024, 0) -- Create an ispace including the 1-dimensional ints from 0 to 1023.
-var i2 = ispace(int2d, { x = 4, y = 4 }, { x = 1, y = 1 }) -- 2-dimensional 4x4 rectangle with indices starting at 1,1.
+task take_is(is : ispace(int1d))
+end
+
+task make_is(n : int)
+  var is = ispace(int1d, n)
+  return is
+end
 {% endhighlight %}
+
+Index spaces can also be iterated. The code below executes 1024
+iterations, for the values `0` through `1023`.
+
+{% highlight regent %}
+var is = ispace(int1d, 1024)
+for x in is do
+  -- x takes the values 0, ... 1023
+end
+{% endhighlight %}
+
+### Index Space Bounds
+
+One notable difference between index spaces and C arrays is that index
+spaces need not start at 0. The following index space contains the
+elements, `-1`, `0`, `1`, ... `10`.
+
+{% highlight regent %}
+var is = ispace(int1d, 12, -1)
+{% endhighlight %}
+
+In its most general form, the arguments to the `ispace` operator are
+as follows:
+
+ 1. The type of the index (e.g., `int1d`).
+
+ 2. The extent (size) of the index space (e.g., `12` indicates it
+    contains 12 elements).
+
+ 3. The offset (start) of the index space (e.g., `-1` indicates the
+    first element starts at index &minus;1).
+
+Index spaces support two operators, `.bounds` and `.volume`, to
+retrieve the bounding rectangle and volume of the index space,
+respectively.
+
+{% highlight regent %}
+is.bounds -- returns rect1d { lo = int1d(-1), hi = int1d(10) }
+is.volume -- returns 12
+{% endhighlight %}
+
+### Multi-dimensional Index Spaces
+
+Index spaces are not restricted to 1 dimension. Regent supports up to
+9 dimensions, though for dimensions above 3, Regent must be recompiled
+with the appropriate support (set `MAX_DIM=N` when building). Regent
+provides a set of built-in index types for each of these dimensions:
+`int1d`, `int2d`, `int3d`, etc. up to `int9d` (if compiled with the
+right support).
+
+`int1d` is a special case in that it corresponds directly into an
+`int`. For the other cases, each `intNd` is actually a field space
+with `N` fields. These fields always take the following ordering: `x`,
+`y`, `z`, `w`, `v`, `u`, `t`, `s`, `r`.
+
+Because `intNd` types are field spaces, their elements can be accessed
+with the usual field space syntax.
+
+{% highlight regent %}
+task sum_coordinates(i : int4d)
+  return i.x + i.y + i.z + i.w
+end
+
+task make_coordinate(a : int, b : int, c : int, d : int)
+  -- field names are matched positionally when unspecified
+  return int4d { a, b, c, d }
+end
+{% endhighlight %}
+
+Index spaces can be created from multi-dimensional index types. In
+this case, the extent specifies the upper-rectangular corner of a
+bounding box, and the offset shifts the box by the specified
+amount. The offset is zero by default. Some examples are shown below:
+
+{% highlight regent %}
+var is1 = ispace(int1d, 10) -- [0, 1, ... 9]
+var is2 = ispace(int2d, {4, 4}) -- [{0, 0}, {0, 1}, ... {0, 3}, ... {3, 3}]
+var is3 = ispace(int3d, {9, 9, 9}, {1, 1, 1}) -- [{1, 1, 1}, ... {9, 9, 9}]
+{% endhighlight %}
+
+### "Unstructured" Index Spaces
+
+For historical reasons, Regent supports a notion of an "unstructured"
+index space via the index type `ptr`. It is functionally equivalent to
+`int1d` in all respects and is being maintained for backwards
+compatibility only. Most programs can use `int1d` instead with no
+negative consequences.
+
+### Sparse Index Spaces
+
+In general, index spaces need not be dense rectangles. Regent does not
+provide a syntax to directly create a sparse index space, but they can
+be created via partitioning, a feature discussed in a later tutorial.
 
 ## Regions
 
