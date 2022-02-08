@@ -131,23 +131,41 @@
 <h2 id="ubuntu">Ubuntu</h2>
 <p>If you use Ubuntu, you can install Regent by running:</p>
 <figure class="highlight">
-<pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
+<pre><code class="language-bash" data-lang="bash"><span class="c"># install dependencies</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
+
+<span class="c"># download and build Regent</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
-./install.py <span class="nt">--debug</span></code></pre>
+./install.py <span class="nt">--debug</span>
+
+<span class="c"># run Regent example</span>
+./regent.py examples/circuit_sparse.rg</code></pre>
 </figure>
+<p>(These instructions have been tested on Ubuntu 18.04 and 20.04.)</p>
 <h2 id="macos">macOS</h2>
 <p>If you use macOS, you can install Regent by running:</p>
 <figure class="highlight">
-<pre><code class="language-bash" data-lang="bash">curl <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+<pre><code class="language-bash" data-lang="bash"><span class="c"># install XCode command-line tools</span>
+<span class="nb">sudo </span>xcode-select <span class="nt">--install</span>
+
+<span class="c"># download dependencies</span>
+curl <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 <span class="nb">tar </span>xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+
+<span class="c"># environment variables needed to build/run Regent</span>
 <span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-9.0.1-x86_64-apple-darwin"</span>
 <span class="nb">export </span><span class="nv">INCLUDE_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>xcrun <span class="nt">--sdk</span> macosx <span class="nt">--show-sdk-path</span><span class="si">)</span><span class="s2">/usr/include"</span>
+<span class="nb">export </span><span class="nv">CXXFLAGS</span><span class="o">=</span><span class="s2">"-std=c++11"</span>
+
+<span class="c"># download and build Regent</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
 <span class="nb">cd </span>legion/language
-<span class="nv">CXXFLAGS</span><span class="o">=</span><span class="nt">-std</span><span class="o">=</span>c++11 ./install.py <span class="nt">--debug</span></code></pre>
+./install.py <span class="nt">--debug</span>
+
+<span class="c"># run Regent example</span>
+./regent.py examples/circuit_sparse.rg</code></pre>
 </figure>
-<p>Note: Previously we recommended Homebrew to install LLVM, but as of December 2020, this route does not work unless you have a full installation of XCode (i.e., the command-line tools are not sufficient).</p>
 <h2 id="other-systems">Other Systems</h2>
 <p>Complete instructions for installation follow below.</p>
 <p>Regent is also available as a Docker container. See <a href="#docker">the bottom of this page</a> for instructions.</p>
@@ -215,7 +233,7 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 
     <footer class="rg-footer" role="contentinfo">
   <div class="container">
-    <p>&copy; 2021 Stanford University.</p>
+    <p>&copy; 2022 Stanford University.</p>
     <p>Powered by <a href="http://jekyllrb.com/">Jekyll</a> and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
 
     <ul class="rg-footer-links muted">
