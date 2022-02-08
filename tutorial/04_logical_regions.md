@@ -224,6 +224,9 @@ example, using the `fs` field space from earlier:
 var r = region(ispace(int1d, 10), fs)
 {% endhighlight %}
 
+This region contains elements numbered 0 to 9 (inclusive), and each
+element contains fields `a`, `b`, `c` and `d`.
+
 The index space may either be specified inline (as above) or
 out-of-line. The latter allows multiple regions to be created with the
 same index space (and the same or different field space).
