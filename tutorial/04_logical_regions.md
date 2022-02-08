@@ -6,9 +6,29 @@ highlight_first: false
 permalink: /tutorial/04_logical_regions/index.html
 ---
 
-## Field spaces
+We now come to one of the central abstractions for data in Regent,
+*logical regions* (or just "regions" for short). As hinted in earlier
+tutorials, regions allow mutable to be used (safely) within
+Regent. Idiomatic Regent programs usually store most or all of their
+data in regions.
 
-Field spaces are sets of fields, and behave similarly to structs in C or Terra.
+At their most basic, regions are like arrays of structs in a language
+like C. The main differences are that regions are not fixed to a
+single memory allocation, but can seamlessly move around a distributed
+machine, be copied down to the GPU, etc. In most cases, this happens
+without any specific user intervention, and users need only be
+concerned with what data is placed in regions and how that data is
+used.
+
+Regions consist of a *field space* (like a C struct) and an *index
+space*. The latter doesn't have a first-class analog in C, but is
+conceptually the set of indices used to refer to elements within a
+region (like indices in an array). Each of these components is
+described in more detail below.
+
+## Field Spaces
+
+Field spaces are sets of fields, and behave similarly to structs in C.
 
 {% highlight regent %}
 fspace fs {
@@ -43,7 +63,7 @@ task make_edge(points : region(point), a : ptr(point, points), b : ptr(point, po
 end
 {% endhighlight %}
 
-## Index spaces
+## Index Spaces
 
 An index space (ispace) is a collection in index points. Regent has two kinds of index spaces: structured and unstructured.
 
