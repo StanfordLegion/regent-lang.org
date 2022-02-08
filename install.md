@@ -29,7 +29,7 @@ sudo apt-get install build-essential cmake git llvm-6.0-dev libclang-6.0-dev cla
 # download and build Regent
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
-./install.py --debug
+./install.py --debug --rdir=auto
 
 # run Regent example
 ./regent.py examples/circuit_sparse.rg
@@ -45,8 +45,13 @@ If you use macOS, you can install Regent by running:
 # install XCode command-line tools
 sudo xcode-select --install
 
-# download dependencies
-curl -O https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+# download CMake
+curl -L -O https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-macos-universal.tar.gz
+tar xfz cmake-3.22.2-macos-universal.tar.gz
+export PATH="$PATH:cmake-3.22.2-macos-universal/CMake.app/Contents/bin"
+
+# download LLVM
+curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 tar xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
 
 # environment variables needed to build/run Regent
@@ -57,11 +62,13 @@ export CXXFLAGS="-std=c++11"
 # download and build Regent
 git clone -b master https://github.com/StanfordLegion/legion.git
 cd legion/language
-./install.py --debug
+./install.py --debug --rdir=auto
 
 # run Regent example
 ./regent.py examples/circuit_sparse.rg
 {% endhighlight %}
+
+(These instructions have been tested on macOS 11.6 on an x86 Mac.)
 
 ## Other Systems
 
