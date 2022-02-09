@@ -122,7 +122,7 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="k">task</span> <span class="nf">print_x</span><span class="p">()</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"value of x is %d\n"</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="c1">-- ok, x is replaced by 2 at compile time</span>
+  <span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"value of x is {}"</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="c1">-- ok, x is replaced by 2 at compile time</span>
 <span class="k">end</span></code></pre>
 </figure>
 <p>On the other hand, it makes no sense to attempt to modify a Lua variable inside Regent. In the code below, <code>x</code> is replaced by <code>2</code>, resulting in the nonsensical assignment <code>2 = 3</code>. This fails with a compile error.</p>

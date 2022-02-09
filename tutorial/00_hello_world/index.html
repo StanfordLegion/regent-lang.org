@@ -118,10 +118,10 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
 
-<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">format</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"std/format"</span><span class="p">)</span>
 
 <span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello World!\n"</span><span class="p">)</span>
+  <span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"Hello World!"</span><span class="p">)</span>
 <span class="k">end</span>
 
 <span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
@@ -139,17 +139,16 @@
 <h2 id="lua-code">Lua Code</h2>
 <p>Execution of a script begins in Lua. The code runs top-to-bottom, like a standard scripting language. Unlike a traditional programming language, Regent constructs can <em>also</em> be embedded in the program.</p>
 <p>Important: in most cases, Lua code cannot directly call Regent tasks. (The exception, <code>regentlib.start</code>, is shown below.) This means that it is best to think of Lua running “at compile time” from the perspective of Regent. Exactly what this means, and how to use it, will be explored in a future tutorial.</p>
-<p>As an example, the line below parses the C header file <code>stdio.h</code> and stores the result into a Lua variable. (So <code>printf</code> can be accessed as <code>c.printf</code>.) This makes it easy to interact with arbitrary C code.</p>
+<p>As an example, the line below loads the <code>std/format</code> module from the Regent standard library, which provides utilities for formatted printing. This is stored in a Lua variable (with <code>local</code>) under the name <code>format</code>.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">terralib</span><span class="p">.</span><span class="n">includec</span><span class="p">(</span><span class="s2">"stdio.h"</span><span class="p">)</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">format</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"std/format"</span><span class="p">)</span></code></pre>
 </figure>
-<p>Note: this pattern is so common that Regent provides a predefined variable, <code>regentlib.c</code>, that contains common C headers such as <code>stdio.h</code>.</p>
 <h2 id="hello-world-task">Hello World Task</h2>
 <p>Next we define a Regent task. This is done with the <code>task</code> keyword. Note that, once we reach the <code>task</code> keyword, <em>subsequent code is in Regent</em> (until the matching <code>end</code>). After <code>end</code> we return to Lua to continue execution.</p>
 <p>Regent tasks are covered in a future tutorial, but for now it is sufficient to say that they behave like functions.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
-  <span class="n">c</span><span class="p">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">"Hello World!\n"</span><span class="p">)</span>
+  <span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"Hello World!"</span><span class="p">)</span>
 <span class="k">end</span></code></pre>
 </figure>
 <h2 id="main-task">Main Task</h2>
@@ -162,7 +161,7 @@
 </figure>
 <h2 id="starting-execution">Starting Execution</h2>
 <p>Finally, at the end of the file, we start the program (beginning with <code>main</code>). Note that, as described earlier, this is the only place where Lua is permitted to call into Regent. After this call, execution begins at <code>main</code> and proceeds through the Regent program.</p>
-<p>In our example, <code>main</code> calls <code>hello_world</code>, which calls <code>c.printf</code>, which prints a line to the standard output of the program.</p>
+<p>In our example, <code>main</code> calls <code>hello_world</code>, which calls <code>format.println</code>, which prints a line to the standard output of the program.</p>
 <p>The <code>start</code> call <em>does not return</em>. Furthermore, the Lua execution environment used to compile the Regent program is also unavailable after this function is called. So complete any Lua programming prior to calling this function.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
