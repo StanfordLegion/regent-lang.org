@@ -266,6 +266,26 @@ for x in r do
 end
 {% endhighlight %}
 
+### Array Syntax for Region Access
+
+In addition to the pointer-style syntax shown above, regions also
+support an array-style syntax (`r[...]`). The example below is
+identical to the previous example.
+
+{% highlight regent %}
+var r = region(ispace(int1d, 10), fs)
+for x in r do
+  r[x].a = 3.14
+  r[x].b = 2
+  r[x].c = r[x].b + int(x)
+  r[x].d = r[x].c * r[x].c
+end
+{% endhighlight %}
+
+This form can be particularly helpful when it may not be obvious what
+region an index is contained in (e.g., when doing index arithmetic on
+the pointers).
+
 ### Region Typing and Assignment
 
 Unlike other types, region variables in Regent *cannot* be assigned a

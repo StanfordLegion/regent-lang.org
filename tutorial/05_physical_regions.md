@@ -6,36 +6,32 @@ highlight_first: false
 permalink: /tutorial/05_physical_regions/index.html
 ---
 
-Regent provides two distinct syntaxes for accessing regions.
+As discussed in previous tutorials, *logical* regions (often just
+called regions) are unlike arrays in a language like C, in that they
+are not mapped to a fixed memory location over their entire
+lifetime. Instead they are mapped to zero or more *physical regions*
+(often called *instances*), and may move between these instances over
+the duration of the program. Instances may be located on different
+nodes in a distributed machine, on different heterogeneous processors
+(CPUs, GPUs, etc.), or may even be stored in different memory layouts
+(struct-of-arrays vs array-of-structs, etc.).
 
-## Iteration Over Regions
+For the most part, users of Regent need not be aware of the precise
+mapping from logical to physical instances, as this is managed by
+Regent on behalf of the use. In fact, we already saw physical regions
+in use in the previous tutorial. Any time a task accesses the contents
+of a region (via `@`, `.` or `r[...]`), Regent ensures that a physical
+region is available on the local processor to support the
+access. While this is mostly seamless, it has performance implications
+which we will explore in this example.
 
-The loop below iterates over pointers to the elements in the region. The loop index type (which is optional and shown only for
-pedagogical purposes) records both the type that the pointer points to and the region that it points to.
+## Regions are not Initially Mapped
 
-{% highlight regent %}
-var is = ispace(int1d, 1024)
-var input_lr = region(is, input)
+## Inline Mapping
 
-for input_ptr : int1d(input, input_lr) in input_lr do -- The type declaration here is optional.
-  (@input_ptr).x = c.drand48() -- The dereference operator @ is used to access the element.
-  input_ptr.y = c.drand48() -- The dereference operator is also optional.
-end
-{% endhighlight %}
+## Mapping for Tasks
 
-## Iteration Over Index Spaces
-
-The loop below iterates over points in the index space, and is functionally equivalent to the example above. Since the loop variable is typed on the index space rather than a region, the index access operator `[]` must be used to access the respective regions.
-
-{% highlight regent %}
-var is = ispace(int1d, 1024)
-var input_lr = region(is, input)
-
-for i : int1d(is) in is do -- The type declaration here is also optional.
-  input_lr[i].x = c.drand48()
-  input_lr[i].y = c.drand48()
-end
-{% endhighlight %}
+## Blocking on Mapping
 
 ## Final Code
 
