@@ -15,10 +15,10 @@ repository](https://github.com/StanfordLegion/legion/tree/master/tutorial).
 {% highlight regent %}
 import "regent"
 
-local c = terralib.includec("stdio.h")
+local format = require("std/format")
 
 task hello_world()
-  c.printf("Hello World!\n")
+  format.println("Hello World!")
 end
 
 task main()
@@ -58,17 +58,14 @@ that it is best to think of Lua running "at compile time" from the
 perspective of Regent. Exactly what this means, and how to use it,
 will be explored in a future tutorial.
 
-As an example, the line below parses the C header file `stdio.h` and
-stores the result into a Lua variable. (So `printf` can be accessed as
-`c.printf`.) This makes it easy to interact with arbitrary C code.
+As an example, the line below loads the `std/format` module from the
+Regent standard library, which provides utilities for formatted
+printing. This is stored in a Lua variable (with `local`) under the
+name `format`.
 
 {% highlight regent %}
-local c = terralib.includec("stdio.h")
+local format = require("std/format")
 {% endhighlight %}
-
-Note: this pattern is so common that Regent provides a predefined
-variable, `regentlib.c`, that contains common C headers such as
-`stdio.h`.
 
 ## Hello World Task
 
@@ -82,7 +79,7 @@ sufficient to say that they behave like functions.
 
 {% highlight regent %}
 task hello_world()
-  c.printf("Hello World!\n")
+  format.println("Hello World!")
 end
 {% endhighlight %}
 
@@ -108,8 +105,9 @@ Finally, at the end of the file, we start the program (beginning with
 Lua is permitted to call into Regent. After this call, execution
 begins at `main` and proceeds through the Regent program.
 
-In our example, `main` calls `hello_world`, which calls `c.printf`,
-which prints a line to the standard output of the program.
+In our example, `main` calls `hello_world`, which calls
+`format.println`, which prints a line to the standard output of the
+program.
 
 The `start` call *does not return*. Furthermore, the Lua execution
 environment used to compile the Regent program is also unavailable

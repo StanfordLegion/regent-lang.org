@@ -29,7 +29,7 @@ So for example, the following program is ok and prints the value `2`:
 {% highlight regent %}
 local x = 2
 task print_x()
-  c.printf("value of x is %d\n", x) -- ok, x is replaced by 2 at compile time
+  format.println("value of x is {}", x) -- ok, x is replaced by 2 at compile time
 end
 {% endhighlight %}
 

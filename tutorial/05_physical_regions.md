@@ -42,7 +42,7 @@ end
 {% highlight regent %}
 import "regent"
 
-local c = terralib.includec("stdlib.h")
+local c = regentlib.c
 
 fspace input {
   x : double,

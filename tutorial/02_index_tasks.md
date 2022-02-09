@@ -68,10 +68,10 @@ optimization.
 {% highlight regent %}
 import "regent"
 
-local c = regentlib.c
+local format = require("std/format")
 
 task double_of(i : int, x : int)
-  c.printf("Hello world from task %d!\n", i)
+  format.println("Hello world from task {}", i)
   return 2*x
 end
 

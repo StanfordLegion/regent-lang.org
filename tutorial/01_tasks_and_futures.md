@@ -76,48 +76,48 @@ determine that this is safe to do). This is important, because if the
 parent blocks prior to the second call, Regent is unable to analyze it
 for parallelism.
 
-An example of something that might block execution would be calling
-into a C function with the value of `f1`:
+An example of something that might block execution would be printing
+the value of `f1`:
 
 {% highlight regent %}
 var f1 = fibonacci(n - 1)
-c.printf("value of first fibonnaci is %d\n", f1) -- blocks!
+format.println("value of first fibonnaci is %d\n", f1) -- blocks!
 var f2 = fibonacci(n - 2)
 {% endhighlight %}
 
-The second line in this snippet blocks, because it calls a C function
-(`printf`). In general, Regent has no ability to analyze the contents
-or effects of C functions, and such functions (if passed values
-resulting from tasks) may inhibit parallelism. An easy way to work
-around this is to wrap the call to `printf` in a task. This way,
-Regent can analyze the task for parallelism, as it does with the rest
-of the program.
+The second line in this snippet blocks, because it invokes I/O. In
+general, anything outside of Regent's control (I/O, or anything
+written in C or another language) may inhibit parallelism. An easy way
+to work around this is to wrap the call to `println` in a task, as
+shown at the bottom of this section. Using the task "hides" the I/O
+from Regent, essentially giving Regent permission to reorder it with
+other tasks.
 
 Behind the scenes, Regent maximizes parallelism by making each task
 return a *future*. Futures represent the results of tasks yet to be
 completed. In most cases, users don't need to be concerned with
 futures: as noted above, as long as the program avoids passing any
-futures into C functions, Regent will handle the parallelism
+futures into I/O (or C functions), Regent will handle the parallelism
 automatically. Tasks accept futures directly, so passing a future to a
 task does not block. Operators like `+` can also be optimized by
 Regent to work on futures, so they do not block either. Similarly,
 Regent can optimize most conditional statements (such as `if` and
 `while`) that are predicated on futures, as long as those conditionals
-do not control the execution of C functions. The few remaining
-statements that block on futures (e.g., `return`) are usually not a
-problem for parallelism.
+do not control the execution of I/O (or C functions). The few
+remaining statements that block on futures (e.g., `return`) are
+usually not a problem for parallelism.
 
 Returning to our original example, `main` calls `fibonacci` in a
-loop. In order to avoid blocking on the call to the C function
-`c.printf`, the call is extracted into a task and called on the result
-of each `fibonacci` call. Thus the entire body of `main` will execute
-in parallel, with each `print_result` waiting on its corresponding
-`fibonnaci`, but not otherwise blocking the execution of other
-`fibonnaci` or `print_result` calls.
+loop. In order to avoid blocking on the call to `println`, the call is
+extracted into a task and called on the result of each `fibonacci`
+call. Thus the entire body of `main` will execute in parallel, with
+each `print_result` waiting on its corresponding `fibonnaci`, but not
+otherwise blocking the execution of other `fibonnaci` or
+`print_result` calls.
 
 {% highlight regent %}
 task print_result(n : int, result : int)
-  c.printf("Fibonacci(%d) = %d\n", n, result)
+  format.println("Fibonacci({}) = {}", n, result)
 end
 
 task main()
@@ -133,7 +133,7 @@ end
 {% highlight regent %}
 import "regent"
 
-local c = regentlib.c
+local format = require("std/format")
 
 task fibonacci(n : int) : int
   if n == 0 then return 0 end
@@ -146,7 +146,7 @@ task fibonacci(n : int) : int
 end
 
 task print_result(n : int, result : int)
-  c.printf("Fibonacci(%d) = %d\n", n, result)
+  format.println("Fibonacci({}) = {}", n, result)
 end
 
 task main()

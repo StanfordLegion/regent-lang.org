@@ -322,8 +322,6 @@ access are discussed in a future tutorial.
 {% highlight regent %}
 import "regent"
 
-local c = terralib.includec("stdio.h")
-
 fspace fs {
   a : double,
   {b, c, d} : int,
