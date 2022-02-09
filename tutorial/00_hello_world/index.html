@@ -137,14 +137,15 @@
 </figure>
 <p>(If you forget this line, you will typically see a parser error, as Lua attempts to interpret Regent keywords as Lua variable names.)</p>
 <h2 id="lua-code">Lua Code</h2>
-<p>Execution of a script begins in Lua. The code runs top-to-bottom, like a standard scripting language. Unlike a traditional programming language, Regent constructs can <em>also</em> be embedded in the program.</p>
+<p>Execution of a script begins in Lua. The code runs top-to-bottom, like a standard scripting language. Unlike a conventional language, Regent constructs can <em>also</em> be embedded in the program.</p>
 <p>Important: in most cases, Lua code cannot directly call Regent tasks. (The exception, <code>regentlib.start</code>, is shown below.) This means that it is best to think of Lua running “at compile time” from the perspective of Regent. Exactly what this means, and how to use it, will be explored in a future tutorial.</p>
-<p>As an example, the line below loads the <code>std/format</code> module from the Regent standard library, which provides utilities for formatted printing. This is stored in a Lua variable (with <code>local</code>) under the name <code>format</code>.</p>
+<p>As an example, the line below loads the <code>std/format</code> module from the Regent standard library, which provides utilities for formatted printing.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">local</span> <span class="n">format</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"std/format"</span><span class="p">)</span></code></pre>
 </figure>
+<p>The module here is actually a Lua value. It is stored in a Lua variable (via <code>local</code>) under the name <code>format</code>. As we’ll see below, Regent code can access Lua variables. This means that once we load the module in Lua, we can make use of it in our Regent code.</p>
 <h2 id="hello-world-task">Hello World Task</h2>
-<p>Next we define a Regent task. This is done with the <code>task</code> keyword. Note that, once we reach the <code>task</code> keyword, <em>subsequent code is in Regent</em> (until the matching <code>end</code>). After <code>end</code> we return to Lua to continue execution.</p>
+<p>Next we define a Regent task. This is done with the <code>task</code> keyword. Note that, once we reach the <code>task</code> keyword, subsequent code is in Regent (until the matching <code>end</code>). After <code>end</code> we return to Lua to continue execution.</p>
 <p>Regent tasks are covered in a future tutorial, but for now it is sufficient to say that they behave like functions.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">hello_world</span><span class="p">()</span>
@@ -166,6 +167,8 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
 </figure>
+<h2 id="next-up">Next Up</h2>
+<p>Continue to the <a href="/tutorial/01_tasks_and_futures">next tutorial</a> to see how to use tasks to achieve parallel execution.</p>
 
     </div>
   </div>
