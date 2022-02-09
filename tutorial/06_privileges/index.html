@@ -197,7 +197,7 @@
 <li>A task that <code>reduces OP</code> will <em>not</em> interfere with other <code>reduces     OP</code> (for the same operator <code>OP</code>), but will interfere with a different operator <code>OP2</code>, or with <code>reads</code> or <code>writes</code>.</li>
 </ul>
 <p>These checks are performed on a field-by-field basis, so a task that <code>writes(r.a)</code> will not interfere with a task that <code>reads(r.b)</code>.</p>
-<p>One important thing to note is that interference is based on a task’s <em>declared</em> privileges, rather than the operations a task actually performs at runtime. Regent’s type system ensures that a task does not peform any operation not identified in its privileges, but it makes no attempt to check that the task uses all of the privileges that it has declared.</p>
+<p>One important thing to note is that interference is based on a task’s <em>declared</em> privileges, rather than the operations a task actually performs at runtime. Regent’s type system ensures that a task does not perform any operation not identified in its privileges, but it makes no attempt to check that the task uses all of the privileges that it has declared.</p>
 <h2 id="dependence-analysis-with-privileges">Dependence Analysis with Privileges</h2>
 <p>Regent uses interference to check which tasks may execute in parallel. Tasks that interfere are serialized, but (assuming the parent does not block) this does not prevent other non-interfering tasks from running at the same time.</p>
 <p>In the code below, <code>task_b</code> depends on <code>task_a</code> (and therefore <code>task_b</code> will not begin execution until <code>task_a</code> completes), while <code>task_c</code> can run in parallel to the other two.</p>
@@ -227,43 +227,40 @@
 <span class="k">end</span></code></pre>
 </figure>
 <h2 id="daxpy-with-privileges">DAXPY with Privileges</h2>
-<p>Privileges describe how a task interacts with region-typed arguments. For example, <code>reads</code> is required in order to read from a region argument, and <code>writes</code> is required to modify a region.</p>
+<p>Privileges enable us to write a version of DAXPY more properly in Regent. This will still be a sequential implementation (in the sense that it won’t do any data partitioning, and therefore won’t achieve parallelism), but it is getting closer to idiomatic Regent code.</p>
+<p>The first step is to set up the tasks. The <a href="/tutorial/05_physical_regions#final-code">previous version of the code</a> had three loops: an initialization loop, a DAXPY loop, and a verification loop. These are likely to be the time-consuming parts of the program (especially if we want to scale this DAXPY implementation), so these are the important parts to put in tasks.</p>
+<p>We’ll start with the DAXPY loop. The original version of this loop looked like:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+  <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>To extract this into a task, we need to start by writing the task header. This will need to include, at a minimum, the variables referenced inside the loop (that is, <code>is</code>, <code>input_lr</code>, <code>output_lr</code>, and <code>alpha</code>). Here’s what this looks like:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span>
            <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
            <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
            <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="c1">-- Multiple privileges may be specified at once. Privileges may also</span>
-<span class="c1">-- apply to specific fields. (Multiple fields can be named with braces.)</span>
-<span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>If we just copy the loop into the body of this task, we’ll get a compile error. The task has no privileges, so it isn’t permitted to access any of the regions it takes as arguments.</p>
+<p>In order to fix this, we need to add a <code>where</code> clause to the task declaration. The privileges can be determined by reading the body of the loop itself. The loop reads <code>input_lr.x</code> and <code>input_lr.y</code>, and writes <code>output_lr.z</code>. This translates into the following privilege clause:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span></code></pre>
+</figure>
+<p>Now we can copy the loop body and get the entire thing to compile. The final version looks like this:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span>
+           <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
+           <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
+           <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>Privileges are enforced by the type system, and a compile error will be issued if the declared privileges are violated.</p>
-<p>Beyond <code>reads</code> and <code>writes</code>, reductions (<code>+</code>, <code>*</code>, <code>-</code>, <code>/</code>, <code>min</code>, <code>max</code>) allow the application of certain commutative operators to the elements of regions.</p>
-<figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">sum_output</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span>
-                <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
-                <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
-                <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="k">where</span> <span class="k">reduces</span> <span class="o">+</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
-    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">+=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">task</span> <span class="nf">max_output</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span>
-           <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
-           <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
-           <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="k">where</span> <span class="k">reduces</span> <span class="ow">max</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
-    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="ow">max</span><span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre>
-</figure>
+<p>The process for the other loops is similar. We’ll create two additional tasks, <code>init</code> and <code>check</code>, to extract each of the respective loops. The final code is shown below.</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
@@ -292,7 +289,7 @@
            <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
            <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
            <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
   <span class="k">end</span>
@@ -325,6 +322,8 @@
 <span class="k">end</span>
 <span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
 </figure>
+<h2 id="next-up">Next Up</h2>
+<p>Continue to the <a href="/tutorial/07_partitions">next tutorial</a> to see the parallel version of this code with data partitioning.</p>
 
     </div>
   </div>

@@ -169,9 +169,9 @@
 </figure>
 <p>This is usually considered bad style in Regent. It would be better to move the <code>println</code> loop into a task, so that the parent doesn’t need to block between <code>some_task</code> and the code that reads the region. Of course, the reading task will still be blocked on the completion of <code>some_task</code>, but at least no unrelated tasks need to be blocked in this case.</p>
 <p>This can also be mitigated by maintaining <code>__demand(__inner)</code> on the main task (and any other tasks that call subtasks).</p>
-<h2 id="daxpy-example">DAXPY Example</h2>
+<h2 id="sequential-daxpy-example">Sequential DAXPY Example</h2>
 <p>From this point onward, we’re going to be taking a look at a DAXPY example code. This builds on features described in the last couple of tutorials, so we won’t spend much more time considering the code in detail. The full code is listed below.</p>
-<p>For the first version, we’ll write this code without the use of tasks. Tasks that take regions—and actually access them—require privileges, the subject of the next tutorial. Until then, we just write the loops directly into the main task. The accesses to regions use the <code>r[...]</code> syntax described earlier.</p>
+<p>For the first version, we’ll write this code without the use of tasks. Tasks that take regions—and actually access them—require privileges, the subject of the next tutorial. Until then, we just write the loops directly into the main task. The accesses to regions use the <code>r[...]</code> syntax described earlier. This means that the implementation here will be sequential—there won’t be any parallelism, because there aren’t any tasks. We’ll get around to fixing that in a future tutorial.</p>
 <p>The only additional feature to note here is that Regent can call arbitrary C functions. Here, we’re calling <code>drand48</code> from the C header <code>stdlib.h</code>. These libc headers are so commonly used in Regent that <code>regentlib.c</code> is provided to offer them by default. Additional headers can be included into the code by calling <code>terralib.includec("header_name.h")</code> (not shown).</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
@@ -201,7 +201,7 @@
 
   <span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
 
-  <span class="k">for</span> <span class="n">i</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">is</span><span class="p">)</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
   <span class="k">end</span>
 
