@@ -6,6 +6,104 @@ highlight_first: false
 permalink: /tutorial/06_privileges/index.html
 ---
 
+*Privileges* describe the ways in which tasks interact with their
+region arguments. This is one of the key cornerstones of the Regent
+programming model: privileges allow Regent to determine what a task
+will do (to its region arguments) without actually running the
+task. Privileges, in combination with the region arguments used, are
+the way that Regent determines what tasks may run in parallel.
+
+## Privileges
+
+Regent supports the following privileges:
+
+  * `reads`
+  * `writes`
+  * `reduces` with one of the following operators: `+`, `-`, `*`, `/`,
+    `min` or `max`
+
+Each privilege corresponds to an operation that a task is permitted to
+perform on a region.
+
+The `reads` privilege allows a task to read the contents of a region:
+
+{% highlight regent %}
+var _ = r[...]
+{% endhighlight %}
+
+The `writes` privilege allows a task to write to a region:
+
+{% highlight regent %}
+r[...] = ...
+{% endhighlight %}
+
+The `reduces` privilege allows a task to apply the corresponding
+reduction operator. For example, `+`:
+
+{% highlight regent %}
+r[...] += ...
+{% endhighlight %}
+
+Or `min`:
+
+{% highlight regent %}
+r[...] min= ...
+{% endhighlight %}
+
+Privileges can be combined, so `reads` and `writes` can be used to
+provide read-write access to a region. In general, any combination of
+`reads` or `writes` with `reduces` is upgraded to `reads writes`, so
+this is not really a useful combination. Similarly any two reduction
+operators (e.g., `reduces +` and `reduces *`) will be upgraded to
+`reads writes`. Reductions are most useful on their own.
+
+## Declaring Privileges in a Task
+
+A task can declare privileges in a `where` clause, following the task
+arguments. For example, reading a region `r`:
+
+{% highlight regent %}
+task read_task(r : region(...))
+where reads(r) do
+  ...
+end
+{% endhighlight %}
+
+Or writing:
+
+{% highlight regent %}
+task write_task(r : region(...))
+where writes(r) do
+  ...
+end
+{% endhighlight %}
+
+Reading and writing:
+
+{% highlight regent %}
+task read_write_task(r : region(...))
+where reads writes(r) do
+  ...
+end
+{% endhighlight %}
+
+And reducing:
+
+{% highlight regent %}
+task sum_task(r : region(...))
+where reduces +(r) do
+  ...
+end
+{% endhighlight %}
+
+## Field-Specific Privileges
+
+Privileges can also be specified on specific fields within a region.
+
+## Dependence Analysis
+
+## DAXPY with Privileges
+
 Privileges describe how a task interacts with region-typed arguments. For example, `reads` is required in order to read from a region argument, and `writes` is required to modify a region.
 
 {% highlight regent %}
