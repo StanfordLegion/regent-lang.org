@@ -114,7 +114,66 @@
         </h1>
       
 
-      <p>Privileges describe how a task interacts with region-typed arguments. For example, <code>reads</code> is required in order to read from a region argument, and <code>writes</code> is required to modify a region.</p>
+      <p><em>Privileges</em> describe the ways in which tasks interact with their region arguments. This is one of the key cornerstones of the Regent programming model: privileges allow Regent to determine what a task will do (to its region arguments) without actually running the task. Privileges, in combination with the region arguments used, are the way that Regent determines what tasks may run in parallel.</p>
+<h2 id="privileges">Privileges</h2>
+<p>Regent supports the following privileges:</p>
+<ul>
+<li><code>reads</code></li>
+<li><code>writes</code></li>
+<li><code>reduces</code> with one of the following operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>min</code> or <code>max</code></li>
+</ul>
+<p>Each privilege corresponds to an operation that a task is permitted to perform on a region.</p>
+<p>The <code>reads</code> privilege allows a task to read the contents of a region:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">_</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span></code></pre>
+</figure>
+<p>The <code>writes</code> privilege allows a task to write to a region:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span></code></pre>
+</figure>
+<p>The <code>reduces</code> privilege allows a task to apply the corresponding reduction operator. For example, <code>+</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">+=</span> <span class="o">...</span></code></pre>
+</figure>
+<p>Or <code>min</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="n">min</span><span class="o">=</span> <span class="o">...</span></code></pre>
+</figure>
+<p>Privileges can be combined, so <code>reads</code> and <code>writes</code> can be used to provide read-write access to a region. In general, any combination of <code>reads</code> or <code>writes</code> with <code>reduces</code> is upgraded to <code>reads writes</code>, so this is not really a useful combination. Similarly any two reduction operators (e.g., <code>reduces +</code> and <code>reduces *</code>) will be upgraded to <code>reads writes</code>. Reductions are most useful on their own.</p>
+<h2 id="declaring-privileges-in-a-task">Declaring Privileges in a Task</h2>
+<p>A task can declare privileges in a <code>where</code> clause, following the task arguments. For example, reading a region <code>r</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">read_task</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Or writing:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">write_task</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Reading and writing:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">read_write_task</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>And reducing:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">sum_task</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reduces</span> <span class="o">+</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<h2 id="field-specific-privileges">Field-Specific Privileges</h2>
+<p>Privileges can also be specified on specific fields within a region.</p>
+<h2 id="dependence-analysis">Dependence Analysis</h2>
+<h2 id="daxpy-with-privileges">DAXPY with Privileges</h2>
+<p>Privileges describe how a task interacts with region-typed arguments. For example, <code>reads</code> is required in order to read from a region argument, and <code>writes</code> is required to modify a region.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">is</span> <span class="p">:</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span>
            <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
