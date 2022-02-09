@@ -75,3 +75,8 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
+
+## Next Up
+
+Continue to the [next tutorial]({{ "tutorial/04_logical_regions" |
+relative_url }}) to see how aggregate data is stored in Regent.

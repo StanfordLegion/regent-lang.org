@@ -59,7 +59,7 @@ following code defines a variable `x` of type `fs`:
 var x = fs { a = 3.14, b = 4, c = 5, c = 6 }
 {% endhighlight %}
 
-Values of field spaces can be used like any other type: they can be
+Such values can be used like values of any other type: they can be
 passed (by-value) to tasks, returned from tasks, modified, etc. To
 access the individual elements of a field space, use the `.` (dot)
 operator.
@@ -189,10 +189,11 @@ task make_coordinate(a : int, b : int, c : int, d : int)
 end
 {% endhighlight %}
 
-Index spaces can be created from multi-dimensional index types. In
-this case, the extent specifies the upper-rectangular corner of a
-bounding box, and the offset shifts the box by the specified
-amount. The offset is zero by default. Some examples are shown below:
+Multi-dimensional index spaces can be created from multi-dimensional
+index types. In this case, the extent specifies the upper-rectangular
+corner of a bounding box, and the offset shifts the box by the
+specified amount. The offset is zero by default. Some examples are
+shown below:
 
 {% highlight regent %}
 var is1 = ispace(int1d, 10) -- [0, 1, ... 9]
@@ -224,8 +225,8 @@ example, using the `fs` field space from earlier:
 var r = region(ispace(int1d, 10), fs)
 {% endhighlight %}
 
-This region contains elements numbered 0 to 9 (inclusive), and each
-element contains fields `a`, `b`, `c` and `d`.
+This region contains elements numbered `0` to `9` (inclusive), and
+each element contains fields `a`, `b`, `c` and `d`.
 
 The index space may either be specified inline (as above) or
 out-of-line. The latter allows multiple regions to be created with the
@@ -237,6 +238,8 @@ var s = region(is, fs)
 var t = region(is, fs)
 var u = region(is, int)
 {% endhighlight %}
+
+### Region Iteration and Access
 
 Like index spaces, regions can be iterated. One difference is that
 when regions are iterated, the iteration ranges over pointers to the
@@ -254,7 +257,8 @@ end
 
 In the case where the region's field space is not a primitive type
 (i.e., not `int`, `double`, `float`, etc.), the `.` (dot) operator can
-be used to implicitly dereference a pointer.
+be used to implicitly dereference a pointer. Below, `x.a` is
+equivalent to writing `(@x).a`.
 
 {% highlight regent %}
 var r = region(ispace(int1d, 10), fs)
@@ -377,3 +381,9 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
+
+## Next Up
+
+Continue to the [next tutorial]({{ "tutorial/05_physical_regions" |
+relative_url }}) to learn more about the mapping of regions to
+physical memory allocations in Regent.

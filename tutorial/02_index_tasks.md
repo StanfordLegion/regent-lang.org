@@ -87,3 +87,9 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
+
+## Next Up
+
+Continue to the [next tutorial]({{ "tutorial/03_global_vars" |
+relative_url }}) to read about some features that are *not* allowed in
+Regent.
