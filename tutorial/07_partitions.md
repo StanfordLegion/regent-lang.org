@@ -6,7 +6,69 @@ highlight_first: false
 permalink: /tutorial/07_partitions/index.html
 ---
 
-(The text for this tutorial has not been written yet.)
+In theory, tasks and regions are enough to induce a parallel
+execution. If you create `N` regions, and `N` tasks, those will all be
+able to run in parallel. But it's a lot more pleasant---and more
+efficient too---to use data partitioning. Partitioning also opens the
+door to much more powerful tools down the road, like using multiple
+partitions to implement ghost cell exchanges.
+
+For now, we're going to look at what can be achieved with a single
+partition of the data.
+
+## Partitions
+
+*Partitions* divide regions into a number of subregions. There are
+many partitioning operators, but the most basic is `equal`. The
+`equal` operator creates a specified number of roughly equal-sized
+subregions. (The subregions are only *roughly* equal-sized because the
+number of subregions created may not evenly divide the region being
+divided.)
+
+The following code divides `r` into `N` subregions:
+
+{% highlight regent %}
+var p = partition(equal, r, ispace(int1d, N))
+{% endhighlight %}
+
+Having partitioned `r` as `p`, we can then access the `i`th subregion
+as `p[i]`. This enables us to write, for example, a loop of tasks over
+the subregions of a partition.
+
+{% highlight regent %}
+for i = 0, N do
+  some_task(p[i])
+end
+{% endhighlight %}
+
+The `equal` operator is always guarranteed to produce subregions that
+satisfy certain relationships. In particular:
+
+  * The subregions `p[i]` and `p[j]` are guarranteed to be *disjoint*
+    (that is, they do not contain any common elements), for all `i !=
+    j`.
+
+  * The subregions of `p`, taken as a whole, are guarranteed to be
+    *complete*. That is, the union of `p[i]` for all `i` is equal to
+    the original parent region.
+
+These properties are *not* guarranted to hold for all possible
+partitions. There are partitions in Regent that are *aliased* (`p[i]`
+overlaps `p[j]` for some `i != j`), and ones that are *incomplete*
+(the union of subregions does not cover the parent region). In fact,
+these are some of the most interesting and useful partitions. But for
+now, we'll stick with the `equal` operator and its disjoint and
+complete partitions.
+
+## Subregions are Views
+
+## Partitioning Operators
+
+## Passing Partitions to Tasks
+
+## DAXPY with Partitions
+
+## Final Code
 
 {% highlight regent %}
 import "regent"
