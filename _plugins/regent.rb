@@ -27,7 +27,7 @@ module Rouge
 
         rule %r((==|~=|<=|>=|\.\.\.|\.\.|[=+\-*/%^<>#@|&])), Operator
         rule %r([\[\]\{\}\(\)\.,:;]), Punctuation
-        rule %r((and|or|not)\b), Operator::Word
+        rule %r((and|or|not|min|max)\b), Operator::Word
 
         rule %r((break|do|else|elseif|end|for|if|in|repeat|return|then|until|while)\b), Keyword
         rule %r((local)\b), Keyword::Declaration
