@@ -138,7 +138,7 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">x</span> <span class="o">=</span> <span class="n">fs</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">6</span> <span class="p">}</span></code></pre>
 </figure>
-<p>Values of field spaces can be used like any other type: they can be passed (by-value) to tasks, returned from tasks, modified, etc. To access the individual elements of a field space, use the <code>.</code> (dot) operator.</p>
+<p>Such values can be used like values of any other type: they can be passed (by-value) to tasks, returned from tasks, modified, etc. To access the individual elements of a field space, use the <code>.</code> (dot) operator.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">sum_fs</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">fs</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">x</span><span class="p">.</span><span class="n">a</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">c</span> <span class="o">+</span> <span class="n">x</span><span class="p">.</span><span class="n">d</span>
@@ -212,7 +212,7 @@
   <span class="k">return</span> <span class="kt">int4d</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">}</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>Index spaces can be created from multi-dimensional index types. In this case, the extent specifies the upper-rectangular corner of a bounding box, and the offset shifts the box by the specified amount. The offset is zero by default. Some examples are shown below:</p>
+<p>Multi-dimensional index spaces can be created from multi-dimensional index types. In this case, the extent specifies the upper-rectangular corner of a bounding box, and the offset shifts the box by the specified amount. The offset is zero by default. Some examples are shown below:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is1</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">-- [0, 1, ... 9]</span>
 <span class="kd">var</span> <span class="n">is2</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int2d</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span> <span class="c1">-- [{0, 0}, {0, 1}, ... {0, 3}, ... {3, 3}]</span>
@@ -227,7 +227,7 @@
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">fs</span><span class="p">)</span></code></pre>
 </figure>
-<p>This region contains elements numbered 0 to 9 (inclusive), and each element contains fields <code>a</code>, <code>b</code>, <code>c</code> and <code>d</code>.</p>
+<p>This region contains elements numbered <code>0</code> to <code>9</code> (inclusive), and each element contains fields <code>a</code>, <code>b</code>, <code>c</code> and <code>d</code>.</p>
 <p>The index space may either be specified inline (as above) or out-of-line. The latter allows multiple regions to be created with the same index space (and the same or different field space).</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -235,6 +235,7 @@
 <span class="kd">var</span> <span class="n">t</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
 <span class="kd">var</span> <span class="n">u</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span></code></pre>
 </figure>
+<h3 id="region-iteration-and-access">Region Iteration and Access</h3>
 <p>Like index spaces, regions can be iterated. One difference is that when regions are iterated, the iteration ranges over pointers to the elements of the region. The <code>@</code> (dereference) operator may be used on pointers to access (read or write) the corresponding region element. In the following loop, each element of the region <code>i</code> is assigned the value <code>i+1</code>.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="kt">int</span><span class="p">)</span>
@@ -242,7 +243,7 @@
   <span class="o">@</span><span class="n">x</span> <span class="o">=</span> <span class="kt">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>In the case where the region’s field space is not a primitive type (i.e., not <code>int</code>, <code>double</code>, <code>float</code>, etc.), the <code>.</code> (dot) operator can be used to implicitly dereference a pointer.</p>
+<p>In the case where the region’s field space is not a primitive type (i.e., not <code>int</code>, <code>double</code>, <code>float</code>, etc.), the <code>.</code> (dot) operator can be used to implicitly dereference a pointer. Below, <code>x.a</code> is equivalent to writing <code>(@x).a</code>.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">fs</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="k">in</span> <span class="n">r</span> <span class="k">do</span>
@@ -328,6 +329,8 @@
 <span class="k">end</span>
 <span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
 </figure>
+<h2 id="next-up">Next Up</h2>
+<p>Continue to the <a href="/tutorial/05_physical_regions">next tutorial</a> to learn more about the mapping of regions to physical memory allocations in Regent.</p>
 
     </div>
   </div>
