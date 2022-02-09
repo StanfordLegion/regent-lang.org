@@ -137,7 +137,7 @@
 </figure>
 <p>Or <code>min</code>:</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="n">min</span><span class="o">=</span> <span class="o">...</span></code></pre>
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="ow">min</span><span class="o">=</span> <span class="o">...</span></code></pre>
 </figure>
 <p>Privileges can be combined, so <code>reads</code> and <code>writes</code> can be used to provide read-write access to a region. In general, any combination of <code>reads</code> or <code>writes</code> with <code>reduces</code> is upgraded to <code>reads writes</code>, so this is not really a useful combination. Similarly any two reduction operators (e.g., <code>reduces +</code> and <code>reduces *</code>) will be upgraded to <code>reads writes</code>. Reductions are most useful on their own.</p>
 <h2 id="declaring-privileges-in-a-task">Declaring Privileges in a Task</h2>
@@ -170,8 +170,62 @@
 <span class="k">end</span></code></pre>
 </figure>
 <h2 id="field-specific-privileges">Field-Specific Privileges</h2>
-<p>Privileges can also be specified on specific fields within a region.</p>
-<h2 id="dependence-analysis">Dependence Analysis</h2>
+<p>Privileges can also be specified on specific fields within a region. The following task reads field <code>a</code> and writes field <code>b</code> of the region <code>r</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">read_a_write_b</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">a</span><span class="p">),</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">b</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>Fields can be grouped with <code>{...}</code>. (Nested fields, if any, can be listed this way as well.) Multiple regions can also be combined under the same privilege for convenience.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">another_task</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">s</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">.{</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">},</span> <span class="n">s</span><span class="p">.</span><span class="n">x</span><span class="p">),</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">d</span><span class="p">.{</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">})</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>This task:</p>
+<ul>
+<li><code>reads</code> the fields <code>r.a</code>, <code>r.b</code>, <code>r.c</code>, and <code>s.x</code></li>
+<li><code>reads</code> and <code>writes</code> the fields <code>r.d.e</code> and <code>r.d.f</code></li>
+</ul>
+<h2 id="interference-with-privileges">Interference with Privileges</h2>
+<p>Privileges describe the effects a task has (including mutations) on its region arguments. These privileges, in combination with the region arguments passed to the tasks, are used to determine which tasks may potentially interfere.</p>
+<ul>
+<li>A task that <code>writes</code> a region will interfere with any other task that <code>reads</code> or <code>writes</code> or <code>reduces</code> the same region.</li>
+<li>A task that <code>reads</code> a region will <em>not</em> interfere with other <code>reads</code>, but will interfere with <code>writes</code> or <code>reduces</code>.</li>
+<li>A task that <code>reduces OP</code> will <em>not</em> interfere with other <code>reduces     OP</code> (for the same operator <code>OP</code>), but will interfere with a different operator <code>OP2</code>, or with <code>reads</code> or <code>writes</code>.</li>
+</ul>
+<p>These checks are performed on a field-by-field basis, so a task that <code>writes(r.a)</code> will not interfere with a task that <code>reads(r.b)</code>.</p>
+<p>One important thing to note is that interference is based on a task’s <em>declared</em> privileges, rather than the operations a task actually performs at runtime. Regent’s type system ensures that a task does not peform any operation not identified in its privileges, but it makes no attempt to check that the task uses all of the privileges that it has declared.</p>
+<h2 id="dependence-analysis-with-privileges">Dependence Analysis with Privileges</h2>
+<p>Regent uses interference to check which tasks may execute in parallel. Tasks that interfere are serialized, but (assuming the parent does not block) this does not prevent other non-interfering tasks from running at the same time.</p>
+<p>In the code below, <code>task_b</code> depends on <code>task_a</code> (and therefore <code>task_b</code> will not begin execution until <code>task_a</code> completes), while <code>task_c</code> can run in parallel to the other two.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">task_a</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">task_b</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">task_c</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">do</span>
+  <span class="o">...</span>
+<span class="k">end</span>
+
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="kd">var</span> <span class="n">s</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">t</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+  <span class="n">task_a</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+  <span class="n">task_b</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+  <span class="n">task_c</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
 <h2 id="daxpy-with-privileges">DAXPY with Privileges</h2>
 <p>Privileges describe how a task interacts with region-typed arguments. For example, <code>reads</code> is required in order to read from a region argument, and <code>writes</code> is required to modify a region.</p>
 <figure class="highlight">
@@ -204,9 +258,9 @@
            <span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">),</span>
            <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
            <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="k">where</span> <span class="k">reduces</span> <span class="n">max</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">where</span> <span class="k">reduces</span> <span class="ow">max</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
-    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="n">max</span><span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span>
+    <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="ow">max</span><span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre>
 </figure>
