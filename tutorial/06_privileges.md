@@ -98,9 +98,94 @@ end
 
 ## Field-Specific Privileges
 
-Privileges can also be specified on specific fields within a region.
+Privileges can also be specified on specific fields within a
+region. The following task reads field `a` and writes field `b` of the
+region `r`.
 
-## Dependence Analysis
+{% highlight regent %}
+task read_a_write_b(r : region(...))
+where reads(r.a), writes(r.b) do
+  ...
+end
+{% endhighlight %}
+
+Fields can be grouped with `{...}`. (Nested fields, if any, can be
+listed this way as well.) Multiple regions can also be combined under
+the same privilege for convenience.
+
+{% highlight regent %}
+task another_task(r : region(...), s : region(...))
+where reads(r.{a, b, c}, s.x), reads writes(r.d.{e, f}) do
+  ...
+end
+{% endhighlight %}
+
+This task:
+
+  * `reads` the fields `r.a`, `r.b`, `r.c`, and `s.x`
+  * `reads` and `writes` the fields `r.d.e` and `r.d.f`
+
+## Interference with Privileges
+
+Privileges describe the effects a task has (including mutations) on
+its region arguments. These privileges, in combination with the region
+arguments passed to the tasks, are used to determine which tasks may
+potentially interfere.
+
+  * A task that `writes` a region will interfere with any other task
+    that `reads` or `writes` or `reduces` the same region.
+  * A task that `reads` a region will *not* interfere with other
+    `reads`, but will interfere with `writes` or `reduces`.
+  * A task that `reduces OP` will *not* interfere with other `reduces
+    OP` (for the same operator `OP`), but will interfere with a
+    different operator `OP2`, or with `reads` or `writes`.
+
+These checks are performed on a field-by-field basis, so a task that
+`writes(r.a)` will not interfere with a task that `reads(r.b)`.
+
+One important thing to note is that interference is based on a task's
+*declared* privileges, rather than the operations a task actually
+performs at runtime. Regent's type system ensures that a task does not
+peform any operation not identified in its privileges, but it makes no
+attempt to check that the task uses all of the privileges that it has
+declared.
+
+## Dependence Analysis with Privileges
+
+Regent uses interference to check which tasks may execute in
+parallel. Tasks that interfere are serialized, but (assuming the
+parent does not block) this does not prevent other non-interfering
+tasks from running at the same time.
+
+In the code below, `task_b` depends on `task_a` (and therefore
+`task_b` will not begin execution until `task_a` completes), while
+`task_c` can run in parallel to the other two.
+
+{% highlight regent %}
+task task_a(r : region(...))
+where writes(r) do
+  ...
+end
+
+task task_b(r : region(...))
+where reads(r) do
+  ...
+end
+
+task task_c(r : region(...))
+where writes(r) do
+  ...
+end
+
+task main()
+  var s = region(...)
+  var t = region(...)
+
+  task_a(s)
+  task_b(s)
+  task_c(t)
+end
+{% endhighlight %}
 
 ## DAXPY with Privileges
 
