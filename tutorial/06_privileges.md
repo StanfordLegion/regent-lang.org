@@ -227,7 +227,7 @@ If we just copy the loop into the body of this task, we'll get a
 compile error. The task has no privileges, so it isn't permitted to
 access any of the regions it takes as arguments.
 
-In order to fix this, we need to add a `where` clause to the task
+To fix this, we need to add a `where` clause to the task
 declaration. The privileges can be determined by reading the body of
 the loop itself. The loop reads `input_lr.x` and `input_lr.y`, and
 writes `output_lr.z`. This translates into the following privilege
