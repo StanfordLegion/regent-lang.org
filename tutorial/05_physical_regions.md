@@ -155,7 +155,7 @@ this case.
 This can also be mitigated by maintaining `__demand(__inner)` on the
 main task (and any other tasks that call subtasks).
 
-## DAXPY Example
+## Sequential DAXPY Example
 
 From this point onward, we're going to be taking a look at a DAXPY
 example code. This builds on features described in the last couple of
@@ -166,7 +166,10 @@ For the first version, we'll write this code without the use of
 tasks. Tasks that take regions---and actually access them---require
 privileges, the subject of the next tutorial. Until then, we just
 write the loops directly into the main task. The accesses to regions
-use the `r[...]` syntax described earlier.
+use the `r[...]` syntax described earlier. This means that the
+implementation here will be sequential---there won't be any
+parallelism, because there aren't any tasks. We'll get around to
+fixing that in a future tutorial.
 
 The only additional feature to note here is that Regent can call
 arbitrary C functions. Here, we're calling `drand48` from the C header
@@ -204,7 +207,7 @@ task main()
 
   var alpha = c.drand48()
 
-  for i : int1d(is) in is do
+  for i in is do
     output_lr[i].z = alpha*input_lr[i].x + input_lr[i].y
   end
 

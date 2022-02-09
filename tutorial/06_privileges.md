@@ -146,7 +146,7 @@ These checks are performed on a field-by-field basis, so a task that
 One important thing to note is that interference is based on a task's
 *declared* privileges, rather than the operations a task actually
 performs at runtime. Regent's type system ensures that a task does not
-peform any operation not identified in its privileges, but it makes no
+perform any operation not identified in its privileges, but it makes no
 attempt to check that the task uses all of the privileges that it has
 declared.
 
@@ -189,47 +189,72 @@ end
 
 ## DAXPY with Privileges
 
-Privileges describe how a task interacts with region-typed arguments. For example, `reads` is required in order to read from a region argument, and `writes` is required to modify a region.
+Privileges enable us to write a version of DAXPY more properly in
+Regent. This will still be a sequential implementation (in the sense
+that it won't do any data partitioning, and therefore won't achieve
+parallelism), but it is getting closer to idiomatic Regent code.
+
+The first step is to set up the tasks. The [previous version of the
+code]({{ "tutorial/05_physical_regions#final-code" | relative_url }})
+had three loops: an initialization loop, a DAXPY loop, and a
+verification loop. These are likely to be the time-consuming parts of
+the program (especially if we want to scale this DAXPY
+implementation), so these are the important parts to put in tasks.
+
+We'll start with the DAXPY loop. The original version of this loop
+looked like:
+
+{% highlight regent %}
+for i in is do
+  output_lr[i].z = alpha*input_lr[i].x + input_lr[i].y
+end
+{% endhighlight %}
+
+To extract this into a task, we need to start by writing the task
+header. This will need to include, at a minimum, the variables
+referenced inside the loop (that is, `is`, `input_lr`, `output_lr`,
+and `alpha`). Here's what this looks like:
 
 {% highlight regent %}
 task daxpy(is : ispace(int1d),
            input_lr : region(is, input),
            output_lr : region(is, output),
            alpha : double)
--- Multiple privileges may be specified at once. Privileges may also
--- apply to specific fields. (Multiple fields can be named with braces.)
-where reads writes(output_lr.z), reads(input_lr.{x, y}) do
+end
+{% endhighlight %}
+
+If we just copy the loop into the body of this task, we'll get a
+compile error. The task has no privileges, so it isn't permitted to
+access any of the regions it takes as arguments.
+
+In order to fix this, we need to add a `where` clause to the task
+declaration. The privileges can be determined by reading the body of
+the loop itself. The loop reads `input_lr.x` and `input_lr.y`, and
+writes `output_lr.z`. This translates into the following privilege
+clause:
+
+{% highlight regent %}
+where writes(output_lr.z), reads(input_lr.{x, y}) do
+{% endhighlight %}
+
+Now we can copy the loop body and get the entire thing to compile. The
+final version looks like this:
+
+{% highlight regent %}
+task daxpy(is : ispace(int1d),
+           input_lr : region(is, input),
+           output_lr : region(is, output),
+           alpha : double)
+where writes(output_lr.z), reads(input_lr.{x, y}) do
   for i in is do
     output_lr[i].z = alpha*input_lr[i].x + input_lr[i].y
   end
 end
 {% endhighlight %}
 
-Privileges are enforced by the type system, and a compile error will be issued if the declared privileges are violated.
-
-Beyond `reads` and `writes`, reductions (`+`, `*`, `-`, `/`, `min`, `max`) allow the application of certain commutative operators to the elements of regions.
-
-{% highlight regent %}
-task sum_output(is : ispace(int1d),
-                input_lr : region(is, input),
-                output_lr : region(is, output),
-                alpha : double)
-where reduces +(output_lr.z), reads(input_lr.{x, y}) do
-  for i in is do
-    output_lr[i].z += alpha*input_lr[i].x + input_lr[i].y
-  end
-end
-
-task max_output(is : ispace(int1d),
-           input_lr : region(is, input),
-           output_lr : region(is, output),
-           alpha : double)
-where reduces max(output_lr.z), reads(input_lr.{x, y}) do
-  for i in is do
-    output_lr[i].z max= alpha*input_lr[i].x
-  end
-end
-{% endhighlight %}
+The process for the other loops is similar. We'll create two
+additional tasks, `init` and `check`, to extract each of the
+respective loops. The final code is shown below.
 
 ## Final Code
 
@@ -260,7 +285,7 @@ task daxpy(is : ispace(int1d),
            input_lr : region(is, input),
            output_lr : region(is, output),
            alpha : double)
-where reads writes(output_lr.z), reads(input_lr.{x, y}) do
+where writes(output_lr.z), reads(input_lr.{x, y}) do
   for i in is do
     output_lr[i].z = alpha*input_lr[i].x + input_lr[i].y
   end
@@ -293,3 +318,9 @@ task main()
 end
 regentlib.start(main)
 {% endhighlight %}
+
+## Next Up
+
+Continue to the [next tutorial]({{ "tutorial/07_partitions" |
+relative_url }}) to see the parallel version of this code with data
+partitioning.
