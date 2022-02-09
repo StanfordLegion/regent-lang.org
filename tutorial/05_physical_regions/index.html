@@ -114,29 +114,12 @@
         </h1>
       
 
-      <p>Regent provides two distinct syntaxes for accessing regions.</p>
-<h2 id="iteration-over-regions">Iteration Over Regions</h2>
-<p>The loop below iterates over pointers to the elements in the region. The loop index type (which is optional and shown only for pedagogical purposes) records both the type that the pointer points to and the region that it points to.</p>
-<figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">input_ptr</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">)</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span> <span class="c1">-- The type declaration here is optional.</span>
-  <span class="p">(</span><span class="o">@</span><span class="n">input_ptr</span><span class="p">).</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator @ is used to access the element.</span>
-  <span class="n">input_ptr</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator is also optional.</span>
-<span class="k">end</span></code></pre>
-</figure>
-<h2 id="iteration-over-index-spaces">Iteration Over Index Spaces</h2>
-<p>The loop below iterates over points in the index space, and is functionally equivalent to the example above. Since the loop variable is typed on the index space rather than a region, the index access operator <code>[]</code> must be used to access the respective regions.</p>
-<figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
-<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">is</span><span class="p">)</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span> <span class="c1">-- The type declaration here is also optional.</span>
-  <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-  <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-<span class="k">end</span></code></pre>
-</figure>
+      <p>As discussed in previous tutorials, <em>logical</em> regions (often just called regions) are unlike arrays in a language like C, in that they are not mapped to a fixed memory location over their entire lifetime. Instead they are mapped to zero or more <em>physical regions</em> (often called <em>instances</em>), and may move between these instances over the duration of the program. Instances may be located on different nodes in a distributed machine, on different heterogeneous processors (CPUs, GPUs, etc.), or may even be stored in different memory layouts (struct-of-arrays vs array-of-structs, etc.).</p>
+<p>For the most part, users of Regent need not be aware of the precise mapping from logical to physical instances, as this is managed by Regent on behalf of the use. In fact, we already saw physical regions in use in the previous tutorial. Any time a task accesses the contents of a region (via <code>@</code>, <code>.</code> or <code>r[...]</code>), Regent ensures that a physical region is available on the local processor to support the access. While this is mostly seamless, it has performance implications which we will explore in this example.</p>
+<h2 id="regions-are-not-initially-mapped">Regions are not Initially Mapped</h2>
+<h2 id="inline-mapping">Inline Mapping</h2>
+<h2 id="mapping-for-tasks">Mapping for Tasks</h2>
+<h2 id="blocking-on-mapping">Blocking on Mapping</h2>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
