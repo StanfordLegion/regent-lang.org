@@ -39,7 +39,7 @@ module Rouge
         rule %r([@]), Operator
         rule %r((__demand|__index_launch|atomic|aliased|copy|complete|disjoint|equal|exclusive|fill|image|import|incomplete|new|null|preimage|reads|reduces|relaxed|rexpr|rquote|simultaneous|where|writes)\b), Keyword
         rule %r((var)\b), Keyword::Declaration
-        rule %r((double|float|int|int1d|int2d|int3d|int4d|ispace|ptr|partition|region)\b), Keyword::Type
+        rule %r((double|float|future|int|int1d|int2d|int3d|int4d|ispace|ptr|partition|region)\b), Keyword::Type
         rule %r((task|terra)\b), Keyword, :function_name
         rule %r((fspace|struct)\b), Keyword, :function_name
 

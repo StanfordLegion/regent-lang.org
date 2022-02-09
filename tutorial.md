@@ -12,8 +12,8 @@ programs. Each tutorial comes with a complete and working example
 program. (The complete source code can also be found in the [GitHub
 repository](https://github.com/StanfordLegion/legion/tree/master/tutorial).)
 In order to follow along with the examples, it is recommended to
-follow the [quickstart guide]({{ "install/#quickstart" | relative_url
-}}) first.
+install Regent via the [quickstart guide]({{ "install/#quickstart" |
+relative_url }}) first.
 
  0. [Hello World](00_hello_world)
  1. [Tasks and Futures](01_tasks_and_futures)

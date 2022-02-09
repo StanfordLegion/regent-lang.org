@@ -48,9 +48,8 @@ Lua attempts to interpret Regent keywords as Lua variable names.)
 ## Lua Code
 
 Execution of a script begins in Lua. The code runs top-to-bottom, like
-a standard scripting language. Unlike a traditional programming
-language, Regent constructs can *also* be embedded in the
-program.
+a standard scripting language. Unlike a conventional language, Regent
+constructs can *also* be embedded in the program.
 
 Important: in most cases, Lua code cannot directly call Regent
 tasks. (The exception, `regentlib.start`, is shown below.) This means
@@ -60,18 +59,22 @@ will be explored in a future tutorial.
 
 As an example, the line below loads the `std/format` module from the
 Regent standard library, which provides utilities for formatted
-printing. This is stored in a Lua variable (with `local`) under the
-name `format`.
+printing.
 
 {% highlight regent %}
 local format = require("std/format")
 {% endhighlight %}
 
+The module here is actually a Lua value. It is stored in a Lua
+variable (via `local`) under the name `format`. As we'll see below,
+Regent code can access Lua variables. This means that once we load the
+module in Lua, we can make use of it in our Regent code.
+
 ## Hello World Task
 
 Next we define a Regent task. This is done with the `task`
-keyword. Note that, once we reach the `task` keyword, *subsequent code
-is in Regent* (until the matching `end`). After `end` we return to Lua
+keyword. Note that, once we reach the `task` keyword, subsequent code
+is in Regent (until the matching `end`). After `end` we return to Lua
 to continue execution.
 
 Regent tasks are covered in a future tutorial, but for now it is
@@ -117,3 +120,9 @@ to calling this function.
 {% highlight regent %}
 regentlib.start(main)
 {% endhighlight %}
+
+## Next Up
+
+Continue to the [next tutorial]({{ "tutorial/01_tasks_and_futures" |
+relative_url }}) to see how to use tasks to achieve parallel
+execution.
