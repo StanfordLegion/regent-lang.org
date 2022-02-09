@@ -244,7 +244,7 @@
 <span class="k">end</span></code></pre>
 </figure>
 <p>If we just copy the loop into the body of this task, we’ll get a compile error. The task has no privileges, so it isn’t permitted to access any of the regions it takes as arguments.</p>
-<p>In order to fix this, we need to add a <code>where</code> clause to the task declaration. The privileges can be determined by reading the body of the loop itself. The loop reads <code>input_lr.x</code> and <code>input_lr.y</code>, and writes <code>output_lr.z</code>. This translates into the following privilege clause:</p>
+<p>To fix this, we need to add a <code>where</code> clause to the task declaration. The privileges can be determined by reading the body of the loop itself. The loop reads <code>input_lr.x</code> and <code>input_lr.y</code>, and writes <code>output_lr.z</code>. This translates into the following privilege clause:</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span></code></pre>
 </figure>

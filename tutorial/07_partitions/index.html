@@ -114,7 +114,31 @@
         </h1>
       
 
-      <p>(The text for this tutorial has not been written yet.)</p>
+      <p>In theory, tasks and regions are enough to induce a parallel execution. If you create <code>N</code> regions, and <code>N</code> tasks, those will all be able to run in parallel. But it’s a lot more pleasant—and more efficient too—to use data partitioning. Partitioning also opens the door to much more powerful tools down the road, like using multiple partitions to implement ghost cell exchanges.</p>
+<p>For now, we’re going to look at what can be achieved with a single partition of the data.</p>
+<h2 id="partitions">Partitions</h2>
+<p><em>Partitions</em> divide regions into a number of subregions. There are many partitioning operators, but the most basic is <code>equal</code>. The <code>equal</code> operator creates a specified number of roughly equal-sized subregions. (The subregions are only <em>roughly</em> equal-sized because the number of subregions created may not evenly divide the region being divided.)</p>
+<p>The following code divides <code>r</code> into <code>N</code> subregions:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span></code></pre>
+</figure>
+<p>Having partitioned <code>r</code> as <code>p</code>, we can then access the <code>i</code>th subregion as <code>p[i]</code>. This enables us to write, for example, a loop of tasks over the subregions of a partition.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">N</span> <span class="k">do</span>
+  <span class="n">some_task</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>The <code>equal</code> operator is always guarranteed to produce subregions that satisfy certain relationships. In particular:</p>
+<ul>
+<li><p>The subregions <code>p[i]</code> and <code>p[j]</code> are guarranteed to be <em>disjoint</em> (that is, they do not contain any common elements), for all <code>i !=     j</code>.</p></li>
+<li><p>The subregions of <code>p</code>, taken as a whole, are guarranteed to be <em>complete</em>. That is, the union of <code>p[i]</code> for all <code>i</code> is equal to the original parent region.</p></li>
+</ul>
+<p>These properties are <em>not</em> guarranted to hold for all possible partitions. There are partitions in Regent that are <em>aliased</em> (<code>p[i]</code> overlaps <code>p[j]</code> for some <code>i != j</code>), and ones that are <em>incomplete</em> (the union of subregions does not cover the parent region). In fact, these are some of the most interesting and useful partitions. But for now, we’ll stick with the <code>equal</code> operator and its disjoint and complete partitions.</p>
+<h2 id="subregions-are-views">Subregions are Views</h2>
+<h2 id="partitioning-operators">Partitioning Operators</h2>
+<h2 id="passing-partitions-to-tasks">Passing Partitions to Tasks</h2>
+<h2 id="daxpy-with-partitions">DAXPY with Partitions</h2>
+<h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
 
@@ -140,7 +164,7 @@
 <span class="k">task</span> <span class="nf">daxpy</span><span class="p">(</span><span class="n">input_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">input</span><span class="p">),</span>
            <span class="n">output_lr</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="n">output</span><span class="p">),</span>
            <span class="n">alpha</span> <span class="p">:</span> <span class="kt">double</span><span class="p">)</span>
-<span class="k">where</span> <span class="k">reads</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">where</span> <span class="k">writes</span><span class="p">(</span><span class="n">output_lr</span><span class="p">.</span><span class="n">z</span><span class="p">),</span> <span class="k">reads</span><span class="p">(</span><span class="n">input_lr</span><span class="p">.{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="k">do</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
     <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
   <span class="k">end</span>
@@ -163,35 +187,24 @@
   <span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
   <span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
-  <span class="c1">-- Data parallelism in Regent is achieved by partioning a reigon</span>
-  <span class="c1">-- into subregions. Regent provides a number of partitioning</span>
-  <span class="c1">-- operators; the code below uses an equal partitioning to create</span>
-  <span class="c1">-- simple blocked subregions.</span>
-  <span class="c1">--</span>
-  <span class="c1">-- The subregions in a partition are also associated with points in</span>
-  <span class="c1">-- an index space. The ispace ps below names the respective subregions.</span>
   <span class="kd">var</span> <span class="n">num_subregions</span> <span class="o">=</span> <span class="mi">4</span>
   <span class="kd">var</span> <span class="n">ps</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_subregions</span><span class="p">)</span>
   <span class="kd">var</span> <span class="n">input_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
   <span class="kd">var</span> <span class="n">output_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">output_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
 
-  <span class="c1">-- Loops may now call tasks on the subregions of the partitions</span>
-  <span class="c1">-- declared above. (Note as before the __demand annotation is</span>
-  <span class="c1">-- optional and causes the compiler to issue an error if the loop</span>
-  <span class="c1">-- iterations cannot be guarranteed to execute in parallel.)</span>
-  <span class="k">__demand</span><span class="p">(</span><span class="n">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">ps</span> <span class="k">do</span>
     <span class="n">init</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
   <span class="k">end</span>
 
   <span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-  <span class="k">__demand</span><span class="p">(</span><span class="n">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">ps</span> <span class="k">do</span>
     <span class="n">daxpy</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
   <span class="k">end</span>
 
-  <span class="k">__demand</span><span class="p">(</span><span class="n">__parallel</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num_subregions</span> <span class="k">do</span>
+  <span class="k">__demand</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">ps</span> <span class="k">do</span>
     <span class="n">check</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
