@@ -602,12 +602,12 @@
 <h4 id="inner-optimization">Inner Optimization</h4>
 <p>The <code>__inner</code> annotation indicates that a task will not directly access the contents of any regions. In certain cases such tasks can be executed more efficiently.</p>
 <figure class="highlight">
-<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__inner</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">f</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will be marked as a inner task.</span>
 <span class="k">end</span>
 
-<span class="n">__forbid</span><span class="p">(</span><span class="n">__inner</span><span class="p">)</span>
+<span class="n">__forbid</span><span class="p">(</span><span class="k">__inner</span><span class="p">)</span>
 <span class="k">task</span> <span class="nf">g</span><span class="p">()</span>
   <span class="o">...</span> <span class="c1">-- This task will NOT be marked as a inner task.</span>
 <span class="k">end</span></code></pre>

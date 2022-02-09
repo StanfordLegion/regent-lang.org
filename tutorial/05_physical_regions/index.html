@@ -118,7 +118,7 @@
 <p>For the most part, users of Regent need not be aware of the precise mapping from logical to physical instances, as this is managed by Regent on behalf of the use. In fact, we already saw physical regions in use in the previous tutorial. Any time a task accesses the contents of a region (via <code>@</code>, <code>.</code> or <code>r[...]</code>), Regent ensures that a physical region is available on the local processor to support the access. While this is mostly seamless in Regent, it has performance implications that can be important.</p>
 <p>In this example, we will consider <em>when</em> regions need to be mapped to instances (i.e., what parts of a program require a region to be mapped), and largely ignore the question of <em>where</em> (i.e., to what memories) regions are mapped. The latter is the domain of <em>mapping</em> in Regent, and will be the subject of a future tutorial.</p>
 <h2 id="regions-are-not-initially-mapped">Regions are not Initially Mapped</h2>
-<p>With one caveat, regions need not be initially mapped at all. That is, the following code will not cause the program to fail with an out of memory error, even if <code>size_of_the_universe</code> is very large.</p>
+<p>With one caveat, regions need not be initially mapped at all. That is, the following code will <em>not</em> cause the program to fail with an out of memory error, even if <code>size_of_the_universe</code> is very large.</p>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">size_of_the_universe</span><span class="p">),</span> <span class="kt">int</span><span class="p">)</span></code></pre>
 </figure>
@@ -130,8 +130,49 @@
 </figure>
 <p>Then Regent will attempt to allocate the region, causing an out of memory failure (since it does not actually fit in memory).</p>
 <h2 id="inline-mapping">Inline Mapping</h2>
+<p>As noted above, accessing the contents of a region causes it to be mapped. For the most part, this happens automatically and users don’t need to be concerned with when and how it happens. There, however, some performance consequences to be considered.</p>
+<p>If a region is accessed <em>anywhere</em> in a task, Regent needs it to be available <em>everywhere</em> in the task. This means, in the example below, the region <code>r</code> is mapped at the point where it is created, even though it will not be used until later on in the task.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">some_task</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1">-- region is mapped here ...</span>
+<span class="n">other_task</span><span class="p">()</span>
+<span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">123</span>          <span class="c1">-- even though the access happens here</span></code></pre>
+</figure>
+<p>Mapping a region is a blocking operation. That means <code>some_task</code> and <code>other_task</code> in the code example may <em>not</em> run in parallel, despite the fact that neither one refers to <code>r</code>, because the creation of <code>r</code> blocks until the mapping is completed.</p>
 <h2 id="mapping-for-tasks">Mapping for Tasks</h2>
+<p>When Regent launches a task, all regions are mapped prior to the beginning of the execution of the task. This ensures that the task will not waste processor cycles waiting on the mapping to be complete, because mapping is performed prior to starting the task execution.</p>
+<p>There is one exception: if the task accesses no regions at all, the task can be considered an <em>inner</em> task. This is most commonly used in tasks that launch other tasks (e.g., as is often true of <code>main</code>). Because Regent knows the task will never access any region data, none of the regions need to be mapped, either prior to the start of the task, or when regions are created by the task itself.</p>
+<p>Reusing the code example from above, if this were run in an inner task, <code>some_task</code> and <code>other_task</code> would be able to run in parallel, because the region creation no longer blocks on the inline mapping.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">some_task</span><span class="p">()</span>
+<span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1">-- no mapping is performed because it's an inner task</span>
+<span class="n">other_task</span><span class="p">()</span>
+<span class="c1">-- r[0] = 123       -- ERROR: this is now illegal to do in an inner task</span></code></pre>
+</figure>
+<p>Regent identifies inner tasks automatically. As with index launches, users who wish to confirm that tasks are being marked as inner can do so with the annotation <code>__demand(__inner)</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__inner</span><span class="p">)</span>
+<span class="k">task</span> <span class="nf">main</span><span class="p">()</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>This is often considered a best practice with the main task, where in most cases it is desirable to ensure that <code>main</code> doesn’t accidentally access any regions (and therefore cause out of memory errors when scaling the code).</p>
 <h2 id="blocking-on-mapping">Blocking on Mapping</h2>
+<p>As noted above, mapping a region forces the task to block until the memory allocation is completed. Blocking is also required whenever a subtask modifies a region which the parent task is going to access. For example:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">some_task</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="c1">-- writes to r</span>
+
+<span class="c1">-- program blocks here to ensure that r is available for the loop below</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">r</span> <span class="k">do</span>
+  <span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"r[{}] = {}"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>This is usually considered bad style in Regent. It would be better to move the <code>println</code> loop into a task, so that the parent doesn’t need to block between <code>some_task</code> and the code that reads the region. Of course, the reading task will still be blocked on the completion of <code>some_task</code>, but at least no unrelated tasks need to be blocked in this case.</p>
+<p>This can also be mitigated by maintaining <code>__demand(__inner)</code> on the main task (and any other tasks that call subtasks).</p>
+<h2 id="daxpy-example">DAXPY Example</h2>
+<p>From this point onward, we’re going to be taking a look at a DAXPY example code. This builds on features described in the last couple of tutorials, so we won’t spend much more time considering the code in detail. The full code is listed below.</p>
+<p>For the first version, we’ll write this code without the use of tasks. Tasks that take regions—and actually access them—require privileges, the subject of the next tutorial. Until then, we just write the loops directly into the main task. The accesses to regions use the <code>r[...]</code> syntax described earlier.</p>
+<p>The only additional feature to note here is that Regent can call arbitrary C functions. Here, we’re calling <code>drand48</code> from the C header <code>stdlib.h</code>. These libc headers are so commonly used in Regent that <code>regentlib.c</code> is provided to offer them by default. Additional headers can be included into the code by calling <code>terralib.includec("header_name.h")</code> (not shown).</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
@@ -153,9 +194,9 @@
   <span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
   <span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
-  <span class="k">for</span> <span class="n">input_ptr</span> <span class="p">:</span> <span class="kt">int1d</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">)</span> <span class="k">in</span> <span class="n">input_lr</span> <span class="k">do</span>
-    <span class="p">(</span><span class="o">@</span><span class="n">input_ptr</span><span class="p">).</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
-    <span class="n">input_ptr</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span> <span class="c1">-- The dereference operator is also optional.</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
+    <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
+    <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
   <span class="k">end</span>
 
   <span class="kd">var</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">c</span><span class="p">.</span><span class="n">drand48</span><span class="p">()</span>
@@ -164,7 +205,6 @@
     <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
   <span class="k">end</span>
 
-  <span class="c1">-- Again, with type inference.</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">is</span> <span class="k">do</span>
     <span class="kd">var</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">+</span> <span class="n">input_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span>
     <span class="kd">var</span> <span class="n">received</span> <span class="o">=</span> <span class="n">output_lr</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span>
@@ -173,6 +213,8 @@
 <span class="k">end</span>
 <span class="n">regentlib</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">main</span><span class="p">)</span></code></pre>
 </figure>
+<h2 id="next-up">Next Up</h2>
+<p>Continue to the <a href="/tutorial/06_privileges">next tutorial</a> to see how privileges are used to provide access to regions inside of tasks.</p>
 
     </div>
   </div>
