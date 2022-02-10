@@ -114,8 +114,7 @@
         </h1>
       
 
-      <p>In theory, tasks and regions are enough to induce a parallel execution. If you create <code>N</code> regions, and <code>N</code> tasks, those will all be able to run in parallel. But it’s a lot more pleasant—and more efficient too—to use data partitioning. Partitioning also opens the door to much more powerful tools down the road, like using multiple partitions to implement ghost cell exchanges.</p>
-<p>For now, we’re going to look at what can be achieved with a single partition of the data.</p>
+      <p>In theory, tasks and regions are sufficient for parallel execution. If you create <code>N</code> regions, and <code>N</code> tasks, those will all be able to run in parallel. But it’s more pleasant—and more efficient too—to use data partitioning. Partitioning provides a way to describe the subsets of a region’s elements needed for a given task, without needing to grab the entire thing. This enables parallelism (tasks using different subsets can run in parallel) and also opens the door to more advanced techniques that we’ll see in future tutorials.</p>
 <h2 id="partitions">Partitions</h2>
 <p><em>Partitions</em> divide regions into a number of subregions. There are many partitioning operators, but the most basic is <code>equal</code>. The <code>equal</code> operator creates a specified number of roughly equal-sized subregions. (The subregions are only <em>roughly</em> equal-sized because the number of subregions created may not evenly divide the region being divided.)</p>
 <p>The following code divides <code>r</code> into <code>N</code> subregions:</p>
@@ -128,16 +127,75 @@
   <span class="n">some_task</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 <span class="k">end</span></code></pre>
 </figure>
-<p>The <code>equal</code> operator is always guarranteed to produce subregions that satisfy certain relationships. In particular:</p>
+<p>The <code>equal</code> operator is always guaranteed to produce subregions that satisfy certain relationships. In particular:</p>
 <ul>
-<li><p>The subregions <code>p[i]</code> and <code>p[j]</code> are guarranteed to be <em>disjoint</em> (that is, they do not contain any common elements), for all <code>i !=     j</code>.</p></li>
-<li><p>The subregions of <code>p</code>, taken as a whole, are guarranteed to be <em>complete</em>. That is, the union of <code>p[i]</code> for all <code>i</code> is equal to the original parent region.</p></li>
+<li><p>The subregions <code>p[i]</code> and <code>p[j]</code> are guaranteed to be <em>disjoint</em> (that is, they do not contain any common elements), for all <code>i !=     j</code>.</p></li>
+<li><p>The subregions of <code>p</code>, taken as a whole, are guaranteed to be <em>complete</em>. That is, the union of <code>p[i]</code> for all <code>i</code> is equal to the original parent region.</p></li>
 </ul>
-<p>These properties are <em>not</em> guarranted to hold for all possible partitions. There are partitions in Regent that are <em>aliased</em> (<code>p[i]</code> overlaps <code>p[j]</code> for some <code>i != j</code>), and ones that are <em>incomplete</em> (the union of subregions does not cover the parent region). In fact, these are some of the most interesting and useful partitions. But for now, we’ll stick with the <code>equal</code> operator and its disjoint and complete partitions.</p>
+<p>These properties are <em>not</em> guaranteed to hold for all possible partitions. There are partitions in Regent that are <em>aliased</em> (<code>p[i]</code> overlaps <code>p[j]</code> for some <code>i != j</code>), and ones that are <em>incomplete</em> (the union of subregions does not cover the parent region). We’ll see more of these partitions in future tutorials. But for now, we’ll stick with the <code>equal</code> operator and its disjoint and complete partitions.</p>
 <h2 id="subregions-are-views">Subregions are Views</h2>
-<h2 id="partitioning-operators">Partitioning Operators</h2>
+<p>One of the most important properties of subregions is that they are <em>views</em> onto their parent regions. That is, they do not copy their elements from the parent, but refer to the parent’s data directly. This means that changes in the subregion are visible in the parent, and vice versa. (While we haven’t seen any aliased partitions yet, it also means that when two subregions overlap, changes in one are visible in the other.)</p>
+<p>This is easiest to see if we create a simple program with one partition:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="kt">int</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="kd">var</span> <span class="n">s</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></code></pre>
+</figure>
+<p>Here, <code>s</code> is the first subregion of <code>r</code> via <code>p</code>. The parent region <code>r</code> contains elements <code>0</code> through <code>9</code>, while <code>s</code> contains elements <code>0</code> through <code>4</code>.</p>
+<p>If we write to <code>s</code>, we’ll see that those changes can be seen in <code>r</code> as well:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">123</span>
+<span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"the value of s[0] is {}"</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">-- prints 123</span>
+<span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"the value of r[0] is {}"</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">-- prints 123</span></code></pre>
+</figure>
+<p>Similarly, we can go the other direction:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="n">r</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">456</span>
+<span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"the value of r[4] is {}"</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="c1">-- prints 456</span>
+<span class="n">format</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s2">"the value of s[4] is {}"</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="c1">-- prints 456</span></code></pre>
+</figure>
+<p>We’ll get back to this in the next tutorial, and how it interacts with multiple partitions of a region. For now, remember that subregions are views and refer directly to their parent’s elements.</p>
 <h2 id="passing-partitions-to-tasks">Passing Partitions to Tasks</h2>
+<p>Partitions can be passed to tasks and returned from tasks. One thing to keep in mind is the type of a partition includes the parent region it is derived from. Therefore, when passing a partition to a task, it is necessary to pass the parent region as well.</p>
+<p>This task:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">task</span> <span class="nf">takes_partition</span><span class="p">(</span><span class="n">t</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">),</span> <span class="kt">int</span><span class="p">),</span>
+                     <span class="n">q</span> <span class="p">:</span> <span class="kt">partition</span><span class="p">(</span><span class="k">disjoint</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">)))</span></code></pre>
+</figure>
+<p>Can be called as:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">r</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="kt">int</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">p</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">takes_partition</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></code></pre>
+</figure>
+<p>Partitions, unlike regions, cannot take privileges. If you need privileges on the subregions of a partition, specify them on the corresponding parent region.</p>
 <h2 id="daxpy-with-partitions">DAXPY with Partitions</h2>
+<p>We can now use partitions to build a data-parallel version of DAXPY. Fortunately, we’ve already done most of the work in the <a href="/tutorial/06_privileges#final-code">previous version of the code</a>. The tasks, in particular, do not need to be modified at all. While originally intended to operate on the entire input and output regions defined in the program, they’ll work fine on subsets of the data as well. Thus, all we need to do is change <code>main</code> to set up the partitions, and create new loops to launch the tasks.</p>
+<p>(It is not always the case that tasks written without partitioning in mind will work seamlessly with partitioning, but it is true to a surprising degree.)</p>
+<p>Recall, from before, that we have two regions we need to be concerned with: <code>input_lr</code> and <code>output_lr</code>. The code for these regions is reproduced below.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">num_elements</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="kd">var</span> <span class="n">is</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">output_lr</span> <span class="o">=</span> <span class="kt">region</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></code></pre>
+</figure>
+<p>To introduce data parallelism, we need to partition these regions. We’ll create a basic four-way partition to start. (In practice, one would normally want this to be configurable so that it can easily scale with the machine, but we’ll leave it fixed for now.) The <code>equal</code> operator makes it easy to set these partitions up.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="kd">var</span> <span class="n">num_subregions</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="kd">var</span> <span class="n">ps</span> <span class="o">=</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="n">num_subregions</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">input_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">input_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="kd">var</span> <span class="n">output_lp</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">output_lr</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span></code></pre>
+</figure>
+<p>At this point, we also want to change the task launches to use the partitions. For example, where we used to have one call to <code>daxpy</code> on the entire <code>input_lr</code> and <code>output_lr</code>, we’ll now have four calls with each of the pieces of <code>input_lp</code> and <code>output_lp</code>.</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="k">__index_launch</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">ps</span> <span class="k">do</span>
+  <span class="n">daxpy</span><span class="p">(</span><span class="n">input_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">output_lp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>We also took the opportunity to mark the loop as <code>__demand(__index_launch)</code>. This instructs the compiler to verify that the loop is eligible to be executed in parallel.</p>
+<p>In fact, because each of the partitions is disjoint, the tasks do indeed run in parallel. This gives us the parallel implementation of DAXPY.</p>
+<p>The final code (shown below) is now written in a form that is parallel and would run distributed if we had an appropriate machine to run on. For DAXPY, there’s not much more to do. However, many applications involve data access patterns that are more complicated than DAXPY (for example, halo or ghost cell exchanges). We’ll consider those applications in a future tutorial.</p>
 <h2 id="final-code">Final Code</h2>
 <figure class="highlight">
 <pre><code class="language-regent" data-lang="regent"><span class="k">import</span> <span class="s2">"regent"</span>
