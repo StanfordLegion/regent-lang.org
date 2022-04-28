@@ -27,240 +27,38 @@
 <h1>Regent</h1>
 
 
-<h2>Contents</h2>
-<ul>
-<li><a href="#Fields">Fields</a></li>
-</ul>
 
 
 <h2>Modules</h2>
 <ul class="nowrap">
-  <li><strong>std.format</strong></li>
+  <li><a href="modules/std.format.html">std.format</a></li>
+  <li><a href="modules/std.timing.html">std.timing</a></li>
 </ul>
 
 </div>
 
 <div id="content">
 
-<h1>Module <code>std.format</code></h1>
-<p>Utilities for formatted printing.</p>
-<p><p>This module provides macros for formatted printing that are integrated into the Regent language.</p>
-<p>A basic example if the <a href="index.html#println">println</a> macro, which prints format string followed by a newline. Each location where <code>{}</code> appears is replaced by the value of one of the arguments. Arguments are referred to in sequence; there is currently no facility to refer to an arguments explicitly by number or by name.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode lua"><code class="sourceCode lua"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>println<span class="op">(</span><span class="st">&quot;Hello {} {} {} world!&quot;</span><span class="op">,</span> <span class="dv">123</span><span class="op">,</span> <span class="dv">3.14</span><span class="op">,</span> <span class="st">&quot;asdf&quot;</span><span class="op">)</span></span></code></pre></div>
-<p>Note that the types of the arguments are inferred automatically, so there is no need to use a format specifier, aside from when a specific style is desired.</p>
-<p>Styles and other arguments for formatting are always optional, and are included inside the <code>{}</code>. For example, <code>{x}</code> formats an integer as hexadecimal, and <code>{.3}</code> formats a floating point number with 3 decimal places. Examples:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode lua"><code class="sourceCode lua"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>println<span class="op">(</span><span class="st">&quot;{7x}&quot;</span><span class="op">,</span> <span class="dv">123</span><span class="op">)</span> <span class="co">-- Format as hex, padded on the left up to 7 spaces</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>println<span class="op">(</span><span class="st">&quot;{e}&quot;</span><span class="op">,</span> <span class="dv">12.4</span><span class="op">)</span> <span class="co">-- Format in scientific notation</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>println<span class="op">{</span><span class="st">&quot;{09}&quot;</span><span class="op">,</span> <span class="dv">123</span><span class="op">)</span> <span class="co">-- Format padded on the left by up to 9 zeroes</span></span></code></pre></div>
-<h2 id="format-specifiers">Format Specifiers</h2>
-<p>The general form of a format specifier is:</p>
-<pre><code>{[padding][.precision][style]}</code></pre>
-<p>Currently the following values are supported for each field:</p>
-<ul>
-<li><p>Padding: must match <code>[0-9]*</code>. Specifies the minimum number of spaces the formatted value must occupy. If the formatted value is at least this number of spaces (or greater), nothing is done. If the formatted value is smaller, then it is padded on the left with spaces (or zeroes, if the padding value starts with a leading <code>0</code>) to ensure that the field as a whole occupies the padding number of spaces.</p></li>
-<li><p>Precision: must be a literal period (<code>.</code>) followed by <code>[0-9]+</code>. Specifies the number of decimal places used to format a floating point value.</p></li>
-<li><p>Style: must match <code>[ex]</code>. Each letter specifies a different style. Note that styles may require specific types. Currently the following styles are supported:</p>
-<ul>
-<li><code>e</code>: The exponential style. Requires a floating point value.</li>
-<li><code>x</code>: The hexadecimal style. Requires an integer value.</li>
-</ul></li>
-</ul>
-</p>
 
+  <h2>Regent Standard Library</h2>
 
-<h2><a href="#Fields">Fields</a></h2>
-<table class="function_list">
+<h2>Modules</h2>
+<table class="module_list">
 	<tr>
-	<td class="name" nowrap><a href="#print">print</a></td>
-	<td class="summary">Print formatted string (no automatic newline).</td>
+		<td class="name"  nowrap><a href="modules/std.format.html">std.format</a></td>
+		<td class="summary">Utilities for formatted printing.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#println">println</a></td>
-	<td class="summary">Print formatted string (with automatic newline).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#fprint">fprint</a></td>
-	<td class="summary">Print formatted string to stream (no automatic newline).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#fprintln">fprintln</a></td>
-	<td class="summary">Print formatted string to stream (with automatic newline).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#snprint">snprint</a></td>
-	<td class="summary">Print formatted string to buffer (no automatic newline).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#snprintln">snprintln</a></td>
-	<td class="summary">Print formatted string to buffer (with automatic newline).</td>
+		<td class="name"  nowrap><a href="modules/std.timing.html">std.timing</a></td>
+		<td class="summary">Utilities for timing.</td>
 	</tr>
 </table>
-
-<br/>
-<br/>
-
-
-    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "print"></a>
-    <strong>print</strong>
-    </dt>
-    <dd>
-    Print formatted string (no automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "println"></a>
-    <strong>println</strong>
-    </dt>
-    <dd>
-    Print formatted string (with automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "fprint"></a>
-    <strong>fprint</strong>
-    </dt>
-    <dd>
-    Print formatted string to stream (no automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">stream</span>
-        Destination stream of type <code>FILE *</code>.
-        </li>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "fprintln"></a>
-    <strong>fprintln</strong>
-    </dt>
-    <dd>
-    Print formatted string to stream (with automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">stream</span>
-        Destination stream of type <code>FILE *</code>.
-        </li>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "snprint"></a>
-    <strong>snprint</strong>
-    </dt>
-    <dd>
-    Print formatted string to buffer (no automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">s</span>
-        Destination buffer of type <code>rawstring</code>.
-        </li>
-        <li><span class="parameter">n</span>
-        Maximum number of bytes to write, including a terminating <code>NUL</code> character.
-        </li>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "snprintln"></a>
-    <strong>snprintln</strong>
-    </dt>
-    <dd>
-    Print formatted string to buffer (with automatic newline).
-
-
-    <ul>
-        <li><span class="parameter">s</span>
-        Destination buffer of type <code>rawstring</code>.
-        </li>
-        <li><span class="parameter">n</span>
-        Maximum number of bytes to write, including a terminating <code>NUL</code> character.
-        </li>
-        <li><span class="parameter">msg</span>
-        Format string. Must be a literal constant.
-        </li>
-        <li><span class="parameter">...</span>
-        Arguments.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-</dl>
-
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-02-10 15:24:28 </i>
+<i style="float:right;">Last updated 2022-04-28 10:15:08 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

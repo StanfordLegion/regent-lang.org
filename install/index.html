@@ -125,7 +125,6 @@
 <li><a href="#building">Building</a></li>
 <li><a href="#running">Running</a></li>
 <li><a href="#development-environment">Development Environment</a></li>
-<li><a href="#docker">Docker</a></li>
 </ul>
 <h1 id="quickstart">Quickstart</h1>
 <p>These quickstart instructions describe how to install Regent on Ubuntu and macOS, respectively.</p>
@@ -133,7 +132,10 @@
 <p>If you use Ubuntu, you can install Regent by running:</p>
 <figure class="highlight">
 <pre><code class="language-bash" data-lang="bash"><span class="c"># install dependencies</span>
-<span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential cmake git llvm-6.0-dev libclang-6.0-dev clang-6.0 libedit-dev libncurses5-dev zlib1g-dev
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>build-essential cmake git wget
+wget https://github.com/terralang/llvm-build/releases/download/llvm-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu.tar.xz
+<span class="nb">tar </span>xf clang+llvm-13.0.0-x86_64-linux-gnu.tar.xz
+<span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-13.0.0-x86_64-linux-gnu"</span>
 
 <span class="c"># download and build Regent</span>
 git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/legion.git
@@ -156,11 +158,11 @@ curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/Ki
 <span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/cmake-3.22.2-macos-universal/CMake.app/Contents/bin"</span>
 
 <span class="c"># download LLVM</span>
-curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/llvm/llvm-project/releases/download/llvmorg-9.0.1/clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
-<span class="nb">tar </span>xfJ clang+llvm-9.0.1-x86_64-apple-darwin.tar.xz
+curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/terralang/llvm-build/releases/download/llvm-13.0.0/clang+llvm-13.0.0-x86_64-apple-darwin.tar.xz
+<span class="nb">tar </span>xfJ clang+llvm-13.0.0-x86_64-apple-darwin.tar.xz
+<span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-13.0.0-x86_64-apple-darwin"</span>
 
 <span class="c"># environment variables needed to build/run Regent</span>
-<span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-9.0.1-x86_64-apple-darwin"</span>
 <span class="nb">export </span><span class="nv">INCLUDE_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>xcrun <span class="nt">--sdk</span> macosx <span class="nt">--show-sdk-path</span><span class="si">)</span><span class="s2">/usr/include"</span>
 <span class="nb">export </span><span class="nv">CXXFLAGS</span><span class="o">=</span><span class="s2">"-std=c++11"</span>
 
@@ -175,7 +177,6 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <p>(These instructions have been tested on macOS 11.6 on an x86 Mac.)</p>
 <h2 id="other-systems">Other Systems</h2>
 <p>Complete instructions for installation follow below.</p>
-<p>Regent is also available as a Docker container. See <a href="#docker">the bottom of this page</a> for instructions.</p>
 <h1 id="prerequisites">Prerequisites</h1>
 <p>Regent requires:</p>
 <ul>
@@ -184,8 +185,9 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <li>Python 3.5 or newer</li>
 <li>LLVM and Clang <strong>with headers</strong>:
 <ul>
-<li>LLVM 6.0 is recommended</li>
+<li>LLVM 13.0 is recommended</li>
 <li>See the <a href="https://github.com/terralang/terra#supported-llvm-versions">version support table</a> for more details</li>
+<li>Pre-built binaries are available <a href="https://github.com/terralang/llvm-build/releases">here</a></li>
 </ul></li>
 <li><em>Optional (but recommended)</em>: CMake 3.5 or newer</li>
 </ul>
@@ -210,7 +212,7 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 </figure>
 <p>For example:</p>
 <figure class="highlight">
-<pre><code class="language-bash" data-lang="bash">./regent.py examples/circuit.rg</code></pre>
+<pre><code class="language-bash" data-lang="bash">./regent.py examples/circuit_sparse.rg</code></pre>
 </figure>
 <p>(Note: The Regent frontend can also be run without arguments to obtain a <a href="http://terralang.org">Terra</a>/<a href="http://luajit.org/">LuaJIT</a> shell. However, this mode is not very useful because of the way that Terra language extensions works. Also, the Legion runtime is not currently reentrant, making interactive use difficult.)</p>
 <h1 id="development-environment">Development Environment</h1>
@@ -219,19 +221,6 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <li><a href="https://github.com/StanfordLegion/regent-mode">Emacs</a></li>
 <li><a href="https://github.com/StanfordLegion/regent.vim">Vim</a></li>
 </ul>
-<h1 id="docker">Docker</h1>
-<p>If you have <a href="https://www.docker.com/">Docker</a>, Regent is also available as a container:</p>
-<figure class="highlight">
-<pre><code class="language-bash" data-lang="bash">docker run <span class="nt">-ti</span> stanfordlegion/regent</code></pre>
-</figure>
-<p>This will start a bash shell from which you can run Regent. Regent is installed under <code>/usr/local/legion</code>. So for example, to run the circuit example:</p>
-<figure class="highlight">
-<pre><code class="language-bash" data-lang="bash">regent /usr/local/legion/language/examples/circuit.rg</code></pre>
-</figure>
-<p>Because Docker containers have no access to the host file system, some additional options are required if you want to run Docker on your own Regent files. The command below mounts the current directory in the host as <code>/examples</code> in the container and then runs Regent on it.</p>
-<figure class="highlight">
-<pre><code class="language-bash" data-lang="bash">docker run <span class="nt">-ti</span> <span class="nt">-v</span> <span class="nv">$PWD</span>:/examples stanfordlegion/regent regent /examples/circuit.rg</code></pre>
-</figure>
 
     </div>
   </div>
