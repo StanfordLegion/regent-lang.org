@@ -73,7 +73,7 @@ cd legion/language
 ./regent.py examples/circuit_sparse.rg
 {% endhighlight %}
 
-(These instructions have been tested on macOS 11.6 on an x86 Mac.)
+(These instructions have been tested on macOS 12.3 on an x86 Mac.)
 
 ## Other Systems
 
