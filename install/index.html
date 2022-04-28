@@ -163,7 +163,7 @@ curl <span class="nt">-L</span> <span class="nt">-O</span> https://github.com/te
 <span class="nb">export </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CMAKE_PREFIX_PATH</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">/clang+llvm-13.0.0-x86_64-apple-darwin"</span>
 
 <span class="c"># environment variables needed to build/run Regent</span>
-<span class="nb">export </span><span class="nv">INCLUDE_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>xcrun <span class="nt">--sdk</span> macosx <span class="nt">--show-sdk-path</span><span class="si">)</span><span class="s2">/usr/include"</span>
+<span class="nb">export </span><span class="nv">SDKROOT</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>xcrun <span class="nt">--sdk</span> macosx <span class="nt">--show-sdk-path</span><span class="si">)</span><span class="s2">"</span>
 <span class="nb">export </span><span class="nv">CXXFLAGS</span><span class="o">=</span><span class="s2">"-std=c++11"</span>
 
 <span class="c"># download and build Regent</span>
@@ -189,7 +189,7 @@ git clone <span class="nt">-b</span> master https://github.com/StanfordLegion/le
 <li>See the <a href="https://github.com/terralang/terra#supported-llvm-versions">version support table</a> for more details</li>
 <li>Pre-built binaries are available <a href="https://github.com/terralang/llvm-build/releases">here</a></li>
 </ul></li>
-<li><em>Optional (but recommended)</em>: CMake 3.5 or newer</li>
+<li><em>Optional (but strongly recommended)</em>: CMake 3.5 or newer</li>
 </ul>
 <p>There are also a number of optional dependencies. For most users, we recommend skipping these initially and installing them later on an as-needed basis.</p>
 <ul>
