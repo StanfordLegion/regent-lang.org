@@ -61,7 +61,7 @@ tar xfJ clang+llvm-13.0.0-x86_64-apple-darwin.tar.xz
 export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PWD/clang+llvm-13.0.0-x86_64-apple-darwin"
 
 # environment variables needed to build/run Regent
-export INCLUDE_PATH="$(xcrun --sdk macosx --show-sdk-path)/usr/include"
+export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 export CXXFLAGS="-std=c++11"
 
 # download and build Regent
@@ -90,7 +90,7 @@ Regent requires:
       * LLVM 13.0 is recommended
       * See the [version support table](https://github.com/terralang/terra#supported-llvm-versions) for more details
       * Pre-built binaries are available [here](https://github.com/terralang/llvm-build/releases)
-  * *Optional (but recommended)*: CMake 3.5 or newer
+  * *Optional (but strongly recommended)*: CMake 3.5 or newer
 
 There are also a number of optional dependencies. For most users, we
 recommend skipping these initially and installing them later on an
