@@ -29,7 +29,8 @@ permalink: /reference/index.html
       * [Partitions](#partitions)
       * [Partition Operators](#partition-operators)
       * [Cross Products](#cross-products)
-  * [Annotations](#annotations)
+  * [Code Generation for GPUs](#code-generation-for-gpus)
+  * [Annotations and Optimization](#annotations-and-optimization)
       * [Task Annotations](#task-annotations)
       * [Statement Annotations](#statement-annotations)
       * [Expression Annotations](#expression-annotations)
@@ -819,11 +820,88 @@ var q = partition(equal, r, ispace(int1d, 5))
 var cp = cross_product(p, q)
 {% endhighlight %}
 
-# Annotations
+# Code Generation for GPUs
 
-Annotations can be applied to tasks, statements, or expressions and
-control the optimizations applied by the Regent compiler to the
-code. Annotations come in two basic flavors:
+Regent makes it easy to write optimized code for GPUs. Currently,
+Regent supports NVIDIA GPUs (via CUDA) and AMD GPUs (via HIP).
+
+Note that Regent GPU code can be written *even when no GPUs are
+available on the system*. This is because the applicability of GPU
+code generation optimizations are checked even when Regent has not
+been built with GPU support. However, in order to actually generate
+GPU code, Regent must be built with the [corresponding GPU toolchain
+enabled](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
+
+In order to enable GPU code generation for a task, mark it with
+`__demand(__cuda)`:
+
+{% highlight regent %}
+__demand(__cuda)
+task h()
+  ...
+end
+{% endhighlight %}
+
+(Note that despite the name, `__demand(__cuda)` applies to both NVIDIA
+and AMD GPUs. In the future, we may change this name to something more
+generic.)
+
+Within a GPU task, every top-level loop is automatically run on the
+GPU. For example:
+
+{% highlight regent %}
+__demand(__cuda)
+task h(r : region(int), s : region(int))
+where reads(r), writes(s)
+  var t = 0
+  for i in r do
+    t += r[i]
+  end
+  for i in s do
+    s[i] += t
+  end
+end
+{% endhighlight %}
+
+This task will result in two GPU kernels being generated, one for each
+`for` loop. The first loop reads region `r` and performs a scalar
+reduction to the variable `t`. The second loop reads `t` and adds the
+value into the region `s`. Note that because the the value of `t` is
+used inside the task, the task will block on the execution of the
+first GPU kernel before running the second. In most cases, Regent
+avoids blocking on the execution of GPU kernels as much as possible to
+enable overlap of compute and communication.
+
+In order to run this code on a GPU, run Regent with the flag `-fgpu
+cuda` for CUDA or `-fgpu hip` for HIP. If an NVIDIA GPU is available
+on the current node, the architecture will be auto-detected by
+default. Otherwise (or if on AMD GPUs), the architecture must be
+specified manually with the `-fgpu-arch` flag or `GPU_ARCH`
+environment variable. (E.g., `ampere` for NVIDIA or `gfx90a` for AMD.)
+
+If a GPU is not available on the current node, run with `-fgpu-offline
+1`. In this mode, Regent can still perform GPU code generation to
+generate a GPU-enabled binary. The binary can then be run on a node
+with a working GPU.
+
+To identify the GPU at runtime, the `-ll:gpu` flag must be used to
+instruct Legion to use the GPU. There are [additional flags to specify
+GPU memory and other
+properties](https://github.com/StanfordLegion/legion/blob/master/README.md).
+
+# Annotations and Optimization
+
+The Regent compiler provides a wide variety of optimizations. Most of
+these optimizations are automatic and require no user
+intervention. Even though they're automatic, it may be desirable to
+ensure that optimizations are occuring (that is, the user hasn't
+written any code that prevents the optimization from being
+applied). Annotations allow users to specify where optimizations are
+expected in a Regent codebase, so that the compiler can ensure the
+code is being optimized as expected.
+
+Annotations can be applied to tasks, statements, or
+expressions, and come in two basic flavors:
 
   * `__demand` requests that the compiler throw an error if an
     optimization cannot be applied.
