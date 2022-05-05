@@ -77,7 +77,10 @@ cd legion/language
 
 ## Other Systems
 
-Complete instructions for installation follow below.
+Complete instructions for other systems follow below.
+
+For supercomputers, you may refer directly to the
+[README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
 # Prerequisites
 
@@ -112,8 +115,8 @@ cd legion/language
 ./install.py --debug
 {% endhighlight %}
 
-For other installation options (including multi-node and GPU
-configurations), see the
+For other installation options (e.g., multi-node and GPU
+configurations, including supercomputers), see the
 [README](https://github.com/StanfordLegion/legion/blob/master/language/README.md).
 
 # Running
