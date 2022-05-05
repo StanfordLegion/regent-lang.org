@@ -144,7 +144,8 @@
 <li><a href="#partition-operators">Partition Operators</a></li>
 <li><a href="#cross-products">Cross Products</a></li>
 </ul></li>
-<li><a href="#annotations">Annotations</a>
+<li><a href="#code-generation-for-gpus">Code Generation for GPUs</a></li>
+<li><a href="#annotations-and-optimization">Annotations and Optimization</a>
 <ul>
 <li><a href="#task-annotations">Task Annotations</a></li>
 <li><a href="#statement-annotations">Statement Annotations</a></li>
@@ -577,8 +578,38 @@
 <span class="kd">var</span> <span class="n">q</span> <span class="o">=</span> <span class="kt">partition</span><span class="p">(</span><span class="k">equal</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="kt">ispace</span><span class="p">(</span><span class="kt">int1d</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="kd">var</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">cross_product</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span></code></pre>
 </figure>
-<h1 id="annotations">Annotations</h1>
-<p>Annotations can be applied to tasks, statements, or expressions and control the optimizations applied by the Regent compiler to the code. Annotations come in two basic flavors:</p>
+<h1 id="code-generation-for-gpus">Code Generation for GPUs</h1>
+<p>Regent makes it easy to write optimized code for GPUs. Currently, Regent supports NVIDIA GPUs (via CUDA) and AMD GPUs (via HIP).</p>
+<p>Note that Regent GPU code can be written <em>even when no GPUs are available on the system</em>. This is because the applicability of GPU code generation optimizations are checked even when Regent has not been built with GPU support. However, in order to actually generate GPU code, Regent must be built with the <a href="https://github.com/StanfordLegion/legion/blob/master/language/README.md">corresponding GPU toolchain enabled</a>.</p>
+<p>In order to enable GPU code generation for a task, mark it with <code>__demand(__cuda)</code>:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__cuda</span><span class="p">)</span>
+<span class="k">task</span> <span class="nf">h</span><span class="p">()</span>
+  <span class="o">...</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>(Note that despite the name, <code>__demand(__cuda)</code> applies to both NVIDIA and AMD GPUs. In the future, we may change this name to something more generic.)</p>
+<p>Within a GPU task, every top-level loop is automatically run on the GPU. For example:</p>
+<figure class="highlight">
+<pre><code class="language-regent" data-lang="regent"><span class="k">__demand</span><span class="p">(</span><span class="n">__cuda</span><span class="p">)</span>
+<span class="k">task</span> <span class="nf">h</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">s</span> <span class="p">:</span> <span class="kt">region</span><span class="p">(</span><span class="kt">int</span><span class="p">))</span>
+<span class="k">where</span> <span class="k">reads</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="k">writes</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+  <span class="kd">var</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">r</span> <span class="k">do</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+  <span class="k">end</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">s</span> <span class="k">do</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">t</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre>
+</figure>
+<p>This task will result in two GPU kernels being generated, one for each <code>for</code> loop. The first loop reads region <code>r</code> and performs a scalar reduction to the variable <code>t</code>. The second loop reads <code>t</code> and adds the value into the region <code>s</code>. Note that because the the value of <code>t</code> is used inside the task, the task will block on the execution of the first GPU kernel before running the second. In most cases, Regent avoids blocking on the execution of GPU kernels as much as possible to enable overlap of compute and communication.</p>
+<p>In order to run this code on a GPU, run Regent with the flag <code>-fgpu cuda</code> for CUDA or <code>-fgpu hip</code> for HIP. If an NVIDIA GPU is available on the current node, the architecture will be auto-detected by default. Otherwise (or if on AMD GPUs), the architecture must be specified manually with the <code>-fgpu-arch</code> flag or <code>GPU_ARCH</code> environment variable. (E.g., <code>ampere</code> for NVIDIA or <code>gfx90a</code> for AMD.)</p>
+<p>If a GPU is not available on the current node, run with <code>-fgpu-offline 1</code>. In this mode, Regent can still perform GPU code generation to generate a GPU-enabled binary. The binary can then be run on a node with a working GPU.</p>
+<p>To identify the GPU at runtime, the <code>-ll:gpu</code> flag must be used to instruct Legion to use the GPU. There are <a href="https://github.com/StanfordLegion/legion/blob/master/README.md">additional flags to specify GPU memory and other properties</a>.</p>
+<h1 id="annotations-and-optimization">Annotations and Optimization</h1>
+<p>The Regent compiler provides a wide variety of optimizations. Most of these optimizations are automatic and require no user intervention. Even though they’re automatic, it may be desirable to ensure that optimizations are occuring (that is, the user hasn’t written any code that prevents the optimization from being applied). Annotations allow users to specify where optimizations are expected in a Regent codebase, so that the compiler can ensure the code is being optimized as expected.</p>
+<p>Annotations can be applied to tasks, statements, or expressions, and come in two basic flavors:</p>
 <ul>
 <li><code>__demand</code> requests that the compiler throw an error if an optimization cannot be applied.</li>
 <li><code>__forbid</code> requires that the compiler not apply an optimization.</li>
