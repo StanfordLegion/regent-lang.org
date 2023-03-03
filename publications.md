@@ -19,6 +19,7 @@ Papers about the Legion runtime that feature experiments written in Regent:
   * [Tracing](https://legion.stanford.edu/publications/#trace2018) (SC 2018) \[[PDF](https://legion.stanford.edu/pdfs/trace2018.pdf)]
   * [Pygion](https://legion.stanford.edu/publications/#pygion2019) (PAW-ATM 2019) \[[PDF](https://legion.stanford.edu/pdfs/pygion2019.pdf)]
   * [Dynamic Control Replication](https://legion.stanford.edu/publications/#dcr2021) (PPoPP 2021) \[[PDF](https://legion.stanford.edu/pdfs/dcr2021.pdf)]
+  * [Visibility Algorithms](https://legion.stanford.edu/publications/#visibility2023) (PPoPP 2023) \[[PDF](https://legion.stanford.edu/pdfs/visibility2023.pdf)]
 
 Papers about applications written in Regent:
 
