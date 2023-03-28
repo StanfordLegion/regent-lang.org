@@ -33,4 +33,5 @@ Papers about applications written in Regent:
   * [Task Bench](https://legion.stanford.edu/publications/#taskbench2020) (SC 2020) \[[PDF](https://legion.stanford.edu/pdfs/taskbench2020.pdf)]
   * [*In Situ* Data Compression](https://sourceryinstitute.github.io/PAW/PAW-ATM20/indexPAW-ATM20.html) (PAW-ATM 2020) \[[PDF](https://raw.githubusercontent.com/sourceryinstitute/PAW/gh-pages/PAW-ATM20/extendedAbstracts/PAW-ATM2020_abstract1.pdf)]
   * [Meshfree Solver](https://legion.stanford.edu/publications/#meshfree2020) (PAW-ATM 2020) \[[PDF](https://legion.stanford.edu/pdfs/pawatm2020.pdf)]
+  * [Electron Repulsion Integrals](https://doi.org/10.1021/acs.jctc.2c00414) (J. Chem. Theory Comput. 2022) \[[PDF](https://pubs.acs.org/doi/pdf/10.1021/acs.jctc.2c00414)]
   * [CDUGKS](https://doi.org/10.1093/mnras/stad770) (MNRAS 2023) \[[PDF](https://doi.org/10.1093/mnras/stad770)]
